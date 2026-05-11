@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Clean — Flyer A6</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #d1d5db;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      padding: 32px 20px 48px;
+    }
+
+    .print-hint {
+      background: #1e293b;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── A6 CARD: 105mm × 148mm ── */
+    .flyer {
+      width: 105mm;
+      height: 148mm;
+      background: white;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── HERO BAND ─── */
+    .hero {
+      background: #0266f0;
+      padding: 10px 12px 0;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -30px; top: -30px;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo-box {
+      width: 26px; height: 26px;
+      background: white;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 9px;
+      color: #0266f0; letter-spacing: -0.5px;
+    }
+
+    .logo-name {
+      color: white;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-phone {
+      color: rgba(255,255,255,0.9);
+      font-size: 9px;
+      font-weight: 700;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    .hero-headline {
+      color: white;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.6px;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-headline .dim {
+      opacity: 0.85;
+      font-weight: 700;
+    }
+
+    .hero-sub {
+      color: rgba(255,255,255,0.82);
+      font-size: 8.5px;
+      line-height: 1.55;
+      margin-bottom: 9px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-sub strong { color: white; font-weight: 700; }
+
+    /* ─── PHOTO ROW ─── */
+    .photo-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .photo-box {
+      position: relative;
+      height: 54mm;
+      overflow: hidden;
+    }
+
+    .photo-box img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-label {
+      position: absolute;
+      bottom: 5px; left: 6px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px;
+      padding: 2px 7px;
+      font-size: 7.5px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .photo-label.after {
+      background: #0266f0;
+      color: white;
+    }
+
+    /* ─── BODY ─── */
+    .body {
+      flex: 1;
+      padding: 9px 12px 0;
+      overflow: hidden;
+    }
+
+    /* ─── CHECKLIST ─── */
+    .checklist-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 10px;
+      margin-bottom: 8px;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 7.8px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .check-dot {
+      width: 13px; height: 13px;
+      background: #0266f0;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+      font-size: 8px; font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ─── SECONDARY SERVICE ─── */
+    .secondary {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 7px 9px;
+      margin-bottom: 8px;
+    }
+
+    .secondary h4 {
+      font-size: 8px;
+      font-weight: 800;
+      color: #0266f0;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .secondary .mini-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+
+    .mini-chip {
+      background: white;
+      border: 1px solid #bfdbfe;
+      border-radius: 20px;
+      padding: 1.5px 6px;
+      font-size: 7px;
+      font-weight: 600;
+      color: #1d4ed8;
+    }
+
+    /* ─── USP PILLS ─── */
+    .usp-row {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .usp-pill {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 3px 7px;
+      font-size: 7px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    /* ─── CTA FOOTER ─── */
+    .cta {
+      background: #082352;
+      margin: 0 -12px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+    }
+
+    .cta-num {
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+    }
+
+    .cta-num small {
+      display: block;
+      color: rgba(255,255,255,0.5);
+      font-size: 7px;
+      font-weight: 500;
+      margin-bottom: 1px;
+      letter-spacing: 0;
+    }
+
+    .cta-right {
+      text-align: right;
+    }
+
+    .cta-right p {
+      color: rgba(255,255,255,0.55);
+      font-size: 7px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .cta-right strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 700;
+      font-size: 8px;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: white; padding: 0; gap: 0; }
+      .print-hint { display: none; }
+      .flyer {
+        width: 105mm; height: 148mm;
+        box-shadow: none;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-hint">
+    💡 Chrome → Cmd+P → Spremi kao PDF<br>
+    Papir: A6 (105×148mm) ili A4 → bez margina → 2 po stranici
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- FLYER — GARAŽA (glavna) + STUBIŠTE (dodatno)     -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="flyer">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-top">
+        <div class="logo">
+          <div class="logo-box">PC</div>
+          <span class="logo-name">Pro Clean</span>
+        </div>
+        <div class="hero-phone">
+          099 484 0416<br>
+          <span style="font-weight:500;opacity:0.7">proclean.hr</span>
+        </div>
+      </div>
+
+      <div class="hero-headline">
+        <span class="dim">Čista garaža,</span><br>
+        uredna zgrada.
+      </div>
+
+      <p class="hero-sub">
+        Profesionalno čišćenje garaža i parkirišta — <strong>visokotlačno pranje,
+        uklanjanje ulja</strong> i dezinfekcija. Za stambene zajednice i tvrtke.
+      </p>
+    </div>
+
+    <!-- BEFORE / AFTER PHOTOS -->
+    <div class="photo-row">
+      <div class="photo-box">
+        <img src="/images/gallery/staircase2-before.jpg" alt="Prije" style="object-position: center 40%;" />
+        <span class="photo-label">prije</span>
+      </div>
+      <div class="photo-box">
+        <img src="/images/gallery/garage-after-real.jpg" alt="Poslije" style="object-position: center 30%;" />
+        <span class="photo-label after">poslije ✓</span>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="body">
+
+      <!-- Garage checklist -->
+      <div style="font-size:8px;font-weight:800;color:#111;margin:8px 0 5px;letter-spacing:-0.1px;">
+        🚗 Čišćenje garaže — što je uključeno
+      </div>
+      <div class="checklist-row">
+        <div class="check"><span class="check-dot">✓</span> Visokotlačno pranje poda</div>
+        <div class="check"><span class="check-dot">✓</span> Uklanjanje mrlja od ulja</div>
+        <div class="check"><span class="check-dot">✓</span> Čišćenje zidova i stupova</div>
+        <div class="check"><span class="check-dot">✓</span> Pranje garažnih vrata</div>
+        <div class="check"><span class="check-dot">✓</span> Čišćenje odvodnih kanala</div>
+        <div class="check"><span class="check-dot">✓</span> Dezinfekcija i osvježavanje</div>
+      </div>
+
+      <!-- Secondary: Stubište -->
+      <div class="secondary">
+        <h4>🏢 Dodatna usluga — čišćenje stubišta</h4>
+        <div class="mini-checks">
+          <span class="mini-chip">Brisanje podova</span>
+          <span class="mini-chip">Čišćenje sandučića</span>
+          <span class="mini-chip">Pranje stakla</span>
+          <span class="mini-chip">Dezinfekcija</span>
+          <span class="mini-chip">Rukohvati</span>
+          <span class="mini-chip">Iznošenje smeća</span>
+        </div>
+      </div>
+
+      <!-- USP row -->
+      <div class="usp-row">
+        <span class="usp-pill">✅ Fiksna cijena</span>
+        <span class="usp-pill">⏰ Dolazimo na vrijeme</span>
+        <span class="usp-pill">🌿 Bio sredstva</span>
+        <span class="usp-pill">📋 Godišnji ugovor</span>
+      </div>
+
+    </div>
+
+    <!-- CTA FOOTER -->
+    <div class="cta">
+      <div>
+        <div class="cta-num">
+          <small>Nazovi ili WhatsApp</small>
+          099 484 0416
+        </div>
+      </div>
+      <div class="cta-right">
+        <p>Besplatna procjena<br>Odgovor unutar 24h</p>
+        <strong>proclean.hr · Zagreb</strong>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

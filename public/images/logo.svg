@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 120" width="460" height="120">
+  <style>
+    .pro { font: 800 92px 'Manrope','Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; fill: #081226; letter-spacing: -0.04em; }
+    .clean { font: 600 92px 'Manrope','Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; fill: #2860ff; letter-spacing: -0.04em; }
+  </style>
+  <text x="10" y="92" class="pro">pro</text>
+  <text x="165" y="92" class="clean">clean</text>
+</svg>

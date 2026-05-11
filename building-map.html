@@ -1,0 +1,2797 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Mapa Zgrada</title>
+
+  <!-- Tailwind (CDN, standalone) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Mapbox GL JS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <style>
+    html, body { height: 100%; margin: 0; overscroll-behavior: none; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #111;
+    }
+    #map { position: absolute; inset: 0; }
+
+    /* Pin markers */
+    .pin {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 3px 10px rgba(0,0,0,.28);
+      cursor: pointer;
+      transition: transform .18s cubic-bezier(.16,1,.3,1);
+    }
+    .pin:hover { transform: scale(1.18); }
+    .pin.active    { background: #22c55e; }
+    .pin.contacted { background: #eab308; }
+    .pin.potential { background: #ef4444; }
+    .pin.pulse::after {
+      content: ""; position: absolute; inset: -8px;
+      border-radius: 50%;
+      border: 2px solid currentColor; opacity: .6;
+      animation: pulse 1.6s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(.6); opacity: .8; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    /* Glass morphism (Apple-ish) */
+    .glass {
+      background: rgba(255,255,255,.78);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+      border: 1px solid rgba(255,255,255,.6);
+    }
+    .glass-dark {
+      background: rgba(20,20,22,.72);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+    }
+
+    /* Animations */
+    @keyframes slideDown { from { transform: translate(-50%,-16px); opacity: 0; } to { transform: translate(-50%,0); opacity: 1; } }
+    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes slideInLeft  { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    @keyframes slideInUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .anim-slide-down { animation: slideDown .4s cubic-bezier(.16,1,.3,1); }
+    .anim-slide-right { animation: slideInRight .38s cubic-bezier(.16,1,.3,1); }
+    .anim-slide-left  { animation: slideInLeft .38s cubic-bezier(.16,1,.3,1); }
+    .anim-slide-up { animation: slideInUp .38s cubic-bezier(.16,1,.3,1); }
+    .anim-fade { animation: fadeIn .25s ease; }
+
+    /* Dashboard tabs */
+    .tab-btn {
+      flex: 1;
+      padding: .5rem .3rem;
+      font-size: .76rem;
+      font-weight: 600;
+      color: #6b7280;
+      border-radius: .5rem;
+      transition: all .18s ease;
+      white-space: nowrap;
+    }
+    .tab-btn[data-on="true"] { background: #fff; color: #111; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+    /* Alert card */
+    .alert-card {
+      border-radius: 1rem;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .alert-overdue  { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fecaca; }
+    .alert-today    { background: linear-gradient(135deg,#fffbeb,#fef3c7); border: 1px solid #fde68a; }
+    .alert-row {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .5rem .65rem;
+      background: rgba(255,255,255,.7);
+      border-radius: .65rem;
+    }
+    .alert-row .time { font-weight: 700; font-size: .82rem; min-width: 52px; }
+
+    /* Shift row */
+    .shift-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr .75fr .75fr 28px;
+      gap: 4px;
+      align-items: center;
+    }
+    .shift-row input {
+      padding: .4rem .5rem;
+      border-radius: .5rem;
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      font-size: .82rem;
+      min-width: 0;
+      outline: none;
+    }
+    .shift-row input:focus { border-color: #111; background: #fff; }
+    .shift-row .x-btn {
+      width: 28px; height: 28px;
+      border-radius: .45rem;
+      color: #9ca3af;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s ease;
+    }
+    .shift-row .x-btn:hover { background: #fee2e2; color: #dc2626; }
+
+    /* Section disclosure */
+    .section-title {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+      color: #9ca3af; font-weight: 700;
+      display: flex; align-items: center; gap: .4rem;
+      margin-bottom: .45rem; padding: 0 .25rem;
+    }
+
+    /* Material row (similar to shift, but 4 cols) */
+    .mat-row {
+      display: grid;
+      grid-template-columns: 2fr .6fr .8fr 28px;
+      gap: 4px;
+      align-items: center;
+    }
+    .mat-row input {
+      padding: .4rem .5rem;
+      border-radius: .5rem;
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      font-size: .82rem;
+      min-width: 0;
+      outline: none;
+    }
+    .mat-row input:focus { border-color: #111; background: #fff; }
+
+    /* Generic modal */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .modal-card {
+      background: #fff;
+      border-radius: 1.25rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,.35);
+      width: 100%;
+      max-width: 760px;
+      max-height: 92vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-body {
+      flex: 1; overflow-y: auto;
+      padding: 1.25rem;
+    }
+    .modal-footer {
+      padding: .9rem 1.25rem;
+      border-top: 1px solid #f3f4f6;
+      display: flex; gap: .5rem; justify-content: flex-end;
+    }
+
+    /* Service checkbox grid */
+    .svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .4rem; }
+    @media (max-width: 640px) { .svc-grid { grid-template-columns: 1fr; } }
+    .svc-chip {
+      display: flex; align-items: center; gap: .55rem;
+      padding: .55rem .7rem;
+      border: 1px solid #e5e7eb;
+      border-radius: .7rem;
+      font-size: .85rem;
+      cursor: pointer;
+      background: #fafafa;
+      transition: all .15s ease;
+      user-select: none;
+    }
+    .svc-chip:hover { background: #f3f4f6; }
+    .svc-chip[data-on="true"] { background: #111; color: #fff; border-color: #111; }
+    .svc-chip .svc-check {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid #d4d4d8;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .svc-chip[data-on="true"] .svc-check { background: #fff; border-color: #fff; }
+    .svc-chip[data-on="true"] .svc-check::after {
+      content: ""; width: 8px; height: 8px; border-radius: 1px;
+      background: #111;
+    }
+
+    /* Ponuda iframe modal */
+    #ponudaModal .ponuda-bar {
+      height: 52px; flex-shrink: 0;
+      background: #111; color: #fff;
+      display: flex; align-items: center; gap: .75rem;
+      padding: 0 1rem;
+    }
+    #ponudaModal .ponuda-bar .addr-chip {
+      flex: 1; font-size: .82rem; opacity: .8;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #ponudaModal iframe {
+      flex: 1; border: none; background: #faf9f5;
+    }
+    .ponuda-save-btn {
+      padding: .45rem 1rem; border-radius: .55rem;
+      background: #3B5BFF; color: #fff;
+      font-size: .82rem; font-weight: 700;
+      transition: opacity .15s ease;
+    }
+    .ponuda-save-btn:hover { opacity: .85; }
+    .ponuda-save-btn.saving { opacity: .6; pointer-events: none; }
+
+    /* Monthly cost row */
+    .mc-row { display: grid; grid-template-columns: 1fr .5fr 28px; gap: 4px; }
+    .mc-row input {
+      padding: .5rem .7rem;
+      border-radius: .55rem;
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      font-size: .88rem;
+      outline: none;
+    }
+    .mc-row input:focus { border-color: #111; background: #fff; }
+
+    @media print { body > * { display: none !important; } }
+
+    /* Stat cards */
+    .stat-card {
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      border-radius: .9rem;
+      padding: .85rem;
+    }
+    .stat-card .val { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .stat-card .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: #737373; font-weight: 600; margin-top: .35rem; }
+
+    /* Dashboard list item */
+    .db-item {
+      padding: .7rem .85rem;
+      border-radius: .8rem;
+      background: #fafafa;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .db-item:hover { background: #f3f4f6; border-color: #e5e7eb; }
+    .db-item .top { display: flex; align-items: center; gap: .5rem; }
+    .db-item .dot-s { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Small action button inline */
+    .btn-tiny {
+      padding: .3rem .55rem;
+      border-radius: .5rem;
+      font-size: .75rem;
+      font-weight: 600;
+      background: #111;
+      color: #fff;
+      transition: all .15s ease;
+    }
+    .btn-tiny:hover { background: #374151; }
+    .btn-tiny.ghost { background: #f3f4f6; color: #111; }
+    .btn-tiny.ghost:hover { background: #e5e7eb; }
+
+    /* Dashboard mobile: overlay instead of side-by-side */
+    @media (max-width: 640px) {
+      #dashboard { width: 100% !important; animation: slideInLeft .38s cubic-bezier(.16,1,.3,1); }
+    }
+
+    /* Chip active state */
+    .chip { transition: all .18s ease; }
+    .chip[data-on="true"] { background: #111 !important; color: #fff; }
+    .chip[data-on="true"] .count { color: rgba(255,255,255,.6); }
+    .type-chip { color: #6b7280; cursor: pointer; }
+    .type-chip[data-on="true"] { background: #111; color: #fff; }
+    /* Earnings bottom bar */
+    .earnings-bar {
+      position: fixed; bottom: .75rem; left: 50%; transform: translateX(-50%);
+      z-index: 35; display: flex; gap: .5rem;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(14px);
+      border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.12);
+      padding: .55rem .9rem; font-size: 13px; font-weight: 500;
+      white-space: nowrap;
+    }
+    .earnings-bar .lbl { color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+    .earnings-bar .val-real { color: #16a34a; font-weight: 700; font-size: 15px; }
+    .earnings-bar .val-pot  { color: #f59e0b; font-weight: 700; font-size: 15px; }
+    .earnings-bar .div { width: 1px; background: #e5e7eb; margin: 0 .25rem; }
+    /* Jobs list panel */
+    #jobsPanel {
+      position: fixed; top: 160px; right: 12px; z-index: 36;
+      width: 360px; max-height: calc(100vh - 240px);
+      background: white; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,.15);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    #jobsPanel.hidden { display: none !important; }
+    #jobsPanel header { padding: .9rem 1rem .65rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; }
+    #jobsPanel .body { overflow-y: auto; padding: .5rem .75rem 1rem; flex: 1; }
+    .job-card {
+      padding: .65rem .75rem; border: 1px solid #e5e7eb; border-radius: 10px;
+      margin-bottom: .5rem; transition: background .12s, border-color .12s;
+      cursor: pointer;
+    }
+    .job-card:hover { background: #f9fafb; border-color: #d1d5db; }
+    .job-card.done { border-left: 3px solid #2563eb; }
+    .job-card.pot  { border-left: 3px solid #f59e0b; }
+    /* Manager autocomplete dropdown */
+    .upr-wrap { position: relative; }
+    .upr-drop {
+      position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+      background: white; border: 1px solid #e5e7eb; border-radius: .55rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,.1); z-index: 200;
+      max-height: 200px; overflow-y: auto; display: none;
+    }
+    .upr-drop.open { display: block; }
+    .upr-item { padding: .5rem .75rem; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f3f4f6; }
+    .upr-item:last-child { border-bottom: none; }
+    .upr-item:hover, .upr-item.kbd-on { background: #eff6ff; color: #1d4ed8; }
+
+    /* Inputs */
+    .field {
+      width: 100%;
+      padding: .65rem .85rem;
+      border-radius: .7rem;
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    .field:focus { border-color: #111; background: #fff; }
+    .label { font-size: .78rem; font-weight: 600; color: #525252; margin-bottom: .35rem; display: block; letter-spacing: .01em; }
+
+    /* Worker tags */
+    .tag {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .25rem .55rem;
+      background: #f3f4f6;
+      border-radius: 999px;
+      font-size: .82rem;
+    }
+    .tag button { color: #9ca3af; font-weight: 700; line-height: 1; }
+    .tag button:hover { color: #111; }
+
+    /* Status segmented */
+    .seg { position: relative; display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; background: #f3f4f6; padding: 4px; border-radius: .8rem; }
+    .seg button {
+      padding: .55rem .25rem; border-radius: .55rem;
+      font-size: .85rem; font-weight: 600;
+      color: #525252;
+      transition: all .18s ease;
+      display: flex; align-items: center; justify-content: center; gap: .35rem;
+    }
+    .seg button .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .seg button[data-on="true"] { background: #fff; color: #111; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+    /* Scrollbar */
+    .scrollbox::-webkit-scrollbar { width: 8px; }
+    .scrollbox::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 4px; }
+    .scrollbox::-webkit-scrollbar-track { background: transparent; }
+
+    /* Mapbox logo subdued */
+    .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { opacity: .55; }
+    .mapboxgl-popup { z-index: 20; }
+
+    /* Hide number spinners */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* Mobile form slides from bottom */
+    @media (max-width: 640px) {
+      #panel { left: 0; right: 0; top: auto; bottom: 0; width: 100%; height: 85vh; border-top-left-radius: 22px; border-top-right-radius: 22px; animation: slideInUp .38s cubic-bezier(.16,1,.3,1); }
+    }
+
+    /* Suggestions dropdown */
+    #suggestions { max-height: 280px; overflow-y: auto; }
+    .sugg-item { padding: .6rem .8rem; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,.05); }
+    .sugg-item:last-child { border-bottom: 0; }
+    .sugg-item:hover, .sugg-item.focus { background: #f5f5f7; }
+
+    /* Loading spinner */
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- ================= TOP-LEFT BUTTONS ================= -->
+  <div class="fixed top-3 left-3 z-40 flex gap-2">
+    <button id="dashboardBtn"
+            class="glass rounded-2xl shadow-xl w-11 h-11 flex items-center justify-center hover:scale-105 active:scale-95 transition"
+            aria-label="Otvori dashboard">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    </button>
+    <button id="mainQuoteBtn"
+            class="glass rounded-2xl shadow-xl px-3 h-11 flex items-center gap-1.5 hover:scale-105 active:scale-95 transition text-[13px] font-semibold"
+            aria-label="Nova ponuda">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Ponuda
+    </button>
+  </div>
+
+  <!-- ================= DASHBOARD PANEL ================= -->
+  <aside id="dashboard" class="hidden fixed top-0 left-0 h-full w-full sm:w-[400px] bg-white shadow-2xl z-[45] flex flex-col overflow-hidden anim-slide-left">
+    <header class="px-5 py-4 border-b flex items-center justify-between">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Dashboard</div>
+        <h3 class="text-[17px] font-semibold">Pregled</h3>
+      </div>
+      <div class="flex items-center gap-1">
+        <button id="settingsBtn" class="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500" aria-label="Postavke" title="Postavke">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="dashboardClose" class="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500" aria-label="Zatvori">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="px-4 pt-3">
+      <div class="flex gap-1 bg-gray-100 p-1 rounded-xl" id="dashTabs">
+        <button class="tab-btn" data-tab="overview"  data-on="true">Pregled</button>
+        <button class="tab-btn" data-tab="finance"   data-on="false">Finan.</button>
+        <button class="tab-btn" data-tab="contacts"  data-on="false">Kontak.</button>
+        <button class="tab-btn" data-tab="workers"   data-on="false">Radnici</button>
+        <button class="tab-btn" data-tab="reminders" data-on="false">Podsj.</button>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto scrollbox px-4 py-4 space-y-4" id="dashContent">
+      <!-- ======= TAB: OVERVIEW ======= -->
+      <section data-pane="overview" class="space-y-4">
+        <!-- Urgent alerts (overdue + today calls + today shifts) -->
+        <div id="s_alerts" class="space-y-2"></div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="stat-card"><div class="val" id="s_total">0</div><div class="lbl">Ukupno zgrada</div></div>
+          <div class="stat-card"><div class="val text-green-600" id="s_active">0</div><div class="lbl">Aktivne</div></div>
+          <div class="stat-card"><div class="val text-yellow-600" id="s_contacted">0</div><div class="lbl">Kontaktirane</div></div>
+          <div class="stat-card"><div class="val text-red-600" id="s_potential">0</div><div class="lbl">Potencijalne</div></div>
+        </div>
+
+        <div class="stat-card" style="background: linear-gradient(135deg,#111 0%,#1f2937 100%); border: 0; color: #fff;">
+          <div class="text-[11px] uppercase tracking-wider text-white/60 font-semibold">Mjesečni prihod (aktivne)</div>
+          <div class="mt-1" style="font-size: 2rem; font-weight: 700; letter-spacing: -0.02em;" id="s_revenue">€0</div>
+          <div class="text-xs text-white/60 mt-1">Potencijalni ukupan: <span id="s_potrevenue">€0</span></div>
+        </div>
+
+        <div>
+          <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold mb-2 px-1">Najvrednije zgrade</div>
+          <div class="space-y-1.5" id="s_top"></div>
+        </div>
+      </section>
+
+      <!-- ======= TAB: FINANCE ======= -->
+      <section data-pane="finance" class="hidden space-y-3">
+
+        <!-- Net profit hero card -->
+        <div class="stat-card" style="background:linear-gradient(135deg,#111 0%,#1f2937 100%);border:0;color:#fff;">
+          <div class="text-[11px] uppercase tracking-wider text-white/60 font-semibold">Neto profit (tekući mjesec)</div>
+          <div style="font-size:2rem;font-weight:700;letter-spacing:-0.02em;line-height:1.1;" id="fi_net">€0</div>
+          <div class="flex gap-3 mt-2 text-[12px] text-white/70">
+            <span>↑ Prihodi: <strong class="text-white" id="fi_totalIn">€0</strong></span>
+            <span>↓ Troškovi: <strong class="text-white" id="fi_totalOut">€0</strong></span>
+          </div>
+        </div>
+
+        <!-- Revenue breakdown -->
+        <div>
+          <div class="section-title">Prihodi</div>
+          <div class="space-y-1">
+            <div class="db-item" style="cursor:default">
+              <div class="top"><span class="flex-1 text-[13px]">Aktivne zgrade (mj. prihod)</span><span class="font-semibold text-green-600" id="fi_recurring">€0</span></div>
+            </div>
+            <div class="db-item" style="cursor:default">
+              <div class="top"><span class="flex-1 text-[13px]">Jednokratni poslovi</span><span class="font-semibold text-green-600" id="fi_oneTime">€0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost breakdown -->
+        <div>
+          <div class="section-title">Troškovi</div>
+          <div class="space-y-1">
+            <div class="db-item" style="cursor:default">
+              <div class="top"><span class="flex-1 text-[13px]">Trošak firme (fiksni mj.)</span><span class="font-semibold text-red-500" id="fi_fixed">€0</span></div>
+              <div class="text-[11px] text-gray-400 mt-0.5" id="fi_fixedBreakdown"></div>
+            </div>
+            <div class="db-item" style="cursor:default">
+              <div class="top"><span class="flex-1 text-[13px]">Plaće radnika</span><span class="font-semibold text-red-500" id="fi_labor">€0</span></div>
+            </div>
+            <div class="db-item" style="cursor:default">
+              <div class="top"><span class="flex-1 text-[13px]">Materijali i sredstva</span><span class="font-semibold text-red-500" id="fi_mats">€0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Avg + quick stats -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="stat-card"><div class="val text-green-600" id="f_sum_active">€0</div><div class="lbl">Aktivne mj.</div></div>
+          <div class="stat-card"><div class="val" id="f_avg">€0</div><div class="lbl">Prosjek/zgradi</div></div>
+        </div>
+
+        <!-- One-time jobs -->
+        <div>
+          <div class="section-title flex justify-between items-center">
+            <span>Jednokratni poslovi</span>
+            <button id="fi_addJob" class="btn-tiny ghost">+ Posao</button>
+          </div>
+          <div class="space-y-1.5" id="fi_jobList"></div>
+        </div>
+
+        <!-- Buildings sorted -->
+        <div>
+          <div class="section-title">Zgrade po cijeni</div>
+          <div class="space-y-1.5" id="f_list"></div>
+        </div>
+      </section>
+
+      <!-- ======= TAB: CONTACTS ======= -->
+      <section data-pane="contacts" class="hidden space-y-3">
+        <div class="text-xs text-gray-500 px-1">Klikni telefon za poziv, ili adresu za fokus na mapi.</div>
+        <div class="space-y-1.5" id="c_list"></div>
+      </section>
+
+      <!-- ======= TAB: WORKERS ======= -->
+      <section data-pane="workers" class="hidden space-y-3">
+        <div class="grid grid-cols-3 gap-2">
+          <div class="stat-card"><div class="val text-green-600" id="w_earn">€0</div><div class="lbl">Zarada</div></div>
+          <div class="stat-card"><div class="val text-red-600" id="w_cost">€0</div><div class="lbl">Trošak</div></div>
+          <div class="stat-card"><div class="val" id="w_profit">€0</div><div class="lbl">Profit</div></div>
+        </div>
+        <div class="text-[11px] text-gray-500 text-center -mt-2 px-1">
+          Trošak = rad <span id="w_bd_labor">€0</span> · materijali <span id="w_bd_mat">€0</span> · mjesečno firme <span id="w_bd_fixed">€0</span>
+        </div>
+
+        <div>
+          <div class="section-title">Danas (<span id="w_todayDate"></span>)</div>
+          <div class="space-y-1.5" id="w_today"></div>
+        </div>
+
+        <div>
+          <div class="section-title">Sljedećih 7 dana</div>
+          <div class="space-y-1.5" id="w_week"></div>
+        </div>
+
+        <div>
+          <div class="section-title">Po radniku</div>
+          <div class="space-y-1.5" id="w_byWorker"></div>
+        </div>
+      </section>
+
+      <!-- ======= TAB: REMINDERS ======= -->
+      <section data-pane="reminders" class="hidden space-y-3">
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 text-[13px] text-blue-900">
+          <strong>Kako spojiti s Reminders:</strong> Unesi datum poziva u formi zgrade, zatim klikni gumb ispod. Preuzet će se <code class="bg-blue-100 px-1 rounded">.ics</code> sa svim podsjetnicima kao <em>to-do</em> stavkama — otvori ga i iOS/macOS ih automatski ubaci u Apple Reminders.
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="r_downloadReminders" class="py-2.5 rounded-xl bg-black text-white font-medium hover:bg-gray-800 active:scale-[.98] transition text-sm">📋 Reminders (.ics)</button>
+          <button id="r_downloadCalendar" class="py-2.5 rounded-xl border border-gray-300 font-medium hover:bg-gray-50 active:scale-[.98] transition text-sm">📅 Kalendar (.ics)</button>
+        </div>
+        <div class="section-title mt-2">Nadolazeći</div>
+        <div class="space-y-1.5" id="r_list"></div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- ================= API KEY MODAL ================= -->
+  <div id="apiKeyModal" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 anim-fade">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 anim-slide-up">
+      <div class="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center mb-4">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.1-7-12a7 7 0 1 1 14 0c0 4.9-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      </div>
+      <h2 class="text-xl font-semibold mb-1">Dobrodošli u Mapu Zgrada</h2>
+      <p class="text-gray-600 text-sm mb-5">Za rad mape potreban je <strong>besplatan</strong> Mapbox API ključ (50.000 učitavanja mjesečno besplatno).</p>
+
+      <ol class="text-sm text-gray-700 space-y-2 mb-5 list-decimal pl-5">
+        <li>Otvori <a href="https://account.mapbox.com/auth/signup/" target="_blank" class="text-blue-600 underline font-medium">mapbox.com/signup</a> i napravi račun</li>
+        <li>Na <a href="https://account.mapbox.com/" target="_blank" class="text-blue-600 underline font-medium">Account stranici</a> kopiraj <em>Default public token</em></li>
+        <li>Zalijepi ga u polje ispod (počinje sa <code class="bg-gray-100 px-1 rounded">pk.</code>)</li>
+      </ol>
+
+      <input id="apiKeyInput" type="text" placeholder="pk.eyJ1I..." class="field font-mono text-sm mb-3" />
+      <button id="apiKeySave" class="w-full bg-black text-white py-3 rounded-xl font-medium hover:bg-gray-800 active:scale-[.98] transition">Spremi i pokreni mapu</button>
+      <p class="text-xs text-gray-400 mt-3 text-center">Ključ se sprema samo u tvoj preglednik (localStorage).</p>
+    </div>
+  </div>
+
+  <!-- ================= TOP SEARCH BAR ================= -->
+  <div class="fixed top-3 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-1.25rem)] max-w-2xl anim-slide-down">
+    <div class="glass rounded-2xl shadow-xl p-2 flex gap-2 items-center relative">
+      <div class="pl-3 text-gray-500">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </div>
+      <input id="searchInput" type="text" placeholder="Unesi adresu (npr. Zagreb, Ulica...)"
+             class="flex-1 bg-transparent outline-none py-2.5 text-[15px] placeholder:text-gray-400"
+             autocomplete="off" autocorrect="off" spellcheck="false" />
+      <button id="addBtn" class="bg-black text-white px-5 py-2.5 rounded-xl font-medium hover:bg-gray-800 active:scale-95 transition flex items-center gap-2 min-w-[90px] justify-center">
+        <span id="addBtnLabel">Dodaj</span>
+        <div id="addBtnSpinner" class="spinner hidden"></div>
+      </button>
+
+      <!-- Suggestions dropdown -->
+      <div id="suggestions" class="hidden absolute top-[calc(100%+.4rem)] left-0 right-0 bg-white rounded-2xl shadow-2xl overflow-hidden text-[14px]"></div>
+    </div>
+
+    <!-- Type filter (Stambene / Drugi poslovi / Sve) -->
+    <div class="mt-2 flex gap-1 bg-white/70 backdrop-blur p-1 rounded-xl shadow w-fit mx-auto" id="typeFilter">
+      <button data-type="all"      data-on="true"  class="type-chip px-3 py-1.5 rounded-lg text-[13px] font-semibold transition">Sve</button>
+      <button data-type="building" data-on="false" class="type-chip px-3 py-1.5 rounded-lg text-[13px] font-semibold transition">Stambene zgrade</button>
+      <button data-type="job"      data-on="false" class="type-chip px-3 py-1.5 rounded-lg text-[13px] font-semibold transition">Drugi poslovi</button>
+    </div>
+
+    <!-- Status filter chips -->
+    <div class="mt-2 flex gap-2 overflow-x-auto px-1 pb-1 scrollbox" id="filterChips">
+      <button data-filter="all" data-on="true" class="chip px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap glass shadow">
+        Sve <span class="count ml-1 text-gray-500" data-count="all">0</span>
+      </button>
+      <button data-filter="active" data-on="false" data-bld-only class="chip px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap glass shadow flex items-center">
+        <span class="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>Aktivne <span class="count ml-1 text-gray-500" data-count="active">0</span>
+      </button>
+      <button data-filter="contacted" data-on="false" data-bld-only class="chip px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap glass shadow flex items-center">
+        <span class="w-2 h-2 rounded-full bg-yellow-500 mr-1.5"></span>Kontaktirane <span class="count ml-1 text-gray-500" data-count="contacted">0</span>
+      </button>
+      <button data-filter="potential" data-on="false" data-bld-only class="chip px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap glass shadow flex items-center">
+        <span class="w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>Potencijalne <span class="count ml-1 text-gray-500" data-count="potential">0</span>
+      </button>
+      <button data-filter="potencijalno" data-on="false" data-job-only class="chip hidden px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap glass shadow flex items-center">
+        <span class="w-2 h-2 rounded-full bg-orange-400 mr-1.5"></span>Potencijalno <span class="count ml-1 text-gray-500" data-count="potencijalno">0</span>
+      </button>
+      <button data-filter="napravljeno" data-on="false" data-job-only class="chip hidden px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap glass shadow flex items-center">
+        <span class="w-2 h-2 rounded-full bg-blue-500 mr-1.5"></span>Napravljeno <span class="count ml-1 text-gray-500" data-count="napravljeno">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= SIDE PANEL (FORM) ================= -->
+  <aside id="panel" class="hidden fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-30 flex flex-col overflow-hidden anim-slide-right">
+    <header class="px-5 py-4 border-b flex items-center justify-between">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold" id="panelMode">Nova zgrada</div>
+        <h3 id="panelTitle" class="text-[17px] font-semibold truncate max-w-[280px]">Detalji</h3>
+      </div>
+      <button id="panelClose" class="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500" aria-label="Zatvori">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+
+    <div class="flex-1 overflow-y-auto scrollbox px-5 py-4 space-y-4">
+      <div>
+        <label class="label">Adresa</label>
+        <input id="f_address" class="field" type="text" />
+      </div>
+
+      <div>
+        <label class="label">Status</label>
+        <div class="seg" id="f_status">
+          <button type="button" data-value="active"    data-on="false"><span class="dot bg-green-500"></span>Aktivna</button>
+          <button type="button" data-value="contacted" data-on="false"><span class="dot bg-yellow-500"></span>Kontakt.</button>
+          <button type="button" data-value="potential" data-on="true"><span class="dot bg-red-500"></span>Potenc.</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="label">Mjesečna cijena (€)</label>
+          <input id="f_price" class="field" type="number" min="0" step="1" placeholder="0" />
+        </div>
+        <div>
+          <label class="label">Telefon</label>
+          <input id="f_phone" class="field" type="tel" placeholder="+385..." />
+        </div>
+      </div>
+
+      <div>
+        <label class="label">Upravitelj (firma / osoba)</label>
+        <div class="upr-wrap">
+          <input id="f_upr" class="field" type="text" placeholder="Pretraži ili upiši upravitelja..." autocomplete="off" />
+          <div id="f_uprDrop" class="upr-drop"></div>
+        </div>
+      </div>
+
+      <div>
+        <label class="label">Ime predstavnika (kontakt osoba)</label>
+        <input id="f_rep" class="field" type="text" placeholder="Ime i prezime" />
+      </div>
+
+      <div>
+        <label class="label">Radnici (Enter za dodati)</label>
+        <div id="f_workers_wrap" class="field flex flex-wrap gap-1.5 items-center min-h-[44px] cursor-text">
+          <input id="f_workers_input" class="flex-1 min-w-[100px] bg-transparent outline-none py-0.5 text-sm" placeholder="Npr. Ivan" />
+        </div>
+      </div>
+
+      <div>
+        <label class="label">Bilješke</label>
+        <textarea id="f_notes" class="field" rows="3" placeholder="Dodatne informacije..."></textarea>
+      </div>
+
+      <div>
+        <label class="label">Sljedeći poziv / podsjetnik</label>
+        <div class="flex gap-2">
+          <input id="f_nextCall" class="field" type="datetime-local" />
+          <button type="button" id="f_icsReminderBtn" class="btn-tiny whitespace-nowrap" title="Preuzmi VTODO — otvori za dodavanje u Apple Reminders">Reminders</button>
+        </div>
+        <p class="text-[11px] text-gray-400 mt-1">Otvori preuzetu .ics datoteku — automatski se dodaje u Apple Reminders.</p>
+      </div>
+
+      <!-- Materials / supplies used on this building -->
+      <div>
+        <div class="section-title flex justify-between items-center">
+          <span>Materijali i sredstva</span>
+          <button type="button" id="f_addMat" class="btn-tiny ghost">+ Stavka</button>
+        </div>
+        <div class="mat-row text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1 px-0.5">
+          <span>Naziv</span><span>Kol.</span><span>Cijena €</span><span></span>
+        </div>
+        <div id="f_materials" class="space-y-1"></div>
+        <div class="text-right text-[12px] text-gray-500 mt-2 px-0.5">
+          Ukupno: <strong id="f_matsTotal" class="text-red-600">€0</strong>
+        </div>
+      </div>
+
+      <!-- Shifts (only for active buildings) -->
+      <div id="f_shiftsBox" class="hidden">
+        <div class="section-title flex justify-between items-center">
+          <span>Raspored rada</span>
+          <button type="button" id="f_addShift" class="btn-tiny ghost">+ Dan</button>
+        </div>
+        <div class="shift-row text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1 px-0.5">
+          <span>Datum</span><span>Radnik</span><span>Zarada €</span><span>Trošak €</span><span></span>
+        </div>
+        <div id="f_shifts" class="space-y-1"></div>
+        <div class="flex justify-between text-[12px] text-gray-500 mt-2 px-0.5">
+          <span>Ukupno zarada: <strong id="f_shiftsEarn" class="text-green-600">€0</strong></span>
+          <span>Trošak: <strong id="f_shiftsCost" class="text-red-600">€0</strong></span>
+          <span>Profit: <strong id="f_shiftsProfit" class="text-gray-900">€0</strong></span>
+        </div>
+      </div>
+
+      <div class="text-xs text-gray-400 pt-1" id="f_coords"></div>
+
+      <!-- Saved ponude for this building -->
+      <div id="f_ponudeBox" class="hidden pt-1">
+        <div class="section-title flex justify-between items-center">
+          <span>Vezane ponude</span>
+        </div>
+        <div id="f_ponudeList" class="space-y-1"></div>
+      </div>
+    </div>
+
+    <footer class="px-5 py-3 border-t bg-white flex flex-col gap-2">
+      <button id="quoteBtn" class="w-full py-2.5 rounded-xl border-2 border-black font-semibold hover:bg-gray-50 active:scale-[.98] transition flex items-center justify-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Izradi ponudu
+      </button>
+      <div class="flex gap-2">
+        <button id="deleteBtn" class="hidden flex-1 py-3 rounded-xl border border-red-200 text-red-600 font-medium hover:bg-red-50 transition">Obriši</button>
+        <button id="saveBtn" class="flex-1 py-3 rounded-xl bg-black text-white font-medium hover:bg-gray-800 active:scale-[.98] transition">Spremi</button>
+      </div>
+    </footer>
+  </aside>
+
+  <!-- ================= JOBS LIST PANEL (when type filter = job) ================= -->
+  <div id="jobsPanel" class="hidden">
+    <header>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Drugi poslovi</div>
+        <h3 class="text-[16px] font-semibold">Jednokratni poslovi</h3>
+      </div>
+      <button id="jobsPanelAdd" class="btn-tiny ghost flex items-center gap-1">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novi
+      </button>
+    </header>
+    <div class="body" id="jobsPanelList"></div>
+  </div>
+
+  <!-- ================= EARNINGS BOTTOM BAR ================= -->
+  <div id="earningsBar" class="earnings-bar">
+    <div>
+      <div class="lbl">Realna zarada</div>
+      <div class="val-real" id="eb_real">€0</div>
+    </div>
+    <div class="div"></div>
+    <div>
+      <div class="lbl">Potencijalna</div>
+      <div class="val-pot" id="eb_pot">€0</div>
+    </div>
+    <div class="div"></div>
+    <button id="exportXlsxBtn" class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[12px] font-semibold hover:bg-emerald-700 active:scale-95 transition">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Excel
+    </button>
+  </div>
+
+  <!-- ================= SETTINGS MODAL ================= -->
+  <div id="settingsModal" class="hidden modal-backdrop">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div>
+          <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Postavke</div>
+          <h3 class="text-[17px] font-semibold">Firma i troškovi</h3>
+        </div>
+        <button id="settingsClose" class="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500" aria-label="Zatvori">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body space-y-4">
+        <div>
+          <div class="section-title">Podaci firme</div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2">
+              <label class="label">Logo (prikazuje se na ponudi)</label>
+              <div class="flex items-center gap-3">
+                <img id="st_logoPreview" src="" alt="" class="h-12 w-24 object-contain rounded-lg border border-gray-200 bg-gray-50" style="display:none" />
+                <div class="flex-1">
+                  <label class="btn-tiny ghost cursor-pointer inline-flex items-center gap-1.5">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Učitaj logo
+                    <input type="file" id="st_logo" accept="image/*" class="hidden" />
+                  </label>
+                  <button id="st_logoRemove" class="btn-tiny ghost ml-2 text-red-500 hidden">Ukloni</button>
+                  <p class="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG — prikazuje se u lijevom uglu ponude</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-2"><label class="label">Naziv obrta</label><input id="st_name" class="field" /></div>
+            <div class="col-span-2"><label class="label">Vlasnik</label><input id="st_owner" class="field" /></div>
+            <div class="col-span-2"><label class="label">Adresa</label><input id="st_address" class="field" /></div>
+            <div><label class="label">Telefon</label><input id="st_phone" class="field" /></div>
+            <div><label class="label">Email</label><input id="st_email" class="field" /></div>
+            <div><label class="label">OIB</label><input id="st_oib" class="field" /></div>
+            <div><label class="label">IBAN</label><input id="st_iban" class="field" /></div>
+          </div>
+        </div>
+        <div>
+          <div class="section-title flex justify-between items-center">
+            <span>Mjesečni troškovi firme</span>
+            <button type="button" id="st_addCost" class="btn-tiny ghost">+ Trošak</button>
+          </div>
+          <div class="mc-row text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1 px-0.5">
+            <span>Naziv</span><span>Iznos €</span><span></span>
+          </div>
+          <div id="st_costs" class="space-y-1"></div>
+          <div class="text-right text-[12px] text-gray-500 mt-2 px-0.5">
+            Ukupno mjesečno: <strong id="st_costsTotal" class="text-red-600">€0</strong>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="settingsSave" class="px-5 py-2.5 rounded-xl bg-black text-white font-medium hover:bg-gray-800 active:scale-[.98] transition">Spremi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PONUDA IFRAME MODAL ================= -->
+  <div id="ponudaModal" class="hidden fixed inset-0 z-[80] flex flex-col" style="background:#000">
+    <!-- Top bar: address context + save + close -->
+    <div class="ponuda-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="flex-shrink-0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span class="addr-chip" id="ponuda_addrChip">Nova ponuda</span>
+      <button id="ponuda_saveBtn" class="ponuda-save-btn flex items-center gap-1.5">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Spremi u Ponude1
+      </button>
+      <button id="ponuda_closeBtn" class="ml-2 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition text-white/70 flex-shrink-0" aria-label="Zatvori">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <!-- Saved confirmation banner (hidden by default) -->
+    <div id="ponuda_savedBanner" class="hidden text-center text-[13px] font-semibold py-2" style="background:#22c55e;color:#fff;flex-shrink:0;"></div>
+    <!-- Builder iframe -->
+    <iframe id="ponuda_iframe" src="" title="Proclean generator ponuda" allow="same-origin" style="flex:1;border:none;background:#faf9f5;"></iframe>
+  </div>
+
+  <!-- ================= TOAST ================= -->
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 glass-dark text-white px-4 py-2.5 rounded-xl shadow-lg z-[70] text-sm font-medium"></div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    // ============== STATE ==============
+    const LS_KEY = 'building-map:data';
+    const LS_TOKEN = 'building-map:mapbox-token';
+    const LS_SETTINGS = 'building-map:settings';
+    const LS_ONE_TIME = 'building-map:one-time-jobs';
+
+    const DEFAULT_SETTINGS = {
+      company: {
+        name: 'Pro Clean obrt',
+        owner: 'Ajdin Mahmutović',
+        address: 'Liganjska 4',
+        phone: '',
+        email: '',
+        oib: '',
+        iban: '',
+      },
+      monthlyCosts: [], // {id, name, amount}
+    };
+
+    let map = null;
+    let buildings = loadBuildings();
+    let settings = loadSettings();
+    let oneTimeJobs = loadOneTimeJobs();
+    let markers = new Map(); // id -> mapboxgl.Marker
+    let currentFilter = 'all';
+    let editingId = null;
+    let workers = [];
+    let shifts = []; // shifts being edited in the form: {id, date, name, earning, cost}
+    let materials = []; // materials being edited: {id, name, qty, price}
+    let pendingCoords = null;     // for a brand-new pin not yet saved
+    let pendingAddress = null;
+    let suggestionTimer = null;
+    let suggestionFocus = -1;
+
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    // ============== STORAGE ==============
+    function loadBuildings() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
+      catch { return []; }
+    }
+    function saveBuildings() {
+      localStorage.setItem(LS_KEY, JSON.stringify(buildings));
+    }
+    function loadSettings() {
+      try {
+        const s = JSON.parse(localStorage.getItem(LS_SETTINGS) || 'null');
+        if (!s) return structuredClone(DEFAULT_SETTINGS);
+        return { ...structuredClone(DEFAULT_SETTINGS), ...s, company: { ...DEFAULT_SETTINGS.company, ...(s.company || {}) } };
+      } catch { return structuredClone(DEFAULT_SETTINGS); }
+    }
+    function saveSettings() {
+      localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
+    }
+    function loadOneTimeJobs() {
+      try { return JSON.parse(localStorage.getItem(LS_ONE_TIME) || '[]'); }
+      catch { return []; }
+    }
+    function saveOneTimeJobs() {
+      localStorage.setItem(LS_ONE_TIME, JSON.stringify(oneTimeJobs));
+    }
+    function uid() { return 'b_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
+
+    // ============== TOAST ==============
+    let toastTimer;
+    function toast(msg) {
+      const el = $('#toast');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add('hidden'), 2200);
+    }
+
+    // ============== API KEY ==============
+    function getToken() { return localStorage.getItem(LS_TOKEN) || ''; }
+    function setToken(t) { localStorage.setItem(LS_TOKEN, t); }
+
+    function initTokenFlow() {
+      const modal = $('#apiKeyModal');
+      const input = $('#apiKeyInput');
+      const save = $('#apiKeySave');
+      const existing = getToken();
+      if (existing && existing.startsWith('pk.')) {
+        bootMap(existing);
+        return;
+      }
+      modal.classList.remove('hidden');
+      input.focus();
+      save.addEventListener('click', () => {
+        const val = input.value.trim();
+        if (!val.startsWith('pk.')) { input.classList.add('ring-2','ring-red-400'); toast('Ključ mora počinjati sa "pk."'); return; }
+        setToken(val);
+        modal.classList.add('hidden');
+        bootMap(val);
+      });
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save.click(); });
+    }
+
+    // ============== MAP ==============
+    function bootMap(token) {
+      mapboxgl.accessToken = token;
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/standard',
+        center: [15.9819, 45.8150], // Zagreb
+        zoom: 11,
+        attributionControl: false,
+      });
+
+      map.addControl(new mapboxgl.NavigationControl({ visualizePitch: false, showCompass: false }), 'bottom-right');
+      map.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: false }), 'bottom-right');
+      map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-left');
+
+      let markersRendered = false;
+      function initMarkers() {
+        if (markersRendered) return;
+        markersRendered = true;
+        renderAllMarkers();
+        updateCounts();
+      }
+      map.on('load', initMarkers);
+      map.on('style.load', initMarkers);
+      // Fallback: if load event never fires (known issue with standard style)
+      setTimeout(initMarkers, 3000);
+
+      // Click on empty map adds a pin where you clicked
+      map.on('click', (e) => {
+        // Reverse geocode the click location
+        reverseGeocode(e.lngLat.lng, e.lngLat.lat).then((addr) => {
+          openNewBuilding({ lng: e.lngLat.lng, lat: e.lngLat.lat }, addr || `${e.lngLat.lat.toFixed(5)}, ${e.lngLat.lng.toFixed(5)}`);
+        });
+      });
+    }
+
+    // ============== MARKERS ==============
+    function makeEl(status) {
+      const el = document.createElement('div');
+      el.className = `pin ${status}`;
+      return el;
+    }
+
+    function renderMarker(b) {
+      if (markers.has(b.id)) { markers.get(b.id).remove(); markers.delete(b.id); }
+      const el = makeEl(b.status);
+      const marker = new mapboxgl.Marker({ element: el, draggable: true })
+        .setLngLat([b.lng, b.lat])
+        .addTo(map);
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openExisting(b.id);
+      });
+      marker.on('dragend', () => {
+        const ll = marker.getLngLat();
+        const target = buildings.find(x => x.id === b.id);
+        if (!target) return;
+        target.lng = ll.lng; target.lat = ll.lat;
+        reverseGeocode(ll.lng, ll.lat).then((a) => {
+          if (a) target.address = a;
+          saveBuildings();
+          if (editingId === b.id) {
+            $('#f_address').value = target.address;
+            $('#f_coords').textContent = `${target.lat.toFixed(5)}, ${target.lng.toFixed(5)}`;
+          }
+          toast('Pozicija ažurirana');
+        });
+      });
+      markers.set(b.id, marker);
+    }
+
+    function renderAllMarkers() {
+      markers.forEach(m => m.remove());
+      markers.clear();
+      // Hide markers entirely when type filter = job
+      if (currentType === 'job') return;
+      const isBuildingFilter = ['active','contacted','potential'].includes(currentFilter);
+      const visible = buildings.filter(b => {
+        if (currentFilter === 'all') return true;
+        if (isBuildingFilter) return b.status === currentFilter;
+        return false; // job-status filter doesn't apply to buildings
+      });
+      visible.forEach(renderMarker);
+    }
+
+    function updateCounts() {
+      // Buildings counts
+      const cb = { all: buildings.length, active: 0, contacted: 0, potential: 0 };
+      buildings.forEach(b => { cb[b.status] = (cb[b.status] || 0) + 1; });
+      // Jobs counts
+      const cj = { potencijalno: 0, napravljeno: 0 };
+      oneTimeJobs.forEach(j => { const s = j.jobStatus || 'potencijalno'; cj[s] = (cj[s]||0)+1; });
+
+      $$('.count').forEach(el => {
+        const k = el.dataset.count;
+        if (currentType === 'job') {
+          if (k === 'all') el.textContent = oneTimeJobs.length;
+          else if (k in cj) el.textContent = cj[k];
+          else el.textContent = 0;
+        } else if (currentType === 'building') {
+          el.textContent = cb[k] ?? 0;
+        } else { // 'all'
+          if (k === 'all') el.textContent = buildings.length + oneTimeJobs.length;
+          else if (k in cb) el.textContent = cb[k];
+          else if (k in cj) el.textContent = cj[k];
+          else el.textContent = 0;
+        }
+      });
+
+      updateEarningsBar();
+    }
+
+    // ============== EARNINGS BAR ==============
+    function updateEarningsBar() {
+      // Realna: active buildings monthly + done jobs THIS month
+      const ymNow = new Date().toISOString().slice(0,7);
+      const recurring = buildings.filter(b => b.status === 'active').reduce((a,b)=>a+(Number(b.price)||0),0);
+      const doneThisMonth = oneTimeJobs
+        .filter(j => j.jobStatus === 'napravljeno' && (j.doneDate||j.date||'').startsWith(ymNow))
+        .reduce((a,j)=>a+(Number(j.amount)||0),0);
+      const realna = recurring + doneThisMonth;
+
+      // Potencijalna: potential+contacted buildings + potential jobs
+      const potBld = buildings.filter(b => b.status !== 'active').reduce((a,b)=>a+(Number(b.price)||0),0);
+      const potJob = oneTimeJobs.filter(j => (j.jobStatus||'potencijalno') === 'potencijalno').reduce((a,j)=>a+(Number(j.amount)||0),0);
+      const pot = potBld + potJob;
+
+      $('#eb_real').textContent = formatEUR(realna);
+      $('#eb_pot').textContent  = formatEUR(pot);
+    }
+
+    // ============== TYPE FILTER ==============
+    let currentType = 'all'; // 'all' | 'building' | 'job'
+
+    function applyTypeFilter() {
+      // Show/hide chips based on type
+      $$('#filterChips [data-bld-only]').forEach(el => el.classList.toggle('hidden', currentType === 'job'));
+      $$('#filterChips [data-job-only]').forEach(el => el.classList.toggle('hidden', currentType === 'building' || currentType === 'all'));
+      // Reset filter to "all" when switching type
+      $$('#filterChips button').forEach(b => b.dataset.on = String(b.dataset.filter === 'all'));
+      currentFilter = 'all';
+      // Show jobs panel only when type=job
+      $('#jobsPanel').classList.toggle('hidden', currentType !== 'job');
+      if (currentType === 'job') renderJobsPanel();
+      renderAllMarkers();
+      updateCounts();
+    }
+
+    $('#typeFilter').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-type]');
+      if (!btn) return;
+      $$('#typeFilter button').forEach(b => b.dataset.on = 'false');
+      btn.dataset.on = 'true';
+      currentType = btn.dataset.type;
+      applyTypeFilter();
+    });
+
+    // ============== STATUS FILTER ==============
+    $('#filterChips').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-filter]');
+      if (!btn) return;
+      $$('#filterChips button').forEach(b => b.dataset.on = 'false');
+      btn.dataset.on = 'true';
+      currentFilter = btn.dataset.filter;
+      renderAllMarkers();
+      if (currentType === 'job') renderJobsPanel();
+    });
+
+    // ============== GEOCODING ==============
+    async function forwardGeocode(q) {
+      const token = getToken();
+      const url = `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(q)}&limit=5&language=hr&access_token=${token}`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('Geocoding failed');
+      const j = await r.json();
+      return (j.features || []).map(f => ({
+        name: f.properties?.full_address || f.properties?.name || f.properties?.place_formatted || '',
+        place: f.properties?.name_preferred || f.properties?.name || '',
+        lng: f.geometry.coordinates[0],
+        lat: f.geometry.coordinates[1],
+      })).filter(x => x.name);
+    }
+    async function reverseGeocode(lng, lat) {
+      const token = getToken();
+      const url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${lng}&latitude=${lat}&limit=1&language=hr&access_token=${token}`;
+      try {
+        const r = await fetch(url);
+        const j = await r.json();
+        return j.features?.[0]?.properties?.full_address || j.features?.[0]?.properties?.name || '';
+      } catch { return ''; }
+    }
+
+    // ============== SEARCH ==============
+    const input = $('#searchInput');
+    const sugg = $('#suggestions');
+    const addBtn = $('#addBtn');
+
+    function clearSuggestions() {
+      sugg.innerHTML = ''; sugg.classList.add('hidden'); suggestionFocus = -1;
+    }
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim();
+      clearTimeout(suggestionTimer);
+      if (q.length < 3) { clearSuggestions(); return; }
+      suggestionTimer = setTimeout(async () => {
+        try {
+          const items = await forwardGeocode(q);
+          if (!items.length) { clearSuggestions(); return; }
+          sugg.innerHTML = items.map((it, i) => `
+            <div class="sugg-item" data-i="${i}" data-lng="${it.lng}" data-lat="${it.lat}">
+              <div class="font-medium text-[14px]">${escapeHtml(it.place || it.name)}</div>
+              <div class="text-[12px] text-gray-500 truncate">${escapeHtml(it.name)}</div>
+            </div>`).join('');
+          sugg.classList.remove('hidden');
+          sugg._items = items;
+        } catch (e) { console.warn(e); }
+      }, 250);
+    });
+
+    sugg.addEventListener('click', (e) => {
+      const item = e.target.closest('.sugg-item');
+      if (!item) return;
+      const i = Number(item.dataset.i);
+      const picked = sugg._items[i];
+      clearSuggestions();
+      input.value = picked.name;
+      openNewBuilding({ lng: picked.lng, lat: picked.lat }, picked.name);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      const items = sugg._items || [];
+      if (e.key === 'ArrowDown' && items.length) {
+        e.preventDefault();
+        suggestionFocus = (suggestionFocus + 1) % items.length;
+        updateSuggFocus();
+      } else if (e.key === 'ArrowUp' && items.length) {
+        e.preventDefault();
+        suggestionFocus = (suggestionFocus - 1 + items.length) % items.length;
+        updateSuggFocus();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (suggestionFocus >= 0 && items[suggestionFocus]) {
+          const picked = items[suggestionFocus];
+          clearSuggestions();
+          input.value = picked.name;
+          openNewBuilding({ lng: picked.lng, lat: picked.lat }, picked.name);
+        } else {
+          handleAdd();
+        }
+      } else if (e.key === 'Escape') {
+        clearSuggestions();
+      }
+    });
+    function updateSuggFocus() {
+      $$('.sugg-item').forEach((el, i) => el.classList.toggle('focus', i === suggestionFocus));
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#searchInput') && !e.target.closest('#suggestions')) clearSuggestions();
+    });
+
+    addBtn.addEventListener('click', handleAdd);
+
+    async function handleAdd() {
+      const q = input.value.trim();
+      if (!q) { input.focus(); return; }
+      setAddLoading(true);
+      try {
+        const items = await forwardGeocode(q);
+        if (!items.length) { toast('Adresa nije pronađena'); return; }
+        const best = items[0];
+        input.value = best.name;
+        openNewBuilding({ lng: best.lng, lat: best.lat }, best.name);
+      } catch (err) {
+        console.error(err);
+        toast('Greška kod pretrage');
+      } finally {
+        setAddLoading(false);
+        clearSuggestions();
+      }
+    }
+    function setAddLoading(on) {
+      $('#addBtnLabel').classList.toggle('hidden', on);
+      $('#addBtnSpinner').classList.toggle('hidden', !on);
+      addBtn.disabled = on;
+    }
+
+    // ============== PANEL ==============
+    const panel = $('#panel');
+
+    function openPanel() {
+      panel.classList.remove('hidden');
+      // Trigger reflow for animation
+      panel.style.animation = 'none'; void panel.offsetWidth;
+      panel.style.animation = '';
+    }
+    function closePanel() {
+      panel.classList.add('hidden');
+      editingId = null;
+      pendingCoords = null;
+      pendingAddress = null;
+      // Remove the preview marker if user cancels a new one
+      if (previewMarker) { previewMarker.remove(); previewMarker = null; }
+    }
+    $('#panelClose').addEventListener('click', closePanel);
+
+    let previewMarker = null;
+    function showPreviewMarker(lng, lat, status = 'potential') {
+      if (previewMarker) previewMarker.remove();
+      const el = document.createElement('div');
+      el.className = `pin ${status} pulse`;
+      el.style.color = status === 'active' ? '#22c55e' : status === 'contacted' ? '#eab308' : '#ef4444';
+      previewMarker = new mapboxgl.Marker({ element: el, draggable: true }).setLngLat([lng, lat]).addTo(map);
+      previewMarker.on('dragend', async () => {
+        const ll = previewMarker.getLngLat();
+        pendingCoords = { lng: ll.lng, lat: ll.lat };
+        const a = await reverseGeocode(ll.lng, ll.lat);
+        if (a) { pendingAddress = a; $('#f_address').value = a; }
+        $('#f_coords').textContent = `${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}`;
+      });
+    }
+
+    function openNewBuilding({ lng, lat }, address) {
+      editingId = null;
+      pendingCoords = { lng, lat };
+      pendingAddress = address;
+      workers = [];
+      shifts = [];
+      materials = [];
+      renderWorkers();
+      renderShifts();
+      renderMaterials();
+
+      $('#panelMode').textContent = 'Nova zgrada';
+      $('#panelTitle').textContent = address.split(',')[0] || 'Detalji';
+      $('#f_address').value = address;
+      $('#f_price').value = '';
+      $('#f_upr').value = '';
+      $('#f_rep').value = '';
+      $('#f_phone').value = '';
+      $('#f_notes').value = '';
+      $('#f_nextCall').value = '';
+      $('#f_coords').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      setStatus('potential');
+      $('#deleteBtn').classList.add('hidden');
+      openPanel();
+
+      map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 15.5), essential: true, duration: 900 });
+      showPreviewMarker(lng, lat, 'potential');
+    }
+
+    function openExisting(id) {
+      const b = buildings.find(x => x.id === id);
+      if (!b) return;
+      editingId = id;
+      pendingCoords = null; pendingAddress = null;
+      workers = [...(b.workers || [])];
+      shifts = (b.shifts || []).map(s => ({ ...s }));
+      materials = (b.materials || []).map(m => ({ ...m }));
+      renderWorkers();
+      renderShifts();
+      renderMaterials();
+
+      $('#panelMode').textContent = 'Uredi zgradu';
+      $('#panelTitle').textContent = b.address.split(',')[0] || 'Detalji';
+      $('#f_address').value = b.address || '';
+      $('#f_price').value = b.price ?? '';
+      $('#f_upr').value = b.upravitelj || '';
+      $('#f_rep').value = b.rep || '';
+      $('#f_phone').value = b.phone || '';
+      $('#f_notes').value = b.notes || '';
+      $('#f_nextCall').value = toDatetimeLocal(b.nextCallAt);
+      $('#f_coords').textContent = `${b.lat.toFixed(5)}, ${b.lng.toFixed(5)}`;
+      setStatus(b.status);
+      $('#deleteBtn').classList.remove('hidden');
+      renderBuildingPonude(id);
+      openPanel();
+      map.flyTo({ center: [b.lng, b.lat], zoom: Math.max(map.getZoom(), 15.5), essential: true, duration: 700 });
+    }
+
+    function renderBuildingPonude(buildingId) {
+      const ponude = loadSavedPonude().filter(p => p.buildingId === buildingId);
+      const box = $('#f_ponudeBox');
+      const list = $('#f_ponudeList');
+      if (!ponude.length) { box.classList.add('hidden'); return; }
+      box.classList.remove('hidden');
+      const fmt = ms => { const d = new Date(ms); return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}.`; };
+      list.innerHTML = ponude.map(p => `
+        <div class="flex items-center justify-between gap-2 px-1 py-1.5 rounded-lg hover:bg-gray-50">
+          <div class="flex items-center gap-2 min-w-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B5BFF" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="text-[12px] truncate text-gray-700">${escapeHtml(p.filename)}</span>
+          </div>
+          <span class="text-[11px] text-gray-400 flex-shrink-0">${fmt(p.savedAt)}</span>
+        </div>
+      `).join('');
+    }
+
+    // ============== STATUS SEGMENTED ==============
+    function setStatus(val) {
+      $$('#f_status button').forEach(b => b.dataset.on = String(b.dataset.value === val));
+      // Update preview pin color if new
+      if (pendingCoords && previewMarker) {
+        const el = previewMarker.getElement();
+        el.className = `pin ${val} pulse`;
+        el.style.color = val === 'active' ? '#22c55e' : val === 'contacted' ? '#eab308' : '#ef4444';
+      }
+      updateShiftsVisibility();
+    }
+    function getStatus() {
+      const on = document.querySelector('#f_status button[data-on="true"]');
+      return on ? on.dataset.value : 'potential';
+    }
+    $('#f_status').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-value]');
+      if (btn) setStatus(btn.dataset.value);
+    });
+
+    // ============== WORKERS TAG INPUT ==============
+    function renderWorkers() {
+      const wrap = $('#f_workers_wrap');
+      wrap.querySelectorAll('.tag').forEach(n => n.remove());
+      const inputEl = $('#f_workers_input');
+      workers.forEach((w, i) => {
+        const t = document.createElement('span');
+        t.className = 'tag';
+        t.innerHTML = `${escapeHtml(w)}<button type="button" aria-label="Ukloni" data-i="${i}">×</button>`;
+        wrap.insertBefore(t, inputEl);
+      });
+    }
+    $('#f_workers_wrap').addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        workers.splice(Number(e.target.dataset.i), 1);
+        renderWorkers();
+      } else {
+        $('#f_workers_input').focus();
+      }
+    });
+    $('#f_workers_input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const v = e.target.value.trim().replace(/,$/, '');
+        if (v) { workers.push(v); e.target.value = ''; renderWorkers(); }
+      } else if (e.key === 'Backspace' && !e.target.value && workers.length) {
+        workers.pop(); renderWorkers();
+      }
+    });
+
+    // ============== SAVE / DELETE ==============
+    $('#saveBtn').addEventListener('click', () => {
+      const address = $('#f_address').value.trim();
+      if (!address) { toast('Adresa je obavezna'); return; }
+
+      const status = getStatus();
+      const data = {
+        address,
+        status,
+        price: $('#f_price').value ? Number($('#f_price').value) : null,
+        upravitelj: $('#f_upr').value.trim(),
+        rep: $('#f_rep').value.trim(),
+        phone: $('#f_phone').value.trim(),
+        workers: [...workers],
+        notes: $('#f_notes').value.trim(),
+        nextCallAt: fromDatetimeLocal($('#f_nextCall').value),
+        shifts: status === 'active' ? shifts.filter(s => s.date || s.name || s.earning || s.cost).map(s => ({ ...s })) : (shifts.length ? shifts.map(s => ({ ...s })) : []),
+        materials: materials.filter(m => m.name || m.qty || m.price).map(m => ({ ...m })),
+        updatedAt: Date.now(),
+      };
+
+      if (editingId) {
+        const b = buildings.find(x => x.id === editingId);
+        Object.assign(b, data);
+      } else {
+        const b = { id: uid(), createdAt: Date.now(), lng: pendingCoords.lng, lat: pendingCoords.lat, ...data };
+        buildings.push(b);
+        editingId = b.id;
+      }
+      saveBuildings();
+      if (previewMarker) { previewMarker.remove(); previewMarker = null; }
+      renderAllMarkers();
+      updateCounts();
+      if (!dashboard.classList.contains('hidden')) renderDashboard();
+      toast('Spremljeno');
+      closePanel();
+    });
+
+    $('#deleteBtn').addEventListener('click', () => {
+      if (!editingId) return;
+      if (!confirm('Obriši ovu zgradu?')) return;
+      buildings = buildings.filter(b => b.id !== editingId);
+      saveBuildings();
+      renderAllMarkers();
+      updateCounts();
+      if (!dashboard.classList.contains('hidden')) renderDashboard();
+      toast('Obrisano');
+      closePanel();
+    });
+
+    // ============== MATERIALS ==============
+    function renderMaterials() {
+      const wrap = $('#f_materials');
+      wrap.innerHTML = materials.map((m, i) => `
+        <div class="mat-row" data-i="${i}">
+          <input type="text"   data-k="name"  value="${escapeHtml(m.name || '')}" placeholder="Npr. deterdžent, krpe...">
+          <input type="number" data-k="qty"   value="${m.qty ?? ''}"   placeholder="1" min="0" step="0.01">
+          <input type="number" data-k="price" value="${m.price ?? ''}" placeholder="0" min="0" step="0.01">
+          <button type="button" class="x-btn" data-mat-remove="${i}" aria-label="Ukloni">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/></svg>
+          </button>
+        </div>
+      `).join('');
+      updateMatTotals();
+    }
+    function matTotal(m) { return (Number(m.qty) || 0) * (Number(m.price) || 0); }
+    function updateMatTotals() {
+      const t = materials.reduce((a, m) => a + matTotal(m), 0);
+      $('#f_matsTotal').textContent = formatEUR(t);
+    }
+    $('#f_materials').addEventListener('input', (e) => {
+      const row = e.target.closest('.mat-row'); if (!row) return;
+      const i = Number(row.dataset.i); const k = e.target.dataset.k;
+      if (k === 'qty' || k === 'price') materials[i][k] = e.target.value ? Number(e.target.value) : null;
+      else materials[i][k] = e.target.value;
+      updateMatTotals();
+    });
+    $('#f_materials').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-mat-remove]');
+      if (!btn) return;
+      materials.splice(Number(btn.dataset.matRemove), 1);
+      renderMaterials();
+    });
+    $('#f_addMat').addEventListener('click', () => {
+      materials.push({ id: 'm_'+Math.random().toString(36).slice(2,8), name: '', qty: 1, price: null });
+      renderMaterials();
+    });
+
+    // ============== SHIFTS (RASPORED RADA) ==============
+    function renderShifts() {
+      const wrap = $('#f_shifts');
+      wrap.innerHTML = shifts.map((s, i) => `
+        <div class="shift-row" data-i="${i}">
+          <input type="date"  data-k="date"    value="${s.date || ''}">
+          <input type="text"  data-k="name"    value="${escapeHtml(s.name || '')}" placeholder="Ime radnika" list="workers-datalist">
+          <input type="number" data-k="earning" value="${s.earning ?? ''}" placeholder="0" min="0" step="1">
+          <input type="number" data-k="cost"    value="${s.cost ?? ''}"    placeholder="0" min="0" step="1">
+          <button type="button" class="x-btn" data-remove="${i}" aria-label="Ukloni">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/></svg>
+          </button>
+        </div>
+      `).join('');
+      updateShiftTotals();
+      ensureWorkersDatalist();
+    }
+    function updateShiftTotals() {
+      const earn = shifts.reduce((a, s) => a + (Number(s.earning) || 0), 0);
+      const cost = shifts.reduce((a, s) => a + (Number(s.cost) || 0), 0);
+      $('#f_shiftsEarn').textContent = formatEUR(earn);
+      $('#f_shiftsCost').textContent = formatEUR(cost);
+      $('#f_shiftsProfit').textContent = formatEUR(earn - cost);
+    }
+    function ensureWorkersDatalist() {
+      // Collect all known worker names from all buildings + global workers tag list
+      let dl = document.getElementById('workers-datalist');
+      if (!dl) {
+        dl = document.createElement('datalist');
+        dl.id = 'workers-datalist';
+        document.body.appendChild(dl);
+      }
+      const names = new Set();
+      buildings.forEach(b => {
+        (b.workers || []).forEach(n => names.add(n));
+        (b.shifts || []).forEach(s => s.name && names.add(s.name));
+      });
+      workers.forEach(n => names.add(n));
+      dl.innerHTML = [...names].map(n => `<option value="${escapeHtml(n)}">`).join('');
+    }
+    $('#f_shifts').addEventListener('input', (e) => {
+      const row = e.target.closest('.shift-row');
+      if (!row) return;
+      const i = Number(row.dataset.i);
+      const k = e.target.dataset.k;
+      if (k === 'earning' || k === 'cost') shifts[i][k] = e.target.value ? Number(e.target.value) : null;
+      else shifts[i][k] = e.target.value;
+      updateShiftTotals();
+    });
+    $('#f_shifts').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-remove]');
+      if (!btn) return;
+      shifts.splice(Number(btn.dataset.remove), 1);
+      renderShifts();
+    });
+    $('#f_addShift').addEventListener('click', () => {
+      const today = new Date(); const pad = (n) => String(n).padStart(2,'0');
+      const dateStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+      shifts.push({ id: 'sh_'+Math.random().toString(36).slice(2,8), date: dateStr, name: '', earning: null, cost: null });
+      renderShifts();
+    });
+    function updateShiftsVisibility() {
+      const show = getStatus() === 'active';
+      $('#f_shiftsBox').classList.toggle('hidden', !show);
+    }
+
+    // ============== REMINDER FIELD + ICS ==============
+    function toDatetimeLocal(ms) {
+      if (!ms) return '';
+      const d = new Date(ms);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    function fromDatetimeLocal(v) {
+      if (!v) return null;
+      const t = new Date(v).getTime();
+      return Number.isFinite(t) ? t : null;
+    }
+    function icsEscape(s) {
+      return String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+    }
+    function icsDate(ms) {
+      const d = new Date(ms);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
+    }
+    function buildingDescription(b) {
+      return [
+        `Adresa: ${b.address}`,
+        b.rep ? `Kontakt: ${b.rep}` : '',
+        b.phone ? `Telefon: ${b.phone}` : '',
+        b.price ? `Mjesečna cijena: €${b.price}` : '',
+        b.notes ? `Bilješke: ${b.notes}` : '',
+      ].filter(Boolean).join('\n');
+    }
+    function buildingSummary(b) {
+      return `Nazvati: ${b.rep || b.address.split(',')[0]}`;
+    }
+
+    // VEVENT → Calendar
+    function buildingToVEvent(b) {
+      if (!b.nextCallAt) return null;
+      const start = b.nextCallAt;
+      const end = start + 30 * 60 * 1000;
+      return [
+        'BEGIN:VEVENT',
+        `UID:${b.id}-cal@mapa-zgrada`,
+        `DTSTAMP:${icsDate(Date.now())}`,
+        `DTSTART:${icsDate(start)}`,
+        `DTEND:${icsDate(end)}`,
+        `SUMMARY:${icsEscape(buildingSummary(b))}`,
+        `DESCRIPTION:${icsEscape(buildingDescription(b))}`,
+        `LOCATION:${icsEscape(b.address)}`,
+        `GEO:${b.lat};${b.lng}`,
+        'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:-PT15M',
+        `DESCRIPTION:${icsEscape(buildingSummary(b))}`,
+        'END:VALARM','END:VEVENT',
+      ].join('\r\n');
+    }
+
+    // VTODO → Reminders (Apple Reminders imports VTODO correctly)
+    function buildingToVTodo(b) {
+      if (!b.nextCallAt) return null;
+      return [
+        'BEGIN:VTODO',
+        `UID:${b.id}-todo@mapa-zgrada`,
+        `DTSTAMP:${icsDate(Date.now())}`,
+        `DUE:${icsDate(b.nextCallAt)}`,
+        `SUMMARY:${icsEscape(buildingSummary(b))}`,
+        `DESCRIPTION:${icsEscape(buildingDescription(b))}`,
+        `LOCATION:${icsEscape(b.address)}`,
+        `GEO:${b.lat};${b.lng}`,
+        'STATUS:NEEDS-ACTION',
+        'PRIORITY:5',
+        'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:-PT15M',
+        `DESCRIPTION:${icsEscape(buildingSummary(b))}`,
+        'END:VALARM','END:VTODO',
+      ].join('\r\n');
+    }
+
+    function buildICS(list, kind = 'todo') {
+      const gen = kind === 'todo' ? buildingToVTodo : buildingToVEvent;
+      const items = list.map(gen).filter(Boolean);
+      if (!items.length) return null;
+      return [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Mapa Zgrada//HR',
+        'CALSCALE:GREGORIAN',
+        ...items,
+        'END:VCALENDAR',
+      ].join('\r\n');
+    }
+    function downloadICS(list, filename, kind = 'todo') {
+      const ics = buildICS(list, kind);
+      if (!ics) { toast('Nema zakazanih podsjetnika'); return; }
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast(kind === 'todo' ? 'Otvori .ics → Reminders' : 'Otvori .ics → Kalendar');
+    }
+
+    $('#f_icsReminderBtn').addEventListener('click', () => {
+      const v = $('#f_nextCall').value;
+      const ms = fromDatetimeLocal(v);
+      if (!ms) { toast('Prvo odaberi datum'); return; }
+      const b = editingId
+        ? buildings.find(x => x.id === editingId)
+        : { id: 'preview', address: $('#f_address').value, rep: $('#f_rep').value, phone: $('#f_phone').value, price: Number($('#f_price').value)||0, notes: $('#f_notes').value, lat: pendingCoords?.lat||0, lng: pendingCoords?.lng||0, nextCallAt: ms };
+      if (editingId) b.nextCallAt = ms;
+      downloadICS([b], `reminder-${(b.address||'zgrada').slice(0,30).replace(/[^\w-]/g,'_')}.ics`, 'todo');
+    });
+
+    // ============== DASHBOARD ==============
+    const dashboard = $('#dashboard');
+    const dashBtn = $('#dashboardBtn');
+
+    function openDashboard() {
+      dashboard.classList.remove('hidden');
+      renderDashboard();
+    }
+    function closeDashboard() { dashboard.classList.add('hidden'); }
+    dashBtn.addEventListener('click', openDashboard);
+    $('#dashboardClose').addEventListener('click', closeDashboard);
+
+    $('#dashTabs').addEventListener('click', (e) => {
+      const b = e.target.closest('.tab-btn');
+      if (!b) return;
+      $$('#dashTabs .tab-btn').forEach(x => x.dataset.on = 'false');
+      b.dataset.on = 'true';
+      const tab = b.dataset.tab;
+      $$('#dashContent section').forEach(s => s.classList.toggle('hidden', s.dataset.pane !== tab));
+    });
+
+    $('#r_downloadReminders').addEventListener('click', () => {
+      const upcoming = buildings.filter(b => b.nextCallAt);
+      if (!upcoming.length) { toast('Nema zakazanih podsjetnika'); return; }
+      downloadICS(upcoming, 'mapa-zgrada-reminders.ics', 'todo');
+    });
+    $('#r_downloadCalendar').addEventListener('click', () => {
+      const upcoming = buildings.filter(b => b.nextCallAt);
+      if (!upcoming.length) { toast('Nema zakazanih podsjetnika'); return; }
+      downloadICS(upcoming, 'mapa-zgrada-kalendar.ics', 'event');
+    });
+
+    function statusDotClass(s) {
+      return s === 'active' ? 'bg-green-500' : s === 'contacted' ? 'bg-yellow-500' : 'bg-red-500';
+    }
+    function formatEUR(n) {
+      if (!n) return '€0';
+      return '€' + Number(n).toLocaleString('hr-HR');
+    }
+    function formatWhen(ms) {
+      const d = new Date(ms);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(d.getDate())}.${pad(d.getMonth()+1)}. ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function isSameDay(a, b) {
+      const da = new Date(a), db = new Date(b);
+      return da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth() && da.getDate() === db.getDate();
+    }
+    function todayStart() {
+      const d = new Date(); d.setHours(0,0,0,0); return d.getTime();
+    }
+    function todayEnd() {
+      const d = new Date(); d.setHours(23,59,59,999); return d.getTime();
+    }
+
+    function renderAlerts() {
+      const now = Date.now();
+      const dayEnd = todayEnd();
+      const overdue = buildings.filter(b => b.nextCallAt && b.nextCallAt < now).sort((a,b) => a.nextCallAt - b.nextCallAt);
+      const today = buildings.filter(b => b.nextCallAt && b.nextCallAt >= now && b.nextCallAt <= dayEnd).sort((a,b) => a.nextCallAt - b.nextCallAt);
+
+      // Today's shifts across all buildings
+      const todaysShifts = [];
+      buildings.forEach(b => (b.shifts || []).forEach(s => {
+        if (!s.date) return;
+        const sDate = new Date(s.date); sDate.setHours(12,0,0,0);
+        if (isSameDay(sDate, new Date())) todaysShifts.push({ s, b });
+      }));
+
+      const parts = [];
+      if (overdue.length) {
+        parts.push(`<div class="alert-card alert-overdue">
+          <div class="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            <strong class="text-red-700">Dospjelo (${overdue.length})</strong>
+          </div>
+          ${overdue.map(b => `
+            <div class="alert-row" data-id="${b.id}">
+              <span class="time text-red-700">${formatWhen(b.nextCallAt)}</span>
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-[13px] truncate">${escapeHtml(b.rep || b.address.split(',')[0])}</div>
+                <div class="text-[11px] text-gray-500 truncate">${escapeHtml(b.address)}</div>
+              </div>
+              ${b.phone ? `<a href="tel:${escapeHtml(b.phone)}" class="btn-tiny" onclick="event.stopPropagation()">Zovi</a>` : ''}
+            </div>`).join('')}
+        </div>`);
+      }
+      if (today.length) {
+        parts.push(`<div class="alert-card alert-today">
+          <div class="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <strong class="text-yellow-800">Danas (${today.length})</strong>
+          </div>
+          ${today.map(b => `
+            <div class="alert-row" data-id="${b.id}">
+              <span class="time text-yellow-800">${formatWhen(b.nextCallAt)}</span>
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-[13px] truncate">${escapeHtml(b.rep || b.address.split(',')[0])}</div>
+                <div class="text-[11px] text-gray-500 truncate">${escapeHtml(b.address)}</div>
+              </div>
+              ${b.phone ? `<a href="tel:${escapeHtml(b.phone)}" class="btn-tiny" onclick="event.stopPropagation()">Zovi</a>` : ''}
+            </div>`).join('')}
+        </div>`);
+      }
+      if (todaysShifts.length) {
+        parts.push(`<div class="alert-card" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;">
+          <div class="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <strong class="text-green-800">Radnici danas (${todaysShifts.length})</strong>
+          </div>
+          ${todaysShifts.map(({s, b}) => `
+            <div class="alert-row" data-id="${b.id}">
+              <span class="time text-green-800">${escapeHtml(s.name || '—')}</span>
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-[13px] truncate">${escapeHtml(b.address.split(',')[0])}</div>
+                <div class="text-[11px] text-gray-500 truncate">Zarada: ${formatEUR(s.earning||0)} · Trošak: ${formatEUR(s.cost||0)}</div>
+              </div>
+            </div>`).join('')}
+        </div>`);
+      }
+      $('#s_alerts').innerHTML = parts.join('');
+    }
+
+    function renderWorkersTab() {
+      // Aggregate shifts across all buildings
+      const all = [];
+      buildings.forEach(b => (b.shifts || []).forEach(s => all.push({ ...s, buildingId: b.id, address: b.address })));
+
+      const totalEarn = all.reduce((a,s) => a + (Number(s.earning)||0), 0);
+      const totalLaborCost = all.reduce((a,s) => a + (Number(s.cost)||0), 0);
+      const totalMaterials = buildings.reduce((a,b) => a + (b.materials||[]).reduce((x,m) => x + (Number(m.qty)||0)*(Number(m.price)||0), 0), 0);
+      const monthlyFixed = (settings.monthlyCosts || []).reduce((a,c) => a + (Number(c.amount)||0), 0);
+      const totalCost = totalLaborCost + totalMaterials + monthlyFixed;
+      $('#w_earn').textContent = formatEUR(totalEarn);
+      $('#w_cost').textContent = formatEUR(totalCost);
+      $('#w_profit').textContent = formatEUR(totalEarn - totalCost);
+      $('#w_bd_labor').textContent = formatEUR(totalLaborCost);
+      $('#w_bd_mat').textContent = formatEUR(totalMaterials);
+      $('#w_bd_fixed').textContent = formatEUR(monthlyFixed);
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2,'0');
+      $('#w_todayDate').textContent = `${pad(now.getDate())}.${pad(now.getMonth()+1)}.`;
+
+      // Today
+      const todayList = all.filter(s => s.date && isSameDay(new Date(s.date + 'T12:00'), now));
+      $('#w_today').innerHTML = todayList.length ? todayList.map(s => shiftRowHtml(s)).join('')
+        : `<div class="text-sm text-gray-400 px-1">Nema zakazanih za danas.</div>`;
+
+      // Next 7 days
+      const weekStart = todayStart();
+      const weekEnd = weekStart + 7 * 24 * 60 * 60 * 1000;
+      const weekList = all.filter(s => {
+        if (!s.date) return false;
+        const t = new Date(s.date + 'T12:00').getTime();
+        return t >= weekStart && t < weekEnd;
+      }).sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      // Group by date
+      const byDate = new Map();
+      weekList.forEach(s => {
+        if (!byDate.has(s.date)) byDate.set(s.date, []);
+        byDate.get(s.date).push(s);
+      });
+      $('#w_week').innerHTML = byDate.size ? [...byDate.entries()].map(([d, list]) => {
+        const dd = new Date(d + 'T12:00');
+        const label = `${pad(dd.getDate())}.${pad(dd.getMonth()+1)}. ${['Ned','Pon','Uto','Sri','Čet','Pet','Sub'][dd.getDay()]}`;
+        return `<div class="db-item" style="cursor:default">
+          <div class="top"><span class="font-semibold text-[13px]">${label}</span></div>
+          <div class="space-y-1 mt-1.5">${list.map(s => `
+            <div class="flex items-center justify-between text-[12px] gap-2">
+              <span class="font-medium">${escapeHtml(s.name || '—')}</span>
+              <span class="text-gray-500 truncate flex-1">${escapeHtml(s.address.split(',')[0])}</span>
+              <span class="text-green-600 font-semibold">${formatEUR(s.earning||0)}</span>
+            </div>`).join('')}</div>
+        </div>`;
+      }).join('') : `<div class="text-sm text-gray-400 px-1">Nema zakazanog posla ovaj tjedan.</div>`;
+
+      // Per worker aggregation
+      const byName = new Map();
+      all.forEach(s => {
+        const key = (s.name || '(bez imena)').trim();
+        if (!byName.has(key)) byName.set(key, { name: key, earn: 0, cost: 0, jobs: 0 });
+        const w = byName.get(key);
+        w.earn += Number(s.earning)||0;
+        w.cost += Number(s.cost)||0;
+        w.jobs += 1;
+      });
+      const sorted = [...byName.values()].sort((a,b) => b.earn - a.earn);
+      $('#w_byWorker').innerHTML = sorted.length ? sorted.map(w => `
+        <div class="db-item" style="cursor:default">
+          <div class="top">
+            <span class="font-medium text-[14px] flex-1 truncate">${escapeHtml(w.name)}</span>
+            <span class="text-[11px] text-gray-500">${w.jobs} ${w.jobs === 1 ? 'dan' : 'dana'}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 mt-2 text-[12px]">
+            <div><div class="text-gray-400 text-[10px] uppercase">Zarada</div><div class="font-semibold text-green-600">${formatEUR(w.earn)}</div></div>
+            <div><div class="text-gray-400 text-[10px] uppercase">Trošak</div><div class="font-semibold text-red-600">${formatEUR(w.cost)}</div></div>
+            <div><div class="text-gray-400 text-[10px] uppercase">Profit</div><div class="font-semibold">${formatEUR(w.earn - w.cost)}</div></div>
+          </div>
+        </div>`).join('')
+        : `<div class="text-sm text-gray-400 px-1">Dodaj raspored rada u aktivnoj zgradi.</div>`;
+    }
+
+    function shiftRowHtml(s) {
+      return `<div class="db-item" data-id="${s.buildingId}">
+        <div class="top">
+          <span class="font-medium text-[14px] flex-1 truncate">${escapeHtml(s.name || '(bez imena)')}</span>
+          <span class="text-[12px] font-semibold text-green-600">${formatEUR(s.earning||0)}</span>
+        </div>
+        <div class="text-[12px] text-gray-500 truncate mt-0.5">${escapeHtml(s.address)}</div>
+      </div>`;
+    }
+
+    // ============== ONE-TIME JOBS ==============
+    let editingJobId = null;
+
+    function renderOneTimeJobs() {
+      const list = [...oneTimeJobs].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+      $('#fi_jobList').innerHTML = list.length ? list.map(j => `
+        <div class="db-item" style="cursor:default" data-jid="${j.id}">
+          <div class="top">
+            <span class="font-medium text-[14px] flex-1 truncate">${escapeHtml(j.name||'Posao')}</span>
+            <span class="font-semibold text-green-600">${formatEUR(j.amount||0)}</span>
+          </div>
+          <div class="flex items-center justify-between mt-1 gap-2">
+            <span class="text-[12px] text-gray-500">${j.date ? j.date.split('-').reverse().join('.') : ''}${j.cost ? ' · Trošak: ' + formatEUR(j.cost) : ''}</span>
+            <div class="flex gap-1">
+              <button class="btn-tiny ghost" data-j-edit="${j.id}">Uredi</button>
+              <button class="btn-tiny ghost text-red-500" data-j-del="${j.id}">Obriši</button>
+            </div>
+          </div>
+          ${j.notes ? `<div class="text-[12px] text-gray-500 mt-0.5 truncate">${escapeHtml(j.notes)}</div>` : ''}
+        </div>`).join('')
+        : `<div class="text-sm text-gray-400 px-1">Nema jednokratnih poslova. Klikni "+ Posao" za dodavanje.</div>`;
+    }
+
+    function openJobModal(id) {
+      editingJobId = id || null;
+      const j = id ? oneTimeJobs.find(x => x.id === id) : null;
+      const today = new Date(); const pad = n => String(n).padStart(2,'0');
+      const todayStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+      const existing = document.getElementById('jobModal');
+      if (existing) existing.remove();
+      const modal = document.createElement('div');
+      modal.id = 'jobModal';
+      modal.className = 'modal-backdrop';
+      const curStatus = j?.jobStatus || 'potencijalno';
+      modal.innerHTML = `
+        <div class="modal-card" style="max-width:440px;">
+          <div class="modal-header">
+            <div>
+              <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">${j ? 'Uredi' : 'Novi'} posao</div>
+              <h3 class="text-[17px] font-semibold">Drugi posao</h3>
+            </div>
+            <button id="jobClose" class="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500" aria-label="Zatvori">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="modal-body space-y-3">
+            <div>
+              <label class="label">Status</label>
+              <div class="seg" id="j_status">
+                <button type="button" data-value="potencijalno" data-on="${curStatus==='potencijalno'}"><span class="dot bg-orange-400"></span>Potencijalno</button>
+                <button type="button" data-value="napravljeno"  data-on="${curStatus==='napravljeno'}"><span class="dot bg-blue-500"></span>Napravljeno</button>
+              </div>
+            </div>
+            <div><label class="label">Naziv posla</label><input id="j_name" class="field" placeholder="Npr. Dubinsko čišćenje vila" value="${escapeHtml(j?.name||'')}"/></div>
+            <div><label class="label">Adresa / klijent</label><input id="j_addr" class="field" placeholder="Lokacija ili ime klijenta" value="${escapeHtml(j?.address||'')}"/></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="label">Prihod €</label><input id="j_amount" class="field" type="number" min="0" step="0.01" placeholder="0" value="${j?.amount??''}"/></div>
+              <div><label class="label">Trošak € (opc.)</label><input id="j_cost" class="field" type="number" min="0" step="0.01" placeholder="0" value="${j?.cost??''}"/></div>
+            </div>
+            <div id="j_doneDateWrap" style="${curStatus==='napravljeno'?'':'display:none'}">
+              <label class="label">Datum izvršenja <span class="text-red-500">*</span></label>
+              <input id="j_doneDate" class="field" type="date" value="${j?.doneDate||j?.date||todayStr}"/>
+              <p class="text-[11px] text-gray-400 mt-1">Obavezno — ovaj datum se uračunava u zaradu mjeseca u Excelu.</p>
+            </div>
+            <div id="j_potDateWrap" style="${curStatus==='potencijalno'?'':'display:none'}">
+              <label class="label">Planirani datum (opc.)</label>
+              <input id="j_date" class="field" type="date" value="${j?.date||''}"/>
+            </div>
+            <div><label class="label">Bilješka</label><input id="j_notes" class="field" placeholder="npr. dogovor, kontakt..." value="${escapeHtml(j?.notes||'')}"/></div>
+          </div>
+          <div class="modal-footer flex gap-2">
+            ${j ? `<button id="jobDelete" class="px-4 py-2.5 rounded-xl border border-red-200 text-red-600 font-medium hover:bg-red-50 transition">Obriši</button>` : ''}
+            <button id="jobSave" class="flex-1 py-2.5 rounded-xl bg-black text-white font-medium hover:bg-gray-800 active:scale-[.98] transition">Spremi</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      document.getElementById('j_name').focus();
+      // Status segment toggle
+      const jStatusSeg = document.getElementById('j_status');
+      jStatusSeg.addEventListener('click', e => {
+        const b = e.target.closest('button[data-value]');
+        if (!b) return;
+        jStatusSeg.querySelectorAll('button').forEach(x => x.dataset.on = 'false');
+        b.dataset.on = 'true';
+        const isDone = b.dataset.value === 'napravljeno';
+        document.getElementById('j_doneDateWrap').style.display = isDone ? '' : 'none';
+        document.getElementById('j_potDateWrap').style.display  = isDone ? 'none' : '';
+      });
+      document.getElementById('jobClose').addEventListener('click', () => modal.remove());
+      const delBtn = document.getElementById('jobDelete');
+      if (delBtn) delBtn.addEventListener('click', () => {
+        oneTimeJobs = oneTimeJobs.filter(x => x.id !== editingJobId);
+        saveOneTimeJobs();
+        modal.remove();
+        renderJobsPanel(); updateCounts();
+        if (!dashboard.classList.contains('hidden')) renderDashboard();
+        toast('Obrisano');
+      });
+      document.getElementById('jobSave').addEventListener('click', () => {
+        const name    = document.getElementById('j_name').value.trim();
+        const address = document.getElementById('j_addr').value.trim();
+        const amount  = Number(document.getElementById('j_amount').value) || 0;
+        const cost    = Number(document.getElementById('j_cost').value) || 0;
+        const notes   = document.getElementById('j_notes').value.trim();
+        const status  = jStatusSeg.querySelector('[data-on="true"]')?.dataset.value || 'potencijalno';
+        const doneDate = document.getElementById('j_doneDate').value;
+        const date     = document.getElementById('j_date').value;
+        if (!name) { toast('Upiši naziv posla'); return; }
+        if (status === 'napravljeno' && !doneDate) { toast('Datum izvršenja je obavezan za napravljen posao'); return; }
+        const payload = {
+          name, address, amount, cost, notes,
+          jobStatus: status,
+          date: status === 'napravljeno' ? doneDate : date,
+          doneDate: status === 'napravljeno' ? doneDate : '',
+        };
+        if (editingJobId) {
+          const j = oneTimeJobs.find(x => x.id === editingJobId);
+          Object.assign(j, payload, { updatedAt: Date.now() });
+        } else {
+          oneTimeJobs.push({ id: 'ot_'+Math.random().toString(36).slice(2,10), ...payload, createdAt: Date.now() });
+        }
+        saveOneTimeJobs();
+        modal.remove();
+        renderJobsPanel(); updateCounts();
+        if (!dashboard.classList.contains('hidden')) renderDashboard();
+        toast('Posao spremljen');
+      });
+      modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    }
+
+    // ============== JOBS PANEL (when type=job) ==============
+    function renderJobsPanel() {
+      const list = $('#jobsPanelList');
+      const filterStatus = ['potencijalno','napravljeno'].includes(currentFilter) ? currentFilter : null;
+      let jobs = [...oneTimeJobs];
+      if (filterStatus) jobs = jobs.filter(j => (j.jobStatus||'potencijalno') === filterStatus);
+      jobs.sort((a,b) => (b.date||b.doneDate||'').localeCompare(a.date||a.doneDate||''));
+      if (!jobs.length) {
+        list.innerHTML = `<div class="text-sm text-gray-400 px-2 py-6 text-center">Nema poslova.</div>`;
+        return;
+      }
+      list.innerHTML = jobs.map(j => {
+        const st = j.jobStatus || 'potencijalno';
+        const dt = j.doneDate || j.date || '';
+        const dStr = dt ? dt.split('-').reverse().join('.') : '';
+        return `<div class="job-card ${st==='napravljeno'?'done':'pot'}" data-jid="${j.id}">
+          <div class="flex justify-between items-start gap-2">
+            <div class="font-semibold text-[14px] flex-1 truncate">${escapeHtml(j.name||'Posao')}</div>
+            <div class="font-bold text-[14px] ${st==='napravljeno'?'text-blue-600':'text-orange-500'}">${formatEUR(j.amount||0)}</div>
+          </div>
+          ${j.address ? `<div class="text-[12px] text-gray-500 truncate mt-0.5">${escapeHtml(j.address)}</div>` : ''}
+          <div class="flex items-center justify-between mt-1">
+            <span class="text-[11px] uppercase tracking-wide font-semibold ${st==='napravljeno'?'text-blue-600':'text-orange-500'}">${st === 'napravljeno' ? '✓ Napravljeno' : '⏳ Potencijalno'}</span>
+            <span class="text-[11px] text-gray-400">${dStr}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    $('#jobsPanelAdd').addEventListener('click', () => openJobModal(null));
+    $('#jobsPanelList').addEventListener('click', e => {
+      const card = e.target.closest('.job-card');
+      if (card) openJobModal(card.dataset.jid);
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('[data-j-edit],[data-j-del]');
+      if (!btn) return;
+      if (btn.dataset.jEdit) openJobModal(btn.dataset.jEdit);
+      if (btn.dataset.jDel) {
+        oneTimeJobs = oneTimeJobs.filter(x => x.id !== btn.dataset.jDel);
+        saveOneTimeJobs();
+        if (!dashboard.classList.contains('hidden')) renderDashboard();
+        toast('Obrisano');
+      }
+    });
+    $('#fi_addJob').addEventListener('click', () => openJobModal(null));
+
+    function renderFinance(byStatus) {
+      const sumActive = byStatus.active.reduce((a,b) => a + (b.price||0), 0);
+      const oneTimeIncome = oneTimeJobs.reduce((a,j) => a + (Number(j.amount)||0), 0);
+      const oneTimeCost   = oneTimeJobs.reduce((a,j) => a + (Number(j.cost)||0), 0);
+      const totalIn  = sumActive + oneTimeIncome;
+
+      const laborCost    = buildings.reduce((a,b) => a + (b.shifts||[]).reduce((x,s)=>x+(Number(s.cost)||0),0), 0);
+      const matCost      = buildings.reduce((a,b) => a + (b.materials||[]).reduce((x,m)=>x+(Number(m.qty)||0)*(Number(m.price)||0),0), 0);
+      const fixedCost    = (settings.monthlyCosts||[]).reduce((a,c)=>a+(Number(c.amount)||0),0);
+      const totalOut = laborCost + matCost + fixedCost + oneTimeCost;
+      const net = totalIn - totalOut;
+
+      // Hero
+      const netEl = $('#fi_net');
+      netEl.textContent = formatEUR(net);
+      netEl.style.color = net >= 0 ? '#4ade80' : '#f87171';
+      $('#fi_totalIn').textContent  = formatEUR(totalIn);
+      $('#fi_totalOut').textContent = formatEUR(totalOut);
+
+      // Revenue rows
+      $('#fi_recurring').textContent = formatEUR(sumActive);
+      $('#fi_oneTime').textContent   = formatEUR(oneTimeIncome);
+
+      // Cost rows
+      $('#fi_fixed').textContent = formatEUR(fixedCost);
+      $('#fi_fixedBreakdown').textContent = (settings.monthlyCosts||[])
+        .filter(c=>Number(c.amount)>0)
+        .map(c=>`${c.name}: ${formatEUR(c.amount)}`).join(' · ') || '';
+      $('#fi_labor').textContent = formatEUR(laborCost);
+      $('#fi_mats').textContent  = formatEUR(matCost);
+
+      // Quick stats
+      $('#f_sum_active').textContent = formatEUR(sumActive);
+      $('#f_avg').textContent = byStatus.active.length
+        ? formatEUR(Math.round(sumActive / byStatus.active.length)) : '€0';
+
+      // One-time jobs list
+      renderOneTimeJobs();
+
+      // Sorted buildings
+      const sortedByPrice = [...buildings].sort((a,b)=>(b.price||0)-(a.price||0));
+      $('#f_list').innerHTML = sortedByPrice.length
+        ? sortedByPrice.map(b=>itemHtml(b, formatEUR(b.price||0))).join('')
+        : `<div class="text-sm text-gray-400 px-1">Još nema unesenih zgrada.</div>`;
+    }
+
+    function renderDashboard() {
+      renderAlerts();
+      const total = buildings.length;
+      const byStatus = { active: [], contacted: [], potential: [] };
+      buildings.forEach(b => byStatus[b.status]?.push(b));
+
+      $('#s_total').textContent = total;
+      $('#s_active').textContent = byStatus.active.length;
+      $('#s_contacted').textContent = byStatus.contacted.length;
+      $('#s_potential').textContent = byStatus.potential.length;
+
+      const rev = byStatus.active.reduce((a, b) => a + (b.price || 0), 0);
+      const potRev = buildings.reduce((a, b) => a + (b.price || 0), 0);
+      $('#s_revenue').textContent = formatEUR(rev);
+      $('#s_potrevenue').textContent = formatEUR(potRev);
+
+      // Top buildings
+      const top = [...buildings].filter(b => b.price).sort((a,b) => b.price - a.price).slice(0, 5);
+      $('#s_top').innerHTML = top.length ? top.map(b => itemHtml(b, formatEUR(b.price))).join('')
+        : `<div class="text-sm text-gray-400 px-1">Nema zgrada s unesenom cijenom.</div>`;
+
+      // Finance tab — full P&L
+      renderFinance(byStatus);
+
+      // Contacts tab
+      const contactList = buildings.filter(b => b.rep || b.phone);
+      $('#c_list').innerHTML = contactList.length ? contactList.map(b => `
+        <div class="db-item" data-id="${b.id}">
+          <div class="top">
+            <span class="dot-s ${statusDotClass(b.status)}"></span>
+            <span class="font-medium text-[14px] truncate">${escapeHtml(b.rep || '(bez imena)')}</span>
+          </div>
+          <div class="text-[12px] text-gray-500 truncate mt-0.5">${escapeHtml(b.address)}</div>
+          ${b.phone ? `<a href="tel:${escapeHtml(b.phone)}" class="inline-flex items-center gap-1 mt-1.5 text-[13px] text-blue-600 font-medium" onclick="event.stopPropagation()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            ${escapeHtml(b.phone)}
+          </a>` : ''}
+        </div>`).join('')
+        : `<div class="text-sm text-gray-400 px-1">Nema kontakata. Dodaj ime predstavnika i telefon u formi.</div>`;
+
+      // Workers tab
+      renderWorkersTab();
+
+      // Reminders tab
+      const upcoming = buildings.filter(b => b.nextCallAt).sort((a,b) => a.nextCallAt - b.nextCallAt);
+      $('#r_list').innerHTML = upcoming.length ? upcoming.map(b => {
+        const overdue = b.nextCallAt < Date.now();
+        return `<div class="db-item" data-id="${b.id}">
+          <div class="top">
+            <span class="dot-s ${statusDotClass(b.status)}"></span>
+            <span class="font-medium text-[14px] truncate">${escapeHtml(b.address.split(',')[0])}</span>
+            <span class="ml-auto text-[11px] font-semibold ${overdue ? 'text-red-600' : 'text-gray-500'}">${formatWhen(b.nextCallAt)}</span>
+          </div>
+          <div class="text-[12px] text-gray-500 truncate mt-0.5">${escapeHtml(b.rep || '')} ${b.phone ? '· ' + escapeHtml(b.phone) : ''}</div>
+        </div>`;
+      }).join('')
+        : `<div class="text-sm text-gray-400 px-1">Nema zakazanih poziva.</div>`;
+    }
+
+    function itemHtml(b, rightLabel) {
+      return `<div class="db-item" data-id="${b.id}">
+        <div class="top">
+          <span class="dot-s ${statusDotClass(b.status)}"></span>
+          <span class="font-medium text-[14px] truncate flex-1">${escapeHtml(b.address.split(',')[0])}</span>
+          <span class="text-[13px] font-semibold text-gray-700">${rightLabel}</span>
+        </div>
+        <div class="text-[12px] text-gray-500 truncate mt-0.5">${escapeHtml(b.address)}</div>
+      </div>`;
+    }
+
+    // Click on any dashboard list item -> focus on map
+    $('#dashContent').addEventListener('click', (e) => {
+      if (e.target.closest('a')) return; // let tel: links work
+      const item = e.target.closest('.db-item, .alert-row');
+      if (!item) return;
+      const id = item.dataset.id;
+      if (!id) return;
+      openExisting(id);
+    });
+
+    // ============== UTIL ==============
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    // Keyboard: Escape closes panel
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.classList.contains('hidden')) closePanel();
+    });
+
+    // ============== SETTINGS MODAL ==============
+    const settingsModal = $('#settingsModal');
+
+    function fillSettingsForm() {
+      $('#st_name').value    = settings.company.name    || '';
+      $('#st_owner').value   = settings.company.owner   || '';
+      $('#st_address').value = settings.company.address || '';
+      $('#st_phone').value   = settings.company.phone   || '';
+      $('#st_email').value   = settings.company.email   || '';
+      $('#st_oib').value     = settings.company.oib     || '';
+      $('#st_iban').value    = settings.company.iban    || '';
+      const prev = $('#st_logoPreview');
+      if (settings.company.logo) {
+        prev.src = settings.company.logo; prev.style.display = 'block';
+        $('#st_logoRemove').classList.remove('hidden');
+      } else {
+        prev.style.display = 'none'; $('#st_logoRemove').classList.add('hidden');
+      }
+      renderMonthlyCosts();
+    }
+    $('#st_logo').addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        settings.company.logo = ev.target.result;
+        const prev = $('#st_logoPreview');
+        prev.src = ev.target.result; prev.style.display = 'block';
+        $('#st_logoRemove').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+    $('#st_logoRemove').addEventListener('click', () => {
+      settings.company.logo = '';
+      $('#st_logoPreview').style.display = 'none';
+      $('#st_logoRemove').classList.add('hidden');
+      $('#st_logo').value = '';
+    });
+    function renderMonthlyCosts() {
+      const wrap = $('#st_costs');
+      wrap.innerHTML = settings.monthlyCosts.map((c, i) => `
+        <div class="mc-row" data-i="${i}">
+          <input type="text"   data-k="name"   value="${escapeHtml(c.name || '')}" placeholder="Npr. najam, auto, gorivo...">
+          <input type="number" data-k="amount" value="${c.amount ?? ''}" placeholder="0" min="0" step="1">
+          <button type="button" class="x-btn" data-mc-remove="${i}" aria-label="Ukloni">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/></svg>
+          </button>
+        </div>
+      `).join('');
+      const t = settings.monthlyCosts.reduce((a, c) => a + (Number(c.amount) || 0), 0);
+      $('#st_costsTotal').textContent = formatEUR(t);
+    }
+    function updateMonthlyCostsTotal() {
+      const t = settings.monthlyCosts.reduce((a, c) => a + (Number(c.amount) || 0), 0);
+      $('#st_costsTotal').textContent = formatEUR(t);
+    }
+    $('#st_costs').addEventListener('input', (e) => {
+      const row = e.target.closest('.mc-row'); if (!row) return;
+      const i = Number(row.dataset.i); const k = e.target.dataset.k;
+      if (k === 'amount') settings.monthlyCosts[i][k] = e.target.value ? Number(e.target.value) : 0;
+      else settings.monthlyCosts[i][k] = e.target.value;
+      updateMonthlyCostsTotal();
+    });
+    $('#st_costs').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-mc-remove]'); if (!btn) return;
+      settings.monthlyCosts.splice(Number(btn.dataset.mcRemove), 1);
+      renderMonthlyCosts();
+    });
+    $('#st_addCost').addEventListener('click', () => {
+      settings.monthlyCosts.push({ id: 'c_'+Math.random().toString(36).slice(2,8), name: '', amount: null });
+      renderMonthlyCosts();
+    });
+    $('#settingsBtn').addEventListener('click', () => {
+      fillSettingsForm();
+      settingsModal.classList.remove('hidden');
+    });
+    $('#settingsClose').addEventListener('click', () => settingsModal.classList.add('hidden'));
+    $('#settingsSave').addEventListener('click', () => {
+      settings.company = {
+        name:    $('#st_name').value.trim(),
+        owner:   $('#st_owner').value.trim(),
+        address: $('#st_address').value.trim(),
+        phone:   $('#st_phone').value.trim(),
+        email:   $('#st_email').value.trim(),
+        oib:     $('#st_oib').value.trim(),
+        iban:    $('#st_iban').value.trim(),
+      };
+      settings.monthlyCosts = (settings.monthlyCosts || []).filter(c => (c.name && c.name.trim()) || (Number(c.amount) > 0));
+      saveSettings();
+      toast('Postavke spremljene');
+      settingsModal.classList.add('hidden');
+      if (!dashboard.classList.contains('hidden')) renderDashboard();
+    });
+
+    // ============== PONUDA BUILDER (IFRAME) ==============
+    const LS_PONUDE = 'building-map:saved-ponude';
+    const IDB_NAME = 'building-map-idb';
+    const IDB_STORE = 'fs-handles';
+
+    let ponudaCurrentBuildingId = null;
+
+    function loadSavedPonude() {
+      try { return JSON.parse(localStorage.getItem(LS_PONUDE) || '[]'); } catch { return []; }
+    }
+    function savePonudeList(arr) {
+      try { localStorage.setItem(LS_PONUDE, JSON.stringify(arr)); } catch {}
+    }
+
+    // IndexedDB helpers for persisting the folder handle
+    function idbGet(key) {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+        req.onerror = () => resolve(null);
+        req.onsuccess = e => {
+          const db = e.target.result;
+          const tx = db.transaction(IDB_STORE, 'readonly');
+          const r = tx.objectStore(IDB_STORE).get(key);
+          r.onsuccess = () => resolve(r.result ?? null);
+          r.onerror = () => resolve(null);
+        };
+      });
+    }
+    function idbSet(key, value) {
+      return new Promise((resolve) => {
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+        req.onerror = () => resolve();
+        req.onsuccess = e => {
+          const db = e.target.result;
+          const tx = db.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).put(value, key);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => resolve();
+        };
+      });
+    }
+
+    async function getFolderHandle() {
+      let handle = await idbGet('ponude-folder');
+      if (handle) {
+        try {
+          const perm = await handle.queryPermission({ mode: 'readwrite' });
+          if (perm === 'granted') return handle;
+          const req = await handle.requestPermission({ mode: 'readwrite' });
+          if (req === 'granted') return handle;
+        } catch {}
+      }
+      // Pick folder fresh
+      try {
+        handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'desktop' });
+        await idbSet('ponude-folder', handle);
+        return handle;
+      } catch {
+        return null;
+      }
+    }
+
+    function openPonudaBuilder(buildingId) {
+      const b = buildingId ? buildings.find(x => x.id === buildingId) : null;
+      ponudaCurrentBuildingId = b ? b.id : null;
+
+      const chip = $('#ponuda_addrChip');
+      chip.textContent = b ? b.address : 'Nova ponuda (bez adrese)';
+
+      const iframe = $('#ponuda_iframe');
+      const token = (() => { try { return localStorage.getItem(LS_TOKEN) || ''; } catch { return ''; } })();
+      iframe.src = '';
+      setTimeout(() => {
+        iframe.src = 'ponuda-builder.html' + (token ? '?token=' + encodeURIComponent(token) : '');
+        if (b) {
+          iframe.onload = () => {
+            try {
+              const iDoc = iframe.contentDocument;
+              const addrEl = iDoc.getElementById('clientAddr');
+              if (addrEl) addrEl.textContent = b.address;
+            } catch {}
+          };
+        }
+      }, 30);
+
+      $('#ponuda_savedBanner').classList.add('hidden');
+      $('#ponudaModal').classList.remove('hidden');
+    }
+
+    async function savePonudaToFolder() {
+      const iframe = $('#ponuda_iframe');
+      const saveBtn = $('#ponuda_saveBtn');
+
+      // Grab HTML from iframe (same origin)
+      let html = '';
+      let iDoc = null;
+      try {
+        iDoc = iframe.contentDocument;
+        html = '<!DOCTYPE html>\n' + iDoc.documentElement.outerHTML;
+      } catch {
+        toast('Ne mogu dohvatiti sadržaj ponude. Pokušaj ponovo.');
+        return;
+      }
+
+      // Build filename: Ponuda-{stavka}-{adresa}
+      const b = ponudaCurrentBuildingId ? buildings.find(x => x.id === ponudaCurrentBuildingId) : null;
+      const svcRaw = iDoc?.querySelector('[data-f="name"]')?.textContent?.trim() || '';
+      const svcSlug = svcRaw.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9čćšđžČĆŠĐŽ\-]/g, '').substring(0, 35) || 'usluga';
+      const addrRaw = b
+        ? b.address.split(',')[0].trim()
+        : (iDoc?.getElementById('clientAddr')?.textContent?.split(',')[0]?.trim() || 'adresa');
+      const addrSlug = addrRaw.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9čćšđžČĆŠĐŽ\-]/g, '');
+      const filename = `Ponuda-${svcSlug}-${addrSlug}.html`;
+
+      // Get folder handle
+      const folder = await getFolderHandle();
+      if (!folder) {
+        toast('Odabir mape otkazan.');
+        return;
+      }
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Sprema...';
+        const fileHandle = await folder.getFileHandle(filename, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(html);
+        await writable.close();
+
+        // Record in localStorage
+        const ponude = loadSavedPonude();
+        ponude.push({
+          id: 'p_' + Math.random().toString(36).slice(2,10),
+          buildingId: ponudaCurrentBuildingId || null,
+          filename,
+          savedAt: Date.now(),
+        });
+        savePonudeList(ponude);
+
+        const banner = $('#ponuda_savedBanner');
+        banner.textContent = `Spremljeno: ${filename}`;
+        banner.classList.remove('hidden');
+        toast(`Ponuda spremljena: ${filename}`);
+      } catch (err) {
+        toast('Greška pri spremanju: ' + (err.message || err));
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Spremi u Ponude1';
+      }
+    }
+
+    // Wire buttons
+    $('#quoteBtn').addEventListener('click', () => openPonudaBuilder(editingId));
+    $('#mainQuoteBtn').addEventListener('click', () => openPonudaBuilder(null));
+    $('#ponuda_closeBtn').addEventListener('click', () => {
+      $('#ponudaModal').classList.add('hidden');
+      $('#ponuda_iframe').src = '';
+    });
+    $('#ponuda_saveBtn').addEventListener('click', savePonudaToFolder);
+
+    // ============== UPRAVITELJ AUTOCOMPLETE ==============
+    function getUpraviteljiList() {
+      const set = new Set();
+      buildings.forEach(b => { if (b.upravitelj) set.add(b.upravitelj.trim()); });
+      return [...set].sort((a, b) => a.localeCompare(b, 'hr'));
+    }
+
+    const uprInput = $('#f_upr');
+    const uprDrop  = $('#f_uprDrop');
+
+    function showUprDrop(filter='') {
+      const list = getUpraviteljiList();
+      const q = filter.trim().toLowerCase();
+      const matches = q ? list.filter(u => u.toLowerCase().includes(q)) : list;
+      if (!matches.length && !q) { uprDrop.classList.remove('open'); return; }
+      uprDrop.innerHTML = matches.length
+        ? matches.map(u => `<div class="upr-item" data-v="${escapeHtml(u)}">${escapeHtml(u)}</div>`).join('')
+        : `<div class="upr-item" style="color:#9ca3af;cursor:default">Novi upravitelj — pritisni Enter</div>`;
+      uprDrop.classList.add('open');
+    }
+
+    uprInput.addEventListener('focus', () => showUprDrop(uprInput.value));
+    uprInput.addEventListener('input', () => showUprDrop(uprInput.value));
+    uprInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { uprDrop.classList.remove('open'); }
+      if (e.key === 'Enter') { e.preventDefault(); uprDrop.classList.remove('open'); }
+    });
+    uprDrop.addEventListener('click', (e) => {
+      const item = e.target.closest('.upr-item[data-v]');
+      if (!item) return;
+      uprInput.value = item.dataset.v;
+      uprDrop.classList.remove('open');
+    });
+    document.addEventListener('click', (e) => {
+      if (!uprInput.contains(e.target) && !uprDrop.contains(e.target)) uprDrop.classList.remove('open');
+    });
+
+    // ============== EXCEL EXPORT ==============
+    function parsePriceText(p) {
+      if (typeof p === 'number') return p;
+      if (!p) return 0;
+      const m = String(p).replace(',', '.').match(/-?\d+(\.\d+)?/);
+      return m ? Number(m[0]) : 0;
+    }
+
+    function fmtMoneyXlsx(n) { return Number(n) || 0; }
+    function fmtDateXlsx(d) {
+      if (!d) return '';
+      if (typeof d === 'number') d = new Date(d);
+      else if (typeof d === 'string') {
+        // dd.mm.yyyy or yyyy-mm-dd
+        if (/^\d{4}-\d{2}-\d{2}/.test(d)) {
+          const [y,m,dd] = d.split('-');
+          return `${dd.padStart(2,'0')}.${m}.${y}`;
+        }
+        return d;
+      }
+      const pad = n => String(n).padStart(2,'0');
+      return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
+    }
+
+    async function exportToExcel() {
+      if (typeof XLSX === 'undefined') { toast('XLSX biblioteka još nije učitana — pokušaj za par sekundi'); return; }
+      const wb = XLSX.utils.book_new();
+
+      // ── ZGRADE sheet ──
+      const zgradeRows = [
+        ['Zgrada', 'Adresa', 'Upravitelj', 'Predstavnik', 'Telefon', 'Status', 'Mjesečna cijena (€)', 'Bilješka']
+      ];
+      const statusMap = { active: 'Aktivan', contacted: 'Kontaktiran', potential: 'Potencijal' };
+      [...buildings].sort((a,b)=>a.address.localeCompare(b.address,'hr')).forEach(b => {
+        zgradeRows.push([
+          b.address.split(',')[0] || '',
+          b.address || '',
+          b.upravitelj || '',
+          b.rep || '',
+          b.phone || '',
+          statusMap[b.status] || b.status || '',
+          fmtMoneyXlsx(b.price),
+          b.notes || ''
+        ]);
+      });
+      const wsZgrade = XLSX.utils.aoa_to_sheet(zgradeRows);
+      wsZgrade['!cols'] = [{wch:32},{wch:42},{wch:24},{wch:22},{wch:16},{wch:14},{wch:18},{wch:30}];
+      // Style headers (XLSX styles via cell.s — limited in community version, just freeze + bold via header)
+      wsZgrade['!freeze'] = { xSplit: 0, ySplit: 1 };
+      wsZgrade['!autofilter'] = { ref: `A1:H1` };
+      // Apply header styles where supported
+      ['A1','B1','C1','D1','E1','F1','G1','H1'].forEach(addr => {
+        if (wsZgrade[addr]) wsZgrade[addr].s = { font: { bold: true, color: { rgb: 'FFFFFFFF' } }, fill: { fgColor: { rgb: 'FF1F2937' } }, alignment: { horizontal: 'left', vertical: 'center' } };
+      });
+      XLSX.utils.book_append_sheet(wb, wsZgrade, 'Zgrade');
+
+      // ── DRUGI POSLOVI sheet ──
+      const posloviRows = [
+        ['Naziv posla', 'Adresa / klijent', 'Status', 'Datum', 'Prihod (€)', 'Trošak (€)', 'Bilješka']
+      ];
+      [...oneTimeJobs].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(j => {
+        const st = j.jobStatus === 'napravljeno' ? 'Napravljeno' : 'Potencijalno';
+        posloviRows.push([
+          j.name || '',
+          j.address || '',
+          st,
+          fmtDateXlsx(j.doneDate || j.date || ''),
+          fmtMoneyXlsx(j.amount),
+          fmtMoneyXlsx(j.cost),
+          j.notes || ''
+        ]);
+      });
+      const wsPoslovi = XLSX.utils.aoa_to_sheet(posloviRows);
+      wsPoslovi['!cols'] = [{wch:34},{wch:30},{wch:16},{wch:14},{wch:14},{wch:14},{wch:30}];
+      wsPoslovi['!freeze'] = { xSplit: 0, ySplit: 1 };
+      wsPoslovi['!autofilter'] = { ref: `A1:G1` };
+      ['A1','B1','C1','D1','E1','F1','G1'].forEach(a => {
+        if (wsPoslovi[a]) wsPoslovi[a].s = { font: { bold: true, color: { rgb: 'FFFFFFFF' } }, fill: { fgColor: { rgb: 'FF1F2937' } } };
+      });
+      XLSX.utils.book_append_sheet(wb, wsPoslovi, 'Drugi poslovi');
+
+      // ── ZARADA sheet (monthly summary) ──
+      // Build month buckets
+      const monthBuckets = {}; // 'YYYY-MM' -> { recurring, oneTime, cost }
+      const recurringMonthly = buildings.filter(b => b.status === 'active').reduce((a,b)=>a+(Number(b.price)||0),0);
+      // Recurring is the same every month — show it for current month as baseline
+      const ymNow = new Date().toISOString().slice(0,7);
+      monthBuckets[ymNow] = { recurring: recurringMonthly, oneTime: 0, cost: 0 };
+      oneTimeJobs.forEach(j => {
+        if (j.jobStatus !== 'napravljeno') return;
+        const ym = (j.doneDate || j.date || '').slice(0,7);
+        if (!ym) return;
+        if (!monthBuckets[ym]) monthBuckets[ym] = { recurring: 0, oneTime: 0, cost: 0 };
+        monthBuckets[ym].oneTime += Number(j.amount)||0;
+        monthBuckets[ym].cost    += Number(j.cost)||0;
+      });
+
+      const zaradaRows = [
+        ['Mjesec', 'Stalni prihod (€)', 'Jednokratni (€)', 'Ukupno prihod (€)', 'Trošak (€)', 'Neto (€)']
+      ];
+      const monthsSorted = Object.keys(monthBuckets).sort();
+      monthsSorted.forEach(ym => {
+        const b = monthBuckets[ym];
+        const tot = b.recurring + b.oneTime;
+        zaradaRows.push([
+          ym,
+          fmtMoneyXlsx(b.recurring),
+          fmtMoneyXlsx(b.oneTime),
+          fmtMoneyXlsx(tot),
+          fmtMoneyXlsx(b.cost),
+          fmtMoneyXlsx(tot - b.cost)
+        ]);
+      });
+      // Totals row
+      const sumRow = ['UKUPNO', { f: `SUM(B2:B${monthsSorted.length+1})` }, { f: `SUM(C2:C${monthsSorted.length+1})` }, { f: `SUM(D2:D${monthsSorted.length+1})` }, { f: `SUM(E2:E${monthsSorted.length+1})` }, { f: `SUM(F2:F${monthsSorted.length+1})` }];
+      zaradaRows.push(sumRow);
+
+      // Potencijalna section
+      zaradaRows.push([]);
+      zaradaRows.push(['POTENCIJALNA ZARADA', '', '', '', '', '']);
+      const potBld = buildings.filter(b => b.status !== 'active').reduce((a,b)=>a+(Number(b.price)||0),0);
+      const potJob = oneTimeJobs.filter(j => (j.jobStatus||'potencijalno') === 'potencijalno').reduce((a,j)=>a+(Number(j.amount)||0),0);
+      zaradaRows.push(['Potencijalne zgrade (mj.)', fmtMoneyXlsx(potBld)]);
+      zaradaRows.push(['Potencijalni poslovi', fmtMoneyXlsx(potJob)]);
+      zaradaRows.push(['UKUPNO POTENCIJAL', fmtMoneyXlsx(potBld + potJob)]);
+
+      const wsZarada = XLSX.utils.aoa_to_sheet(zaradaRows);
+      wsZarada['!cols'] = [{wch:30},{wch:20},{wch:20},{wch:20},{wch:18},{wch:18}];
+      wsZarada['!freeze'] = { xSplit: 0, ySplit: 1 };
+      ['A1','B1','C1','D1','E1','F1'].forEach(a => {
+        if (wsZarada[a]) wsZarada[a].s = { font: { bold: true, color: { rgb: 'FFFFFFFF' } }, fill: { fgColor: { rgb: 'FF1F2937' } } };
+      });
+      // Sumtotal row bold
+      const totRowIdx = monthsSorted.length + 2;
+      ['A','B','C','D','E','F'].forEach(c => {
+        const a = `${c}${totRowIdx}`;
+        if (wsZarada[a]) wsZarada[a].s = { font: { bold: true }, fill: { fgColor: { rgb: 'FFE5E7EB' } } };
+      });
+      XLSX.utils.book_append_sheet(wb, wsZarada, 'Zarada');
+
+      // ── RASPORED sheet (next calls + scheduled jobs) ──
+      const rasporedRows = [['Datum', 'Što', 'Adresa / klijent', 'Status', 'Bilješka']];
+      const upcoming = [];
+      buildings.filter(b => b.nextCallAt).forEach(b => {
+        upcoming.push({ when: b.nextCallAt, what: 'Poziv', addr: b.address, status: statusMap[b.status]||b.status, note: b.rep || '' });
+      });
+      oneTimeJobs.filter(j => j.jobStatus === 'potencijalno' && j.date).forEach(j => {
+        upcoming.push({ when: new Date(j.date).getTime(), what: j.name, addr: j.address || '', status: 'Potencijalno', note: j.notes || '' });
+      });
+      upcoming.sort((a,b) => a.when - b.when);
+      upcoming.forEach(u => {
+        rasporedRows.push([fmtDateXlsx(u.when), u.what, u.addr, u.status, u.note]);
+      });
+      const wsRaspored = XLSX.utils.aoa_to_sheet(rasporedRows);
+      wsRaspored['!cols'] = [{wch:14},{wch:30},{wch:42},{wch:18},{wch:32}];
+      wsRaspored['!freeze'] = { xSplit: 0, ySplit: 1 };
+      ['A1','B1','C1','D1','E1'].forEach(a => {
+        if (wsRaspored[a]) wsRaspored[a].s = { font: { bold: true, color: { rgb: 'FFFFFFFF' } }, fill: { fgColor: { rgb: 'FF1F2937' } } };
+      });
+      XLSX.utils.book_append_sheet(wb, wsRaspored, 'Raspored');
+
+      // ── ZAHTJEVI sheet (placeholder for inquiries) ──
+      const zahtjeviRows = [['Datum', 'Ime', 'Telefon', 'Email', 'Usluga', 'Poruka', 'Status']];
+      const wsZahtjevi = XLSX.utils.aoa_to_sheet(zahtjeviRows);
+      wsZahtjevi['!cols'] = [{wch:14},{wch:24},{wch:18},{wch:28},{wch:24},{wch:36},{wch:14}];
+      wsZahtjevi['!freeze'] = { xSplit: 0, ySplit: 1 };
+      ['A1','B1','C1','D1','E1','F1','G1'].forEach(a => {
+        if (wsZahtjevi[a]) wsZahtjevi[a].s = { font: { bold: true, color: { rgb: 'FFFFFFFF' } }, fill: { fgColor: { rgb: 'FF1F2937' } } };
+      });
+      XLSX.utils.book_append_sheet(wb, wsZahtjevi, 'Zahtjevi');
+
+      // Set workbook properties
+      wb.Props = {
+        Title: 'Pro Clean — Kontakti',
+        Author: 'Pro Clean obrt — Ajdin Mahmutović',
+        CreatedDate: new Date()
+      };
+
+      // Generate xlsx as ArrayBuffer
+      const xlsxBuf = XLSX.write(wb, { type: 'array', bookType: 'xlsx', cellStyles: true });
+
+      // Try to save to existing/chosen file via File System Access API
+      if (window.showSaveFilePicker) {
+        let fileHandle = await idbGet('kontakti-file');
+        let useSaved = false;
+
+        if (fileHandle) {
+          try {
+            const perm = await fileHandle.queryPermission({ mode: 'readwrite' });
+            if (perm === 'granted') {
+              useSaved = true;
+            } else {
+              const req = await fileHandle.requestPermission({ mode: 'readwrite' });
+              useSaved = req === 'granted';
+            }
+          } catch { useSaved = false; }
+        }
+
+        if (!useSaved) {
+          // Let user pick/create the file (defaults to existing kontakti.xlsx location)
+          try {
+            fileHandle = await window.showSaveFilePicker({
+              suggestedName: 'kontakti.xlsx',
+              startIn: 'desktop',
+              types: [{ description: 'Excel tablica', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }]
+            });
+            await idbSet('kontakti-file', fileHandle);
+          } catch (e) {
+            // User cancelled — fall back to download
+            const blob = new Blob([xlsxBuf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `kontakti_${new Date().toISOString().slice(0,10)}.xlsx`; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 5000);
+            toast('Excel preuzet kao novi file');
+            return;
+          }
+        }
+
+        try {
+          const writable = await fileHandle.createWritable();
+          await writable.write(xlsxBuf);
+          await writable.close();
+          toast(`✅ Spremljeno → ${fileHandle.name}`);
+        } catch (err) {
+          console.error(err);
+          toast('Greška pri spremanju — probaj opet');
+        }
+      } else {
+        // Fallback for browsers without File System Access API
+        const blob = new Blob([xlsxBuf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `kontakti_${new Date().toISOString().slice(0,10)}.xlsx`; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        toast('Excel preuzet');
+      }
+    }
+
+    $('#exportXlsxBtn').addEventListener('click', exportToExcel);
+
+    // ============== BOOT ==============
+    initTokenFlow();
+    renderMaterials();
+    updateEarningsBar();
+  })();
+  </script>
+</body>
+</html>
