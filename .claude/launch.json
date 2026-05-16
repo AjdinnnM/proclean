@@ -2,6 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "proclean-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
       "name": "building-map",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "5500"],

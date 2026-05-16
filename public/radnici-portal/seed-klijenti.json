@@ -1,0 +1,350 @@
+{
+  "version": 2,
+  "description": "Pro Clean klijenti — geocoded sa Nominatim/OpenStreetMap",
+  "buildings": [
+    {
+      "address": "Ferenčica 57, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 132.73,
+      "notes": "Datum: 01.05.2025 · 3x tjedno"
+    },
+    {
+      "address": "Aleja Blaža Jurišića 53, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 100.0,
+      "notes": "Datum: 01.05.2025 · 1x tjedno"
+    },
+    {
+      "address": "Aleja Blaža Jurišića 55, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Aleja Blaža Jurišića 75, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 91.0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Augusta Musića 30, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Božidara Magovca 15, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 414.76,
+      "notes": "3x tjedno"
+    },
+    {
+      "address": "Božidara Magovca 55, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 331.81,
+      "notes": "3x tjedno"
+    },
+    {
+      "address": "Davora Zbiljskog 2, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 126.0,
+      "notes": "Datum: 01.05.2025 · 2x tjedno"
+    },
+    {
+      "address": "Dubrava 204, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Dubrava 206, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Dubrava 208, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Milovana Gavazzija 5, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 300.0,
+      "notes": "Milovana Gavazzija 5, 7 i 9 — ukupno 300€ · 1x tjedno"
+    },
+    {
+      "address": "Milovana Gavazzija 7, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 5/7/9 (vidi M. Gavazzija 5)"
+    },
+    {
+      "address": "Milovana Gavazzija 9, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 5/7/9 (vidi M. Gavazzija 5)"
+    },
+    {
+      "address": "Nikole Škrlca 9, Maksimir, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 50.0,
+      "notes": ""
+    },
+    {
+      "address": "Svibanjčica 4, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Ulica Grada Chicaga 1, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 200.0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Ulica Grada Chicaga 3, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 165.9,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Vile Velebita 1, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 100.0,
+      "notes": "Aneks 15.4.2025"
+    },
+    {
+      "address": "Vukomerec 30, Zagreb",
+      "status": "active",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "1x tjedno"
+    },
+    {
+      "address": "Aleja Blaža Jurišića 59, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 10. mjesec · 1x tjedno"
+    },
+    {
+      "address": "Dubrava 204, Zagreb (s Čulinečka cesta 2D)",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 11. mjesec · 1x tjedno · uključuje Čulinečka cesta 2D"
+    },
+    {
+      "address": "Frana Alfirevića 51, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 70.0,
+      "notes": "Početak: 11. mjesec · 1x tjedno"
+    },
+    {
+      "address": "Frana Alfirevića 59, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 70.0,
+      "notes": "Početak: 11. mjesec · 1x tjedno"
+    },
+    {
+      "address": "Aleja Blaža Jurišića 65, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 90.0,
+      "notes": "Početak: 12. mjesec"
+    },
+    {
+      "address": "Kriška 107, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 100.0,
+      "notes": "Početak: 2. mjesec 2026"
+    },
+    {
+      "address": "Frana Alfirevića 13, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 50.0,
+      "notes": "Početak: 3. mjesec 2026"
+    },
+    {
+      "address": "Kriška 105, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 100.0,
+      "notes": "Početak: 3. mjesec 2026"
+    },
+    {
+      "address": "Dubrava 134, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 4. mjesec 2026 · ugovor potpisan · 1x tjedno"
+    },
+    {
+      "address": "Črešnjevec 4, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 5. mjesec 2026"
+    },
+    {
+      "address": "Vukomerec 47, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 720.0,
+      "notes": "Početak: 5. mjesec 2026 · Vukomerec 47/49/49a paket = 720€ · 1x tjedno"
+    },
+    {
+      "address": "Vukomerec 49, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 47/49/49a (vidi V. 47)"
+    },
+    {
+      "address": "Vukomerec 49a, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 47/49/49a (vidi V. 47)"
+    },
+    {
+      "address": "1. Poljanice 13, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 6. mjesec 2026 · 1x tjedno"
+    },
+    {
+      "address": "1. Poljanice 15, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 6. mjesec 2026 · 1x tjedno"
+    },
+    {
+      "address": "Antolovečki put 9, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 6. mjesec 2026 · 1x tjedno"
+    },
+    {
+      "address": "Krotovica 14, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 300.0,
+      "notes": "Početak: 6. mjesec 2026 · Krotovica 14 i 16 paket = 300€"
+    },
+    {
+      "address": "Krotovica 16, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 14/16 (vidi K. 14)"
+    },
+    {
+      "address": "Remetski Banjščak 15, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 6. mjesec 2026 · 1x tjedno"
+    },
+    {
+      "address": "4. Poljanice 4, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Početak: 7. mjesec 2026 · 1x tjedno"
+    },
+    {
+      "address": "Gomboševa 28, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 215.26,
+      "notes": "Početak: 7. mjesec 2026 · Gomboševa 28/30/34 paket = 215.26€ · 1x tjedno"
+    },
+    {
+      "address": "Gomboševa 30, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 28/30/34 (vidi G. 28)"
+    },
+    {
+      "address": "Gomboševa 34, Zagreb",
+      "status": "contacted",
+      "lat": 45.815,
+      "lng": 15.9819,
+      "price": 0,
+      "notes": "Dio paketa 28/30/34 (vidi G. 28)"
+    }
+  ]
+}

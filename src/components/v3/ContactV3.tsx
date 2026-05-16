@@ -87,6 +87,39 @@ export function ContactV3() {
                 WhatsApp
               </a>
             </div>
+
+            {/* Pratite nas */}
+            <div className="mt-10 pt-8 border-t border-black/10">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-4">
+                Pratite nas
+              </p>
+              <div className="space-y-3 text-[14px]">
+                <a
+                  href="https://www.instagram.com/proclean_hr/"
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center gap-3 text-[#3F3F3F] hover:text-[#0A0A0A] transition-colors"
+                >
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white text-[#3B82F6]">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                    </svg>
+                  </span>
+                  Instagram: @proclean_hr
+                </a>
+                <a
+                  href="https://procleanzg.com"
+                  className="flex items-center gap-3 text-[#3F3F3F] hover:text-[#0A0A0A] transition-colors"
+                >
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white text-[#3B82F6]">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                  </span>
+                  procleanzg.com
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* RIGHT */}

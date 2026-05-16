@@ -226,6 +226,109 @@ export default function StubistePage() {
         </div>
       </section>
 
+      {/* ── JEDINI SA STROJEVIMA ── */}
+      <section className="relative bg-white py-20 lg:py-28 overflow-hidden">
+        {/* Soft blue glow */}
+        <div
+          aria-hidden
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full opacity-[0.14] blur-[140px] pointer-events-none"
+          style={{ background: "radial-gradient(circle, #3B82F6 0%, transparent 65%)" }}
+        />
+
+        <div className="relative max-w-6xl mx-auto px-5">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+            {/* Left — text */}
+            <div>
+              <Reveal>
+                <span className="inline-flex items-center gap-2 bg-[#EFF6FF] text-[#3B82F6] text-[11px] font-bold uppercase tracking-[0.16em] px-3 py-1.5 rounded-full mb-5">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 L15 9 L22 9 L17 14 L19 22 L12 18 L5 22 L7 14 L2 9 L9 9 Z" /></svg>
+                  Što nas izdvaja
+                </span>
+              </Reveal>
+
+              <Reveal variant="up" delay={100}>
+                <h2 className="font-semibold text-[#0A0A0A] text-[32px] lg:text-[44px] leading-[1.05] tracking-[-0.02em] mb-6" style={{ fontFamily: "var(--font-v3-display)" }}>
+                  Jedni od rijetkih u Zagrebu —<br />
+                  <span className="italic font-normal text-[#3B82F6]">strojno čišćenje stubišta.</span>
+                </h2>
+              </Reveal>
+
+              <Reveal variant="up" delay={200}>
+                <div className="space-y-4 text-[#3F3F3F] text-[15px] lg:text-[16px] leading-[1.65]">
+                  <p>
+                    Većina firmi u Zagrebu čisti stubišta <strong className="text-[#0A0A0A]">ručno</strong> —
+                    krpa, kanta, deterdžent. Mi smo <strong className="text-[#0A0A0A]">jedni od rijetkih</strong> koji
+                    koriste <strong className="text-[#0A0A0A]">profesionalne strojeve za pranje podova</strong>:
+                    industrijski usisivači, ribači, vlažno-suho čišćenje.
+                  </p>
+                  <p>
+                    Rezultat? <strong className="text-[#0A0A0A]">Dublje čišćenje, manje vremena, bez tragova krpe.</strong>{" "}
+                    Stubište izgleda kao da je novo — od ulaznih vrata do potkrovlja.
+                  </p>
+                </div>
+              </Reveal>
+
+              <Reveal variant="up" delay={300}>
+                <ul className="grid gap-3 mt-7 max-w-md">
+                  {[
+                    "Profesionalni ribači i industrijski usisivači",
+                    "Dubinsko čišćenje fuga i pločica",
+                    "Brže izvođenje — manje smetnji stanarima",
+                    "Bez tragova krpe, mrlja i sapunastih ostataka",
+                  ].map((item, i) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-3 text-[14px] text-[#0A0A0A]"
+                      style={{ animation: `stubMachineFadeIn 700ms cubic-bezier(0.16,1,0.3,1) ${400 + i * 100}ms backwards` }}
+                    >
+                      <span className="mt-0.5 h-5 w-5 rounded-full bg-[#EFF6FF] text-[#3B82F6] flex items-center justify-center shrink-0">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </span>
+                      <span className="font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <style>{`@keyframes stubMachineFadeIn { from { opacity: 0; transform: translateX(-10px) } to { opacity: 1; transform: translateX(0) } }`}</style>
+              </Reveal>
+            </div>
+
+            {/* Right — slika placeholder */}
+            <Reveal variant="up" delay={200} className="relative">
+              <div className="relative w-full h-[360px] lg:h-[480px] rounded-[24px] overflow-hidden shadow-2xl shadow-black/10 group bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE] flex items-center justify-center">
+                {/* Placeholder dok korisnik ne pošalje sliku */}
+                <div className="text-center px-8 py-12">
+                  <span className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-white shadow-lg text-[#3B82F6] mb-5">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="6" width="18" height="13" rx="2" /><path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" /><circle cx="12" cy="13" r="3" />
+                    </svg>
+                  </span>
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#3B82F6] font-bold mb-2">
+                    Slika dolazi
+                  </p>
+                  <p className="text-[14px] text-[#0A0A0A] font-medium max-w-[260px] mx-auto leading-snug">
+                    Naša ekipa sa strojevima u akciji — fotografija uskoro.
+                  </p>
+                </div>
+
+                {/* Periodic shine */}
+                <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
+                  <div
+                    className="absolute -inset-y-12 w-1/3"
+                    style={{
+                      background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%)",
+                      transform: "skewX(-12deg) translateX(-50%)",
+                      animation: "stub-machine-shine 6s ease-in-out 2s infinite",
+                    }}
+                  />
+                </div>
+                <style>{`@keyframes stub-machine-shine { 0%, 70% { transform: skewX(-12deg) translateX(-200%); opacity: 0 } 78% { opacity: 1 } 92% { opacity: 1 } 100% { transform: skewX(-12deg) translateX(700%); opacity: 0 } }`}</style>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* ── PROCESS ── */}
       <section className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-5">
