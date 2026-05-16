@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="512" height="512">
+  <rect width="120" height="120" rx="22" fill="#3B5BFF"></rect>
+  <text x="46" y="98" text-anchor="middle" fill="#F7F8FB" font-family="Poppins, sans-serif" font-weight="800" font-size="118" letter-spacing="-6">p</text>
+  <text x="50" y="114" fill="#F7F8FB" font-family="Poppins, sans-serif" font-weight="700" font-size="16" letter-spacing="-0.3">clean</text>
+  <path d="M102 20 L104 28 L112 30 L104 32 L102 40 L100 32 L92 30 L100 28 Z" fill="#F7F8FB" opacity="0.85"></path>
+</svg>

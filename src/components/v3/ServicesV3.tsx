@@ -34,6 +34,15 @@ const SERVICES = [
     href: "/usluge/izgradnja",
     tags: ["Novogradnja", "Renovacije"],
   },
+  {
+    slug: "poslovni-prostori",
+    title: "Generalno čišćenje poslovnih prostora",
+    desc: "Ugostiteljstvo, uredi, cvjećarne, butici, stanovi i kuće — jednokratno generalno čišćenje.",
+    image: "/images/services/office.jpg",
+    href: "/usluge/poslovni-prostori",
+    tags: ["Generalno", "Jednokratno"],
+    badge: "Novo",
+  },
 ];
 
 export function ServicesV3() {
@@ -51,9 +60,9 @@ export function ServicesV3() {
               className="text-[36px] lg:text-[56px] leading-[1.02] tracking-[-0.025em] text-[#0A0A0A] font-semibold"
               style={{ fontFamily: "var(--font-v3-display)" }}
             >
-              Četiri usluge.
+              Pet usluga.
               <br />
-              <span className="text-[#3B82F6] italic font-normal">Bez kompromisa.</span>
+              <span className="text-[#3B82F6] italic font-normal">Bez improvizacije.</span>
             </h2>
           </div>
           <p className="hidden lg:block text-[14px] text-[#6B7280] max-w-[260px] mb-2">
@@ -73,6 +82,10 @@ export function ServicesV3() {
         @keyframes service-shine {
           0% { transform: skewX(-12deg) translateX(-100%) }
           100% { transform: skewX(-12deg) translateX(700%) }
+        }
+        @keyframes service-badge-pulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59,130,246,0.4) }
+          50% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(59,130,246,0) }
         }
       `}</style>
     </section>
@@ -108,9 +121,22 @@ function ServiceCard({ service, large = false }: { service: typeof SERVICES[0]; 
           }}
         />
 
+        {/* NEW badge */}
+        {service.badge && (
+          <div className="absolute top-5 right-5 z-20">
+            <span
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] font-bold text-white bg-[#3B82F6] rounded-full shadow-lg"
+              style={{ animation: "service-badge-pulse 2.4s ease-in-out infinite" }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-white" />
+              {service.badge}
+            </span>
+          </div>
+        )}
+
         {/* Tags */}
         {service.tags && (
-          <div className="absolute top-5 left-5 right-5 flex flex-wrap gap-1.5">
+          <div className="absolute top-5 left-5 right-20 flex flex-wrap gap-1.5">
             {service.tags.map((t) => (
               <span
                 key={t}

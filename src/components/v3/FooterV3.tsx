@@ -28,11 +28,21 @@ export function FooterV3() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.1 1.1-1.1 2.6 0 1.5 1.1 3 1.3 3.2.2.2 2.2 3.4 5.4 4.7.7.3 1.3.5 1.8.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z M12 2C6.5 2 2 6.5 2 12c0 1.7.4 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
               </a>
             </div>
+            <a
+              href="https://procleanzg.com"
+              className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#3B82F6] hover:text-[#2563EB] transition-colors"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+              procleanzg.com
+            </a>
           </div>
 
           <div className="lg:col-span-3">
             <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#6B7280] font-medium mb-5">Usluge</h4>
             <ul className="space-y-3 text-[14px]">
+              <li><Link href="/usluge/poslovni-prostori" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Poslovni prostori i stanovi</Link></li>
               <li><Link href="/usluge/stubiste" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Čišćenje stubišta</Link></li>
               <li><Link href="/usluge/garaza" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Čišćenje garaža</Link></li>
               <li><Link href="/usluge/izgradnja" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Čišćenje nakon izgradnje</Link></li>
@@ -53,7 +63,20 @@ export function FooterV3() {
 
         <div className="mt-14 pt-7 border-t border-black/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-[12px] text-[#6B7280]">© 2026 Pro Clean. Sva prava pridržana.</p>
-          <p className="text-[12px] text-[#9CA3AF]">Made with care in Zagreb</p>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/radnici"
+              className="group inline-flex items-center gap-2 text-[12px] text-[#6B7280] hover:text-[#3B82F6] transition-colors"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              Portal za radnike
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="opacity-60 group-hover:translate-x-0.5 transition-transform"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+            <span className="hidden md:inline text-[#E5E7EB]">·</span>
+            <p className="text-[12px] text-[#9CA3AF]">Made with care in Zagreb</p>
+          </div>
         </div>
       </div>
     </footer>

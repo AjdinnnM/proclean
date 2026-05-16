@@ -11,6 +11,7 @@ const NAV = [
 ];
 
 const SERVICES = [
+  { title: "Poslovni prostori", href: "/usluge/poslovni-prostori", image: "/images/services/office.jpg" },
   { title: "Čišćenje stubišta", href: "/usluge/stubiste", image: "/images/services/staircase-real.jpg" },
   { title: "Čišćenje garaža", href: "/usluge/garaza", image: "/images/photos/garaza/IMG_3342.jpg" },
   { title: "Pranje prozora", href: "/usluge/prozori", image: "/images/photos/prozori/IMG_3288.jpg" },
