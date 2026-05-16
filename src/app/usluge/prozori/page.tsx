@@ -244,6 +244,11 @@ export default function ProzoriPage() {
                 { before: "/images/photos/prozori/IMG_3144.jpg", after: "/images/photos/prozori/IMG_3145.jpg", label: "" },
               ]}
               extras={[
+                "/images/photos/prozori/IMG_3455.jpg",
+                "/images/photos/prozori/IMG_3451.jpg",
+                "/images/photos/prozori/IMG_3452.jpg",
+                "/images/photos/prozori/IMG_3453.jpg",
+                "/images/photos/prozori/IMG_3454.jpg",
                 "/images/photos/prozori/IMG_3301.jpg",
                 "/images/photos/prozori/IMG_3305.jpg",
                 "/images/photos/prozori/IMG_3288.jpg",
