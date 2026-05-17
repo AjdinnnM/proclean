@@ -40,7 +40,7 @@ export function ContactV3() {
   };
 
   return (
-    <section ref={sectionRef} id="kontakt" className="relative py-20 lg:py-32 overflow-hidden bg-[#FAFAF7]">
+    <section ref={sectionRef} id="kontakt" className="relative py-10 lg:py-14 overflow-hidden bg-[#FAFAF7]">
       {/* Big background glow */}
       <div
         aria-hidden

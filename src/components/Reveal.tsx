@@ -58,9 +58,7 @@ export function Reveal({
           if (e.isIntersecting) {
             setVisible(true);
             clearTimeout(fallback);
-          } else {
-            // Reset to hidden when element leaves viewport — re-animates on next scroll-in
-            setVisible(false);
+            observer.disconnect();
           }
         });
       },

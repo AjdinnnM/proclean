@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function KontaktPage() {
   return (
     <div className="bg-[#FAFAF7] min-h-screen">
-      <div className="max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 pb-4">
+      <div className="max-w-[1100px] mx-auto px-6 lg:px-10 pt-6 pb-0">
         <p className="text-[11px] uppercase tracking-[0.18em] text-[#6B7280] mb-2">
           <a href="/" className="hover:text-[#3B82F6] transition-colors">Pro Clean</a>
           {" › "}
