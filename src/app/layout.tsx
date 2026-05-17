@@ -39,10 +39,10 @@ export default function RootLayout({
   return (
     <html
       lang="hr"
-      className={`${inter.variable} ${display.variable} h-full antialiased`}
+      className={`${inter.variable} ${display.variable} antialiased`}
     >
       <body
-        className="min-h-full flex flex-col"
+        className="min-h-screen flex flex-col"
         style={{
           fontFamily: "var(--font-v3-body), system-ui, sans-serif",
           background: "#FAFAF7",

@@ -197,7 +197,7 @@ export default function PoslovniProstoriPage() {
         />
 
         <div className="max-w-6xl mx-auto px-5">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="max-w-3xl">
 
             {/* Left — text */}
             <div className="pb-12 lg:pb-20 relative">
@@ -263,36 +263,68 @@ export default function PoslovniProstoriPage() {
               </Reveal>
             </div>
 
-            {/* Right — image with shine sweep */}
-            <Reveal variant="up" delay={200} className="relative lg:self-stretch flex items-end justify-center lg:justify-end">
-              <div className="relative w-full max-w-lg lg:max-w-none h-[360px] lg:h-full lg:min-h-[520px] rounded-[20px] overflow-hidden shadow-2xl shadow-black/10 group">
-                <Image
-                  src="/images/services/office.jpg"
-                  alt="Čišćenje poslovnih prostora — Pro Clean Zagreb"
-                  fill priority
-                  className="object-cover"
-                  sizes="(min-width:1024px) 50vw, 100vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 via-transparent to-transparent" />
+          </div>
+        </div>
+      </section>
 
-                {/* Periodic shine sweep */}
-                <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
-                  <div
-                    className="absolute -inset-y-12 w-1/3"
-                    style={{
-                      background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
-                      transform: "skewX(-12deg) translateX(-50%)",
-                      animation: "pp-shine 7s ease-in-out 3s infinite",
-                    }}
+      {/* ── REFERENCE — CVJEĆARNA SKRINJARIĆ + GARDEROBA ── */}
+      <section className="bg-white py-12">
+        <div className="max-w-6xl mx-auto px-5">
+          <Reveal className="text-xs font-bold text-[#3B82F6] uppercase tracking-widest mb-5 text-center">Naše reference</Reveal>
+
+          <div className="grid md:grid-cols-2 gap-5 lg:gap-6">
+            <Reveal variant="left">
+              <a href="/reference/cvjecarna-skrinjaric" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
+                <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
+                  <Image
+                    src="/images/reference/cvjecarna-skrinjaric.jpg"
+                    alt="Cvjećarna Skrinjarić — Pro Clean Zagreb"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(min-width:1024px) 560px, (min-width:768px) 50vw, 100vw"
+                    style={{ transform: "translateZ(0)" }}
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-white/70 uppercase tracking-widest block mb-1">Referenca</span>
+                      <span className="text-white font-extrabold text-lg md:text-xl leading-snug block">Cvjećarna Skrinjarić<br /> — čišćenje nakon evenata</span>
+                      <span className="text-white/60 text-xs block mt-1">Generalno čišćenje nakon velikih akcija</span>
+                    </div>
+                    <span className="flex items-center gap-1.5 bg-white text-[#3B82F6] text-xs font-bold px-4 py-2 rounded-full group-hover:bg-[#3B82F6] group-hover:text-white transition-colors shrink-0">
+                      Saznaj više →
+                    </span>
+                  </div>
+                  <span className="absolute top-4 left-5 bg-[#3B82F6] text-white text-xs font-bold px-3 py-1.5 rounded-full">Cvjećarna</span>
                 </div>
-                <style>{`@keyframes pp-shine { 0%, 70% { transform: skewX(-12deg) translateX(-200%); opacity: 0 } 78% { opacity: 1 } 92% { opacity: 1 } 100% { transform: skewX(-12deg) translateX(700%); opacity: 0 } }`}</style>
+              </a>
+            </Reveal>
 
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-5 py-4 shadow-xl flex items-center gap-4 whitespace-nowrap">
-                  <div className="text-xl font-extrabold text-[#3B82F6] leading-none">Van rad. vremena</div>
-                  <div className="text-xs text-gray-500 font-medium leading-tight">noć · vikend</div>
+            <Reveal variant="right" delay={150}>
+              <a href="/reference/garderoba" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
+                <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
+                  <Image
+                    src="/images/photos/izgradnja/IMG_3035.jpg"
+                    alt="Garderoba Store coffee shop — Pro Clean Zagreb"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(min-width:1024px) 560px, (min-width:768px) 50vw, 100vw"
+                    style={{ transform: "translateZ(0)" }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-white/70 uppercase tracking-widest block mb-1">Referenca</span>
+                      <span className="text-white font-extrabold text-lg md:text-xl leading-snug block">Garderoba Store<br /> — coffee shop</span>
+                      <span className="text-white/60 text-xs block mt-1">Čišćenje nakon renovacije</span>
+                    </div>
+                    <span className="flex items-center gap-1.5 bg-white text-[#3B82F6] text-xs font-bold px-4 py-2 rounded-full group-hover:bg-[#3B82F6] group-hover:text-white transition-colors shrink-0">
+                      Pogledaj →
+                    </span>
+                  </div>
+                  <span className="absolute top-4 left-5 bg-[#3B82F6] text-white text-xs font-bold px-3 py-1.5 rounded-full">Coffee shop</span>
                 </div>
-              </div>
+              </a>
             </Reveal>
           </div>
         </div>
@@ -335,67 +367,6 @@ export default function PoslovniProstoriPage() {
             ))}
           </div>
           <style>{`@keyframes pp-card-shine { 0% { transform: skewX(-12deg) translateX(-100%) } 100% { transform: skewX(-12deg) translateX(700%) } }`}</style>
-        </div>
-      </section>
-
-      {/* ── REFERENCE — CVJEĆARNA SKRINJARIĆ + GARDEROBA ── */}
-      <section className="bg-white py-12">
-        <div className="max-w-6xl mx-auto px-5">
-          <Reveal className="text-xs font-bold text-[#3B82F6] uppercase tracking-widest mb-5 text-center">Naše reference</Reveal>
-
-          <div className="grid md:grid-cols-2 gap-5 lg:gap-6">
-            <Reveal variant="left">
-              <a href="/reference/cvjecarna-skrinjaric" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
-                <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
-                  <Image
-                    src="/images/reference/cvjecarna-skrinjaric.jpg"
-                    alt="Cvjećarna Skrinjarić — Pro Clean Zagreb"
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(min-width:1024px) 560px, (min-width:768px) 50vw, 100vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
-                    <div className="min-w-0">
-                      <span className="text-xs font-bold text-white/70 uppercase tracking-widest block mb-1">Referenca</span>
-                      <span className="text-white font-extrabold text-lg md:text-xl leading-snug block">Cvjećarna Skrinjarić<br /> — čišćenje nakon evenata</span>
-                      <span className="text-white/60 text-xs block mt-1">Generalno čišćenje nakon velikih akcija</span>
-                    </div>
-                    <span className="flex items-center gap-1.5 bg-white text-[#3B82F6] text-xs font-bold px-4 py-2 rounded-full group-hover:bg-[#3B82F6] group-hover:text-white transition-colors shrink-0">
-                      Saznaj više →
-                    </span>
-                  </div>
-                  <span className="absolute top-4 left-5 bg-[#3B82F6] text-white text-xs font-bold px-3 py-1.5 rounded-full">Cvjećarna</span>
-                </div>
-              </a>
-            </Reveal>
-
-            <Reveal variant="right" delay={150}>
-              <a href="/reference/garderoba" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
-                <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
-                  <Image
-                    src="/images/photos/izgradnja/IMG_3035.jpg"
-                    alt="Garderoba Store coffee shop — Pro Clean Zagreb"
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(min-width:1024px) 560px, (min-width:768px) 50vw, 100vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
-                    <div className="min-w-0">
-                      <span className="text-xs font-bold text-white/70 uppercase tracking-widest block mb-1">Referenca</span>
-                      <span className="text-white font-extrabold text-lg md:text-xl leading-snug block">Garderoba Store<br /> — coffee shop</span>
-                      <span className="text-white/60 text-xs block mt-1">Čišćenje nakon renovacije</span>
-                    </div>
-                    <span className="flex items-center gap-1.5 bg-white text-[#3B82F6] text-xs font-bold px-4 py-2 rounded-full group-hover:bg-[#3B82F6] group-hover:text-white transition-colors shrink-0">
-                      Pogledaj →
-                    </span>
-                  </div>
-                  <span className="absolute top-4 left-5 bg-[#3B82F6] text-white text-xs font-bold px-3 py-1.5 rounded-full">Coffee shop</span>
-                </div>
-              </a>
-            </Reveal>
-          </div>
         </div>
       </section>
 
@@ -445,17 +416,6 @@ export default function PoslovniProstoriPage() {
           <div className="max-w-3xl mx-auto">
             <AnimatedChecklist items={CHECKLIST} />
           </div>
-
-          <Reveal variant="up" delay={200} className="mt-12 lg:mt-16 relative h-[280px] lg:h-[380px] rounded-[20px] overflow-hidden shadow-xl shadow-black/8 max-w-4xl mx-auto group">
-            <Image
-              src="/images/services/office.jpg"
-              alt="Profesionalno čišćenje poslovnih prostora — Pro Clean Zagreb"
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-              sizes="(min-width:1024px) 900px, 100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 to-transparent" />
-          </Reveal>
         </div>
       </section>
 
