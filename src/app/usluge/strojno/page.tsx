@@ -211,6 +211,19 @@ export default function StrojnoPage() {
           </div>
         </section>
 
+        {/* ── LOKACIJE ── */}
+        <section className="py-16 bg-white">
+          <div className="max-w-6xl mx-auto px-5 text-center">
+            <h2 className="font-extrabold text-[#0d1f3c] text-2xl mb-2">Radimo u cijelom Zagrebu i okolici</h2>
+            <p className="text-gray-400 text-sm mb-7">Zagreb i okolica: Samobor, Karlovac, Zaprešić, Jastrebarsko, Lučko i šire.</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Podsljeme","Velika Gorica","Samobor","Zaprešić","Karlovac","Lučko","Jastrebarsko","Sveta Nedelja","Bregana"].map((a) => (
+                <span key={a} className="bg-white text-gray-600 text-sm font-medium px-4 py-2 rounded-full border border-gray-200 shadow-sm">{a}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── OSTALE USLUGE ── */}
         <section className="py-14 bg-[#f7f9fc]">
           <div className="max-w-6xl mx-auto px-5">

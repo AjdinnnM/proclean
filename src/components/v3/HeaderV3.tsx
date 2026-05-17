@@ -5,17 +5,17 @@ import Link from "next/link";
 import Image from "next/image";
 
 const NAV = [
-  { label: "Naš rad", href: "/#rad" },
+  { label: "Naš rad", href: "/galerija" },
   { label: "Iskustva", href: "/#iskustva" },
   { label: "Kontakt", href: "/#kontakt" },
 ];
 
 const SERVICES = [
-  { title: "Poslovni prostori", href: "/usluge/poslovni-prostori", image: "/images/services/office.jpg" },
   { title: "Čišćenje stubišta", href: "/usluge/stubiste", image: "/images/services/staircase-real.jpg" },
   { title: "Čišćenje garaža", href: "/usluge/garaza", image: "/images/photos/garaza/IMG_3342.jpg" },
   { title: "Pranje prozora", href: "/usluge/prozori", image: "/images/photos/prozori/IMG_3288.jpg" },
   { title: "Čišćenje nakon izgradnje", href: "/usluge/izgradnja", image: "/images/services/izgradnja-popup.jpg" },
+  { title: "Generalno čišćenje", href: "/usluge/poslovni-prostori", image: "/images/photos/img-2105.jpg" },
 ];
 
 export function HeaderV3() {

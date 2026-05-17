@@ -203,9 +203,9 @@ export default function PoslovniProstoriPage() {
             <div className="pb-12 lg:pb-20 relative">
               <Reveal variant="up">
                 <div className="flex items-center gap-2 mb-6">
-                  <Link href="/" className="text-[11px] uppercase tracking-[0.16em] text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
+                  <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
                   <span className="text-gray-300">›</span>
-                  <span className="text-[11px] uppercase tracking-[0.16em] text-[#3B82F6] font-medium">Čišćenje poslovnih prostora</span>
+                  <span className="text-xs text-gray-500 font-medium">Čišćenje poslovnih prostora</span>
                 </div>
               </Reveal>
 
@@ -548,9 +548,9 @@ export default function PoslovniProstoriPage() {
         <div className="max-w-6xl mx-auto px-5 text-center">
           <Reveal>
             <h2 className="font-extrabold text-[#0A0A0A] text-2xl mb-2" style={{ fontFamily: "var(--font-v3-display)" }}>Radimo u cijelom Zagrebu i okolici</h2>
-            <p className="text-gray-400 text-sm mb-7">Centar, Trešnjevka, Maksimir, Novi Zagreb, Dubrava, Sesvete i šire.</p>
+            <p className="text-gray-400 text-sm mb-7">Zagreb i okolica: Samobor, Karlovac, Zaprešić, Jastrebarsko, Lučko i šire.</p>
             <div className="flex flex-wrap justify-center gap-2">
-              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Podsljeme","Velika Gorica","Samobor"].map((a) => (
+              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Podsljeme","Velika Gorica","Samobor","Zaprešić","Karlovac","Lučko","Jastrebarsko","Sveta Nedelja","Bregana"].map((a) => (
                 <span key={a} className="bg-white text-gray-600 text-sm font-medium px-4 py-2 rounded-full border border-gray-200 shadow-sm">{a}</span>
               ))}
             </div>

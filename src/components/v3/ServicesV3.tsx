@@ -38,7 +38,7 @@ const SERVICES = [
     slug: "poslovni-prostori",
     title: "Generalno čišćenje poslovnih prostora",
     desc: "Ugostiteljstvo, uredi, cvjećarne, butici, stanovi i kuće — jednokratno generalno čišćenje.",
-    image: "/images/services/office.jpg",
+    image: "/images/photos/img-2105.jpg",
     href: "/usluge/poslovni-prostori",
     tags: ["Generalno", "Jednokratno"],
     badge: "Novo",

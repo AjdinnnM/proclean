@@ -111,9 +111,9 @@ export default function ProzoriPage() {
             <div className="pb-12 lg:pb-20 relative">
               <Reveal variant="up">
                 <div className="flex items-center gap-2 mb-6">
-                  <Link href="/" className="text-[11px] uppercase tracking-[0.16em] text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
+                  <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
                   <span className="text-gray-300">›</span>
-                  <span className="text-[11px] uppercase tracking-[0.16em] text-[#3B82F6] font-medium">Pranje prozora</span>
+                  <span className="text-xs text-gray-500 font-medium">Pranje prozora</span>
                 </div>
               </Reveal>
 
@@ -206,8 +206,90 @@ export default function ProzoriPage() {
         </div>
       </section>
 
-      {/* ── NAŠI RADOVI ── */}
+      {/* ── PRANJE NA VISINI — featured ── */}
       <section className="bg-white py-16 lg:py-24">
+        <div className="max-w-6xl mx-auto px-5">
+          <Reveal>
+            <div className="rounded-[24px] overflow-hidden bg-white border border-gray-100 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.18)]">
+              <div className="grid lg:grid-cols-2">
+                {/* Left — text */}
+                <div className="p-8 lg:p-14 flex flex-col justify-center order-2 lg:order-1">
+                  <div className="flex items-center gap-2 mb-5">
+                    <span className="inline-flex items-center gap-1.5 bg-[#EFF6FF] text-[#3B82F6] text-[11px] font-semibold uppercase tracking-[0.14em] px-3 py-1.5 rounded-full">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M5 9l7-7 7 7" /></svg>
+                      Pranje na visini
+                    </span>
+                  </div>
+
+                  <h2 className="font-semibold text-[#0A0A0A] text-[30px] lg:text-[42px] leading-[1.04] tracking-[-0.025em] mb-5" style={{ fontFamily: "var(--font-v3-display)" }}>
+                    Stambene zgrade —<br />
+                    <span className="italic font-normal text-[#3B82F6]">dosežemo svaki kut.</span>
+                  </h2>
+
+                  <p className="text-[15px] lg:text-[16px] text-[#3F3F3F] leading-[1.7] mb-5">
+                    Visoki katovi, fasadno staklo, brisoleji i prozori iznad ulaza — sve što sa zemlje izgleda nedostižno, mi rješavamo s vlastitom dizalicom i certificiranom platformom. Bez skela, bez kompliciranja s upravom zgrade, bez gubljenja dana.
+                  </p>
+                  <p className="text-[14px] lg:text-[15px] text-[#3F3F3F] leading-[1.7] mb-7">
+                    Naši radnici su obučeni za rad na visini, koriste sigurnosne pojaseve i CE opremu. Dolazimo s vlastitim strojem — nema iznajmljivanja, nema čekanja, nema dodatnih troškova koji se naknadno pojave na računu.
+                  </p>
+
+                  <ul className="grid sm:grid-cols-2 gap-2.5 mb-8">
+                    {[
+                      "Dizalica do 20+ metara",
+                      "Certificirana platforma",
+                      "Obučeno osoblje za visine",
+                      "Bez skela i bušenja fasade",
+                      "Eko sredstva, sigurna za biljke",
+                      "Radimo i van radnog vremena",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5 text-[13.5px] text-[#0A0A0A]">
+                        <span className="mt-0.5 h-4 w-4 rounded-full bg-[#EFF6FF] text-[#3B82F6] flex items-center justify-center shrink-0">
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
+                        <span className="font-medium leading-snug">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex flex-wrap gap-3">
+                    <a href="/kontakt" className="inline-flex items-center gap-2 bg-[#3B82F6] text-white font-medium px-6 py-3.5 rounded-full text-[14px] hover:bg-[#2563EB] active:scale-[0.97] transition-all shadow-[0_0_30px_-10px_rgba(59,130,246,0.6)]">
+                      Pogledaj objekt — besplatna procjena
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="tel:+385994840416" className="inline-flex items-center gap-2 bg-white text-[#0A0A0A] font-medium px-5 py-3.5 rounded-full text-[14px] border border-black/10 hover:border-[#3B82F6]/40 transition-all">
+                      099 484 0416
+                    </a>
+                  </div>
+                </div>
+
+                {/* Right — feature image + small collage */}
+                <div className="relative order-1 lg:order-2 p-5 lg:p-8 bg-[#FAFAF7] flex items-stretch">
+                  <div className="grid grid-cols-3 grid-rows-3 gap-2.5 w-full min-h-[420px] lg:min-h-[560px]">
+                    <div className="relative col-span-2 row-span-2 rounded-[16px] overflow-hidden shadow-md">
+                      <Image src="/images/photos/prozori/IMG_3455.jpg" alt="Pranje prozora na visini — stambena zgrada Zagreb" fill className="object-cover" sizes="(min-width:1024px) 33vw, 60vw" />
+                    </div>
+                    <div className="relative col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md">
+                      <Image src="/images/photos/prozori/IMG_3451.jpg" alt="Dizalica za pranje prozora" fill className="object-cover" sizes="(min-width:1024px) 16vw, 30vw" />
+                    </div>
+                    <div className="relative col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md">
+                      <Image src="/images/photos/prozori/IMG_3452.jpg" alt="Radnik na platformi pere prozore" fill className="object-cover" sizes="(min-width:1024px) 16vw, 30vw" />
+                    </div>
+                    <div className="relative col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md">
+                      <Image src="/images/photos/prozori/IMG_3453.jpg" alt="Pranje fasadnog stakla s dizalicom" fill className="object-cover" sizes="(min-width:1024px) 16vw, 30vw" />
+                    </div>
+                    <div className="relative col-span-2 row-span-1 rounded-[16px] overflow-hidden shadow-md">
+                      <Image src="/images/photos/prozori/IMG_3454.jpg" alt="Pranje prozora na visokoj zgradi" fill className="object-cover" sizes="(min-width:1024px) 33vw, 60vw" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── NAŠI RADOVI ── */}
+      <section className="bg-[#FAFAF7] py-16 lg:py-24">
         <div className="max-w-5xl mx-auto px-5">
           <Reveal className="text-center max-w-xl mx-auto mb-10">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-3">Naši radovi</p>
@@ -244,11 +326,6 @@ export default function ProzoriPage() {
                 { before: "/images/photos/prozori/IMG_3144.jpg", after: "/images/photos/prozori/IMG_3145.jpg", label: "" },
               ]}
               extras={[
-                "/images/photos/prozori/IMG_3455.jpg",
-                "/images/photos/prozori/IMG_3451.jpg",
-                "/images/photos/prozori/IMG_3452.jpg",
-                "/images/photos/prozori/IMG_3453.jpg",
-                "/images/photos/prozori/IMG_3454.jpg",
                 "/images/photos/prozori/IMG_3301.jpg",
                 "/images/photos/prozori/IMG_3305.jpg",
                 "/images/photos/prozori/IMG_3288.jpg",
@@ -395,9 +472,9 @@ export default function ProzoriPage() {
         <div className="max-w-6xl mx-auto px-5 text-center">
           <Reveal>
             <h2 className="font-semibold text-[#0A0A0A] text-2xl mb-2" style={{ fontFamily: "var(--font-v3-display)" }}>Radimo u cijelom Zagrebu i okolici</h2>
-            <p className="text-gray-400 text-sm mb-7">Trešnjevka, Maksimir, Novi Zagreb, Sesvete, Dubrava i šire.</p>
+            <p className="text-gray-400 text-sm mb-7">Zagreb i okolica: Samobor, Karlovac, Zaprešić, Jastrebarsko, Lučko i šire.</p>
             <div className="flex flex-wrap justify-center gap-2">
-              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Podsljeme","Velika Gorica","Samobor"].map((a) => (
+              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Podsljeme","Velika Gorica","Samobor","Zaprešić","Karlovac","Lučko","Jastrebarsko","Sveta Nedelja","Bregana"].map((a) => (
                 <span key={a} className="bg-white text-gray-600 text-sm font-medium px-4 py-2 rounded-full border border-gray-200 shadow-sm">{a}</span>
               ))}
             </div>

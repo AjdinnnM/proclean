@@ -52,7 +52,7 @@ export function ImageLightbox({ pairs, extras }: { pairs: Pair[]; extras: Extra[
       {/* Before/after pairs */}
       <div className="grid md:grid-cols-2 gap-5">
         {pairs.map((pair, i) => (
-          <div key={pair.before + i} className="rounded-3xl overflow-hidden shadow-lg border border-gray-100">
+          <div key={pair.before + i} className="rounded-3xl overflow-hidden shadow-lg border border-gray-100" style={{ transform: "translateZ(0)" }}>
             <div className="flex text-xs font-bold">
               <div className="flex-1 bg-gray-800 text-white text-center py-2 tracking-widest uppercase">Prije</div>
               <div className="flex-1 bg-[#0266f0] text-white text-center py-2 tracking-widest uppercase">Poslije</div>
@@ -86,7 +86,7 @@ export function ImageLightbox({ pairs, extras }: { pairs: Pair[]; extras: Extra[
             <button
               key={src}
               onClick={() => setActive(src)}
-              className="relative aspect-square rounded-2xl overflow-hidden shadow-sm group cursor-zoom-in"
+              className="relative aspect-square rounded-2xl overflow-hidden shadow-sm group cursor-zoom-in" style={{ transform: "translateZ(0)" }}
               aria-label="Povećaj sliku"
             >
               <Image src={src} alt="Garderoba Store čišćenje — Pro Clean Zagreb" fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="33vw" />

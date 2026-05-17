@@ -42,11 +42,11 @@ export function FooterV3() {
           <div className="lg:col-span-3">
             <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#6B7280] font-medium mb-5">Usluge</h4>
             <ul className="space-y-3 text-[14px]">
-              <li><Link href="/usluge/poslovni-prostori" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Poslovni prostori i stanovi</Link></li>
               <li><Link href="/usluge/stubiste" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Čišćenje stubišta</Link></li>
               <li><Link href="/usluge/garaza" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Čišćenje garaža</Link></li>
               <li><Link href="/usluge/izgradnja" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Čišćenje nakon izgradnje</Link></li>
               <li><Link href="/usluge/prozori" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Pranje prozora</Link></li>
+              <li><Link href="/usluge/poslovni-prostori" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">Generalno čišćenje</Link></li>
             </ul>
           </div>
 

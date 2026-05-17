@@ -155,9 +155,9 @@ export default function GarazaPage() {
             <div className="pb-12 lg:pb-20 relative">
               <Reveal variant="up">
                 <div className="flex items-center gap-2 mb-6">
-                  <Link href="/" className="text-[11px] uppercase tracking-[0.16em] text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
+                  <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
                   <span className="text-gray-300">›</span>
-                  <span className="text-[11px] uppercase tracking-[0.16em] text-[#3B82F6] font-medium">Čišćenje garaža</span>
+                  <span className="text-xs text-gray-500 font-medium">Čišćenje garaža</span>
                 </div>
               </Reveal>
 
@@ -250,16 +250,25 @@ export default function GarazaPage() {
             </div>
           </Reveal>
 
-          <Reveal variant="up" delay={150} className="mt-8">
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              <div className="relative h-48 w-72 flex-shrink-0 rounded-[16px] overflow-hidden">
-                <Image src="/images/photos/garaza/IMG_3341.jpg" alt="Garaža — Pro Clean Zagreb" fill className="object-cover" sizes="288px" />
-              </div>
-              <div className="relative h-48 w-72 flex-shrink-0 rounded-[16px] overflow-hidden">
-                <Image src="/images/photos/garaza/IMG_3342.jpg" alt="Garaža — Pro Clean Zagreb" fill className="object-cover" sizes="288px" />
-              </div>
-            </div>
-          </Reveal>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { src: "/images/photos/garaza/IMG_3341.jpg", alt: "Čista garaža nakon strojnog ribanja — Pro Clean Zagreb" },
+              { src: "/images/photos/garaza/IMG_3342.jpg", alt: "Strojno pranje poda garaže — Pro Clean Zagreb" },
+              { src: "/images/photos/garaza/IMG_3469.jpg", alt: "Čišćenje paučine i prašine s cijevi u garaži — Pro Clean Zagreb" },
+            ].map((img, i) => (
+              <Reveal key={img.src} variant="up" delay={150 + i * 80}>
+                <div className="relative aspect-[4/3] rounded-[16px] overflow-hidden shadow-lg border border-gray-100 group">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(min-width:640px) 33vw, 100vw"
+                  />
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -459,9 +468,9 @@ export default function GarazaPage() {
         <div className="max-w-6xl mx-auto px-5 text-center">
           <Reveal>
             <h2 className="font-semibold text-[#0A0A0A] text-2xl mb-2" style={{ fontFamily: "var(--font-v3-display)" }}>Radimo u cijelom Zagrebu i okolici</h2>
-            <p className="text-gray-400 text-sm mb-7">Trešnjevka, Maksimir, Novi Zagreb, Sesvete, Dubrava i šire.</p>
+            <p className="text-gray-400 text-sm mb-7">Zagreb i okolica: Samobor, Karlovac, Zaprešić, Jastrebarsko, Lučko i šire.</p>
             <div className="flex flex-wrap justify-center gap-2">
-              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Velika Gorica","Samobor","Zaprešić"].map((a) => (
+              {["Trešnjevka","Maksimir","Centar","Dubrava","Novi Zagreb","Sesvete","Črnomerec","Špansko","Stenjevec","Peščenica","Podsljeme","Velika Gorica","Samobor","Zaprešić","Karlovac","Lučko","Jastrebarsko","Sveta Nedelja","Bregana"].map((a) => (
                 <span key={a} className="bg-white text-gray-600 text-sm font-medium px-4 py-2 rounded-full border border-gray-200 shadow-sm">{a}</span>
               ))}
             </div>
