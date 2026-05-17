@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const SERVICES = [
+const SERVICES: { slug: string; title: string; desc: string; image: string; href: string; tags: string[]; badge?: string }[] = [
   {
     slug: "stubiste",
     title: "Čišćenje stubišta",
