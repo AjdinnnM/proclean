@@ -41,7 +41,6 @@ const SERVICES = [
     image: "/images/photos/img-2105.jpg",
     href: "/usluge/poslovni-prostori",
     tags: ["Generalno", "Jednokratno"],
-    badge: "Novo",
   },
 ];
 
