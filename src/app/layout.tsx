@@ -50,6 +50,14 @@ export default function RootLayout({
       lang="hr"
       className={`${inter.variable} ${display.variable} antialiased`}
     >
+      <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-85VEGE6K4X" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-85VEGE6K4X');`,
+          }}
+        />
+      </head>
       <body
         className="min-h-screen flex flex-col"
         style={{
