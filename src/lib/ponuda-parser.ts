@@ -1,4 +1,4 @@
-// Croatian NLP parser for Pro Clean Zagreb ponuda (offer) generator
+// Croatian NLP parser for Pro Clean Zagreb ponuda generator
 // Rule-based, no external API calls
 
 export interface PonudaItem {
@@ -46,6 +46,53 @@ export interface PonudaFill {
 }
 
 // ---------------------------------------------------------------------------
+// Service descriptions (from real PDF templates)
+// ---------------------------------------------------------------------------
+
+const SERVICE_DESCS: Record<string, string> = {
+  garaza: `* Uklanjanje paučine sa zidova, stropova i svih površina
+* Brisanje i uklanjanje prašine na instalacijama (cijevima)
+* Metenje garaže (uklanjanje prašine, pijeska i krupne nečistoće)
+* Strojno pranje garaže (prolaz za vozila, zajedničke površine i dostupna parkirna mjesta)
+* Čišćenje vrata od garaže
+USLUGA OBUHVAĆA:
+čišćenje prolaza za vozila (podovi, paučina, cijevi) čišćenje privatnih parkirnih mjesta (isključivo ona koja su slobodna)
+metenje i čišćenje prilaza garaži (rampa/spust)`,
+
+  stubiste: `* Detaljno metenje i uklanjanje nečistoća i hodnika na svim katovima
+* Detaljno strojno pranje hodnika na svim katovima
+* Detaljno pranje stubišta
+* Detaljno pranje i čišćenje ograde i rukohvata
+* Detaljno pranje i čišćenje liftova
+* Pranje zidne keramike oko liftova na svim etažama
+* Čišćenje hodnika kod spremišta na -1 etaži
+* Detaljno metenje elektro sobe
+* Pranje prostora ispred ulaza u zgradu
+* Uklanjanje paučine iz zajedničkih prostora zgrade
+* Uklanjanje građevinske prašine i sitnih nečistoća iz zajedničkih prostora
+* Generalno čišćenje svih zajedničkih prostora stambene zgrade`,
+
+  prozori: `* Pranje prozora iznutra i izvana
+* Čišćenje prozorskih okvira i klupica
+* Brisanje stakla do suha bez tragova
+* Čišćenje roletnih kaseta i vodilica`,
+
+  izgradnja: `* Uklanjanje građevinske prašine s podova, zidova i stropova
+* Čišćenje boje, silikona i ostataka građevinskog materijala
+* Pranje svih površina (podovi, zidovi, stolarija)
+* Čišćenje sanitarnih čvorova i kuhinja
+* Fino čišćenje i poliranje površina
+* Objekt spreman za useljenje`,
+
+  generalno: `* Generalno čišćenje svih prostorija
+* Pranje podova i tvrdih površina
+* Brisanje prašine s namještaja i opreme
+* Čišćenje sanitarnih čvorova
+* Pranje prozora iznutra
+* Usisavanje i/ili pranje tepiha i presvlaka`,
+};
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -56,39 +103,61 @@ function normalise(text: string): string {
     .toLowerCase();
 }
 
+// Strip zip code and city from address for use in project name
+function addressShort(addr: string): string {
+  return addr
+    .replace(/,?\s*\d{5}\s+[A-Za-zčćšžđĐČĆŠŽ]+\s*$/, "")
+    .replace(/,?\s*Zagreb\s*$/i, "")
+    .trim();
+}
+
+// Ensure address ends with ", 10000 Zagreb"
+function normalizeAddress(raw: string): string {
+  const clean = raw.trim();
+  // Already has zip code — return as is
+  if (/\d{5}/.test(clean)) return clean;
+  // Already has Zagreb — return as is
+  if (/Zagreb/i.test(clean)) return clean;
+  return `${clean}, 10000 Zagreb`;
+}
+
 // ---------------------------------------------------------------------------
 // Client type detection
 // ---------------------------------------------------------------------------
 
-function detectClientType(
-  text: string
-): "zgrada" | "firma" | "osoba" | undefined {
+function detectClientType(text: string): "zgrada" | "firma" | "osoba" | undefined {
   const n = normalise(text);
 
-  // Firma indicators
+  // Firma first (most explicit)
   if (
     /\bd\.o\.o\.?/i.test(text) ||
     /\bd\.d\.?/i.test(text) ||
     /\bj\.d\.o\.o\.?/i.test(text) ||
-    /\bfirma\b/i.test(n) ||
-    /\btvrtka\b/i.test(n) ||
-    /\bpoduzece\b/i.test(n) ||
-    /\bpodjetje\b/i.test(n)
-  ) {
-    return "firma";
-  }
+    /\bfirma\b/.test(n) ||
+    /\btvrtka\b/.test(n) ||
+    /\bpoduzece\b/.test(n) ||
+    /\bpodjetje\b/.test(n) ||
+    /\bposlodavac\b/.test(n) ||
+    /poslovni\s+prostor/.test(n) ||
+    /posl\.\s*prostor/.test(n) ||
+    /\brenovaci/.test(n) ||
+    /nakon\s+renovaci/.test(n)
+  ) return "firma";
 
-  // Zgrada indicators
+  // Zgrada (stambena zgrada OR mention of garaža/stubište without explicit firma)
   if (
-    /stambena\s+zgrada/i.test(n) ||
-    /stamb\.\s*zgr\./i.test(n) ||
-    /\bzgrada\b/i.test(n) ||
-    /\bstambena\b/i.test(n) ||
-    /\bsoliter\b/i.test(n) ||
-    /\bblok\b/i.test(n)
-  ) {
-    return "zgrada";
-  }
+    /stambena\s+zgrada/.test(n) ||
+    /stamb\.\s*zgr\./.test(n) ||
+    /\bzgrada\b/.test(n) ||
+    /\bstambena\b/.test(n) ||
+    /\bsoliter\b/.test(n) ||
+    /\bblok\b/.test(n) ||
+    /\bgaraz[ae]\b/.test(n) ||
+    /\bstubist[ea]\b/.test(n)
+  ) return "zgrada";
+
+  // Izgradnja/novogradnja → firma
+  if (/\bizgradnj/.test(n) || /\bnovogradnj/.test(n)) return "firma";
 
   return undefined;
 }
@@ -97,44 +166,35 @@ function detectClientType(
 // Address extraction
 // ---------------------------------------------------------------------------
 
-const STREET_SUFFIXES =
-  "ulica|cesta|nasip|avenija|trg|put|aleja|promenada|obala|prolaz|staza";
-const STREET_REGEX = new RegExp(
-  // "Savska cesta 10" style
-  `([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+(?:\\s+[A-Za-zčćšžđĐČĆŠŽ]+)*)\\s+(?:${STREET_SUFFIXES})\\s+\\d+[a-zA-Z]?(?:,\\s*[A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)?`,
+const STREET_SUFFIXES = "ulica|cesta|nasip|avenija|trg|put|aleja|promenada|obala|prolaz|staza|ulica";
+
+// "Savska cesta 10" / "Trnjanski nasip IV 8" / "Makarska Ulica 76"
+const STREET_REGEX_LONG = new RegExp(
+  `([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+(?:\\s+[A-Za-zčćšžđĐČĆŠŽIVXivx]+)*)\\s+(?:${STREET_SUFFIXES})\\s+(?:[IVXLCDM]+\\s+)?\\d+[a-zA-Z]?`,
   "i"
 );
-const STREET_REGEX_SHORT = new RegExp(
-  // "Ilica 5" — capitalised word directly followed by number
-  `([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)\\s+(\\d+[a-zA-Z]?)(?:,\\s*[A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)?`,
-  "g"
-);
+
+// "Ilica 5" / "Maksimirska 88"
+const STREET_REGEX_SHORT = /([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)\s+(\d+[a-zA-Z]?)\b/g;
 
 function extractAddress(text: string): string | undefined {
-  const longMatch = STREET_REGEX.exec(text);
+  const longMatch = STREET_REGEX_LONG.exec(text);
   if (longMatch) return longMatch[0].trim();
 
-  // Try short form but avoid matching plain words
   const candidates: string[] = [];
   let m: RegExpExecArray | null;
   const re = new RegExp(STREET_REGEX_SHORT.source, "gi");
+  const skipWords = /^(Ana|Ivan|Pero|Marko|Tomislav|Renato|Ajdin|Melina|Pro|Clean|Zagreb|Stambena|Zgrada|Firma|Ponuda|Napomena)$/i;
   while ((m = re.exec(text)) !== null) {
-    // Filter out things like "12 prozora" (starts with digit) already excluded by regex
-    // Avoid matching year-like numbers
+    if (skipWords.test(m[1])) continue;
     const num = parseInt(m[2], 10);
-    if (num > 0 && num < 10000) {
-      candidates.push(m[0].trim());
-    }
+    if (num > 0 && num < 10000) candidates.push(m[0].trim());
   }
-  // Prefer longest match
-  if (candidates.length > 0) {
-    return candidates.sort((a, b) => b.length - a.length)[0];
-  }
-  return undefined;
+  return candidates.sort((a, b) => b.length - a.length)[0];
 }
 
 // ---------------------------------------------------------------------------
-// OIB / email / phone
+// Contact fields
 // ---------------------------------------------------------------------------
 
 function extractOib(text: string): string | undefined {
@@ -143,9 +203,7 @@ function extractOib(text: string): string | undefined {
 }
 
 function extractEmail(text: string): string | undefined {
-  const m = /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/.exec(
-    text
-  );
+  const m = /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/.exec(text);
   return m ? m[1] : undefined;
 }
 
@@ -159,16 +217,13 @@ function extractPhone(text: string): string | undefined {
 // ---------------------------------------------------------------------------
 
 function extractPrice(text: string): number | undefined {
-  // "400€", "400 €", "400 eur", "400 eura", "eur 400", "€ 400"
   const patterns = [
     /(\d+(?:[.,]\d+)?)\s*(?:€|eur(?:a|o)?)\b/i,
     /(?:€|eur(?:a|o)?)\s*(\d+(?:[.,]\d+)?)\b/i,
   ];
   for (const p of patterns) {
     const m = p.exec(text);
-    if (m) {
-      return parseFloat(m[1].replace(",", "."));
-    }
+    if (m) return parseFloat(m[1].replace(",", "."));
   }
   return undefined;
 }
@@ -177,112 +232,114 @@ function extractPrice(text: string): number | undefined {
 // Quantity extraction
 // ---------------------------------------------------------------------------
 
-interface QtyHint {
-  qty: number;
-  ctx: string;
-}
+interface QtyHint { qty: number; unit: string; ctx: string; }
 
 function extractQtyHints(text: string): QtyHint[] {
   const hints: QtyHint[] = [];
-  const patterns: Array<{ re: RegExp; ctx: string }> = [
-    { re: /(\d+)\s*prozora?\b/i, ctx: "prozori" },
-    { re: /(\d+)\s*katova?\b/i, ctx: "katovi" },
-    { re: /(\d+)\s*(?:m²|m2)\b/i, ctx: "m2" },
-    { re: /(\d+)\s*eta[žz]e?\b/i, ctx: "etaze" },
-    { re: /(\d+)\s*kom\b/i, ctx: "kom" },
+  const patterns: Array<{ re: RegExp; unit: string; ctx: string }> = [
+    { re: /(\d+)\s*prozora?\b/i,    unit: "kom",  ctx: "prozori" },
+    { re: /(\d+)\s*katova?\b/i,     unit: "kat",  ctx: "katovi"  },
+    { re: /(\d+(?:[.,]\d+)?)\s*(?:m²|m2)\b/i, unit: "m²", ctx: "m2" },
+    { re: /(\d+)\s*eta[žz]e?\b/i,   unit: "m²",  ctx: "etaze"   },
+    { re: /(\d+)\s*kom\b/i,         unit: "kom",  ctx: "kom"     },
   ];
-  for (const { re, ctx } of patterns) {
+  for (const { re, unit, ctx } of patterns) {
     const m = re.exec(text);
-    if (m) {
-      hints.push({ qty: parseInt(m[1], 10), ctx });
-    }
+    if (m) hints.push({ qty: parseFloat(m[1].replace(",", ".")), unit, ctx });
   }
   return hints;
 }
 
 // ---------------------------------------------------------------------------
-// Services → items
+// Service detection → items
 // ---------------------------------------------------------------------------
 
 interface ServiceRule {
+  key: string;
   patterns: RegExp[];
-  desc: string;
+  itemDesc: string;
+  projectLabel: string;
   unit: string;
-  qtyContexts?: string[]; // which QtyHint ctx applies
+  qtyContexts?: string[];
 }
 
 const SERVICE_RULES: ServiceRule[] = [
   {
-    patterns: [/stubi[šs]t[ea]/i, /\bstubi[šs]te\b/i],
-    desc: "Čišćenje stubišta",
+    key: "garaza",
+    patterns: [/\bgara[žz][ae]?\b/i],
+    itemDesc: "Strojno pranje garaže — etaža 1",
+    projectLabel: "Garaža",
+    unit: "m²",
+    qtyContexts: ["m2", "etaze"],
+  },
+  {
+    key: "stubiste",
+    patterns: [/stubi[šs]t[ea]\b/i, /\bstubiste\b/i],
+    itemDesc: "Generalnoč čišćenje stubišta",
+    projectLabel: "Stubište",
     unit: "kom",
     qtyContexts: ["katovi", "etaze"],
   },
   {
-    patterns: [/\bgara[žz]a?\b/i],
-    desc: "Čišćenje garaže",
-    unit: "kom",
-    qtyContexts: ["etaze", "m2"],
-  },
-  {
+    key: "prozori",
     patterns: [/\bprozor/i],
-    desc: "Pranje prozora",
+    itemDesc: "Pranje prozora",
+    projectLabel: "Prozori",
     unit: "kom",
     qtyContexts: ["prozori"],
   },
   {
-    patterns: [/nakon\s+izgradnje/i, /\bizgradnja\b/i, /\bpostigradnja\b/i],
-    desc: "Čišćenje nakon izgradnje",
+    key: "izgradnja",
+    patterns: [/nakon\s+izgradnje/i, /\bizgradnj/i, /\bpostigradnj/i, /\bnovogradnj/i],
+    itemDesc: "Čišćenje nakon izgradnje",
+    projectLabel: "Izgradnja",
     unit: "kom",
+    qtyContexts: ["m2"],
   },
   {
-    patterns: [
-      /generalna\s+(?:čišćenje|ciscenje)/i,
-      /\bgeneralno\b/i,
-      /\bgeneralna\b/i,
-      /poslovni\s+prostori/i,
-    ],
-    desc: "Generalno čišćenje",
+    key: "generalno",
+    patterns: [/\bgeneralna?\b/i, /\bgeneralno\b/i, /poslovni\s+prostor/i, /posl\.\s*prostor/i],
+    itemDesc: "Generalno čišćenje",
+    projectLabel: "Generalno",
     unit: "kom",
     qtyContexts: ["m2"],
   },
 ];
 
-function extractItems(text: string): PonudaItem[] {
-  const globalPrice = extractPrice(text);
-  const qtyHints = extractQtyHints(text);
-  const items: PonudaItem[] = [];
-
+function detectService(text: string): ServiceRule | undefined {
   for (const rule of SERVICE_RULES) {
-    const matched = rule.patterns.some((p) => p.test(text));
-    if (!matched) continue;
+    if (rule.patterns.some((p) => p.test(text))) return rule;
+  }
+  return undefined;
+}
 
-    // Determine quantity
-    let qty = 1;
-    if (rule.qtyContexts) {
-      for (const ctx of rule.qtyContexts) {
-        const hint = qtyHints.find((h) => h.ctx === ctx);
-        if (hint) {
-          qty = hint.qty;
-          break;
-        }
-      }
+function buildItems(rule: ServiceRule, text: string): PonudaItem[] {
+  const price = extractPrice(text) ?? 0;
+  const hints = extractQtyHints(text);
+
+  let qty = 1;
+  let unit = rule.unit;
+  if (rule.qtyContexts) {
+    for (const ctx of rule.qtyContexts) {
+      const hint = hints.find((h) => h.ctx === ctx);
+      if (hint) { qty = hint.qty; unit = hint.unit; break; }
     }
-
-    items.push({
-      desc: rule.desc,
-      qty,
-      unit: rule.unit,
-      price: 0, // filled below
-    });
   }
 
-  // Assign global price to single item, or first item
-  if (globalPrice !== undefined && items.length > 0) {
-    items[0] = { ...items[0], price: globalPrice };
+  // Garaža: multiple etaže → multiple rows
+  if (rule.key === "garaza") {
+    const etazeHint = hints.find((h) => h.ctx === "etaze");
+    if (etazeHint && etazeHint.qty > 1) {
+      return Array.from({ length: etazeHint.qty }, (_, i) => ({
+        desc: `Strojno pranje garaže — etaža ${i + 1}`,
+        qty: hints.find((h) => h.ctx === "m2")?.qty ?? 1,
+        unit: "m²",
+        price: price > 0 ? (i === 0 ? price : 0) : 0,
+      }));
+    }
   }
 
-  return items;
+  return [{ desc: rule.itemDesc, qty, unit, price }];
 }
 
 // ---------------------------------------------------------------------------
@@ -290,62 +347,30 @@ function extractItems(text: string): PonudaItem[] {
 // ---------------------------------------------------------------------------
 
 function extractNotes(text: string): string | undefined {
-  const m =
-    /(?:napomena|biljezka|napomene|biljeska)\s*:\s*(.+?)(?:\n|$)/i.exec(text);
+  const m = /(?:napomena|biljezka|napomene|biljeska)\s*:?\s*(.+?)(?:\n|$)/i.exec(text);
   return m ? m[1].trim() : undefined;
 }
 
 // ---------------------------------------------------------------------------
-// Name extraction (person/company)
+// Name extraction
 // ---------------------------------------------------------------------------
 
-function extractPersonName(text: string): string | undefined {
-  // Look for two-word capitalised combination not matching street or known keywords
-  const skipWords = new Set([
-    "Pro",
-    "Clean",
-    "Zagreb",
-    "Stambena",
-    "Zgrada",
-    "Firma",
-    "Tvrtka",
-    "Savska",
-    "Ilica",
-  ]);
-  // "Ime Prezime" — two consecutive Title Case words
-  const m = /\b([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)\s+([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)\b/.exec(
-    text
-  );
-  if (m && !skipWords.has(m[1]) && !skipWords.has(m[2])) {
-    // Avoid matching street address
-    const combined = m[0];
-    const addrMatch = extractAddress(text);
-    if (!addrMatch || !addrMatch.startsWith(combined)) {
-      return combined;
-    }
-  }
-  return undefined;
+const SKIP_NAMES = new Set([
+  "Pro", "Clean", "Zagreb", "Stambena", "Zgrada", "Firma", "Tvrtka",
+  "Savska", "Ilica", "Garaža", "Stubište", "Prozori", "Ponuda",
+]);
+
+function extractPersonName(text: string, address?: string): string | undefined {
+  const m = /\b([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)\s+([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ]+)\b/.exec(text);
+  if (!m) return undefined;
+  if (SKIP_NAMES.has(m[1]) || SKIP_NAMES.has(m[2])) return undefined;
+  if (address && address.startsWith(m[0])) return undefined;
+  return m[0];
 }
 
 function extractCompanyName(text: string): string | undefined {
-  // Grab text before d.o.o. / d.d. / j.d.o.o.
-  const m = /([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ\s]+?)\s+(?:d\.o\.o\.?|d\.d\.?|j\.d\.o\.o\.?)/i.exec(
-    text
-  );
+  const m = /([A-ZČĆŠŽĐ][a-zA-ZčćšžđĐČĆŠŽ\s]+?)\s+(?:d\.o\.o\.?|d\.d\.?|j\.d\.o\.o\.?)/i.exec(text);
   return m ? m[1].trim() : undefined;
-}
-
-// ---------------------------------------------------------------------------
-// Project name generation
-// ---------------------------------------------------------------------------
-
-function generateProjectName(
-  items: PonudaItem[],
-  address: string | undefined
-): string {
-  const service = items.length > 0 ? items[0].desc : "Čišćenje";
-  if (address) return `${service} — ${address}`;
-  return service;
 }
 
 // ---------------------------------------------------------------------------
@@ -353,23 +378,34 @@ function generateProjectName(
 // ---------------------------------------------------------------------------
 
 export function parsePonuda(text: string): PonudaFill {
-  const clientType = detectClientType(text);
-  const address = extractAddress(text);
+  const clientType = detectClientType(text) ?? "zgrada"; // default to zgrada
+  const rawAddress = extractAddress(text);
+  const address = rawAddress ? normalizeAddress(rawAddress) : undefined;
   const email = extractEmail(text);
   const phone = extractPhone(text);
   const oib = extractOib(text);
-  const items = extractItems(text);
   const notes = extractNotes(text);
-  const projectName = generateProjectName(items, address);
+  const service = detectService(text);
+  const items = service ? buildItems(service, text) : [];
 
-  // Build client object based on type
+  // Project name: "Garaža · Makarska Ulica 76" (street without zip/city)
+  const projectLabel = service?.projectLabel ?? "Čišćenje";
+  const streetShort = address ? addressShort(address) : undefined;
+  const project = streetShort ? `${projectLabel} · ${streetShort}` : projectLabel;
+
+  // Build client
   let client: PonudaClient | undefined;
 
   if (clientType === "zgrada") {
-    const zgrada: PonudaClientZgrada = {};
+    const personName = extractPersonName(text, address);
+    // bldgRecipient: always "Predstavnik suvlasnika — " + name (empty if no name)
+    const bldgRecipient = personName
+      ? `Predstavnik suvlasnika — ${personName}`
+      : "Predstavnik suvlasnika — ";
+    const zgrada: PonudaClientZgrada = { bldgRecipient };
     if (address) zgrada.bldgAddr = address;
     if (email) zgrada.bldgEmail = email;
-    if (Object.keys(zgrada).length > 0) client = zgrada;
+    client = zgrada;
   } else if (clientType === "firma") {
     const firma: PonudaClientFirma = {};
     const name = extractCompanyName(text);
@@ -380,39 +416,22 @@ export function parsePonuda(text: string): PonudaFill {
     if (phone) firma.contact = phone;
     if (Object.keys(firma).length > 0) client = firma;
   } else {
-    // osoba (default when person name found or nothing matches)
     const osoba: PonudaClientOsoba = {};
-    const name = extractPersonName(text);
+    const name = extractPersonName(text, address);
     if (name) osoba.personName = name;
     if (address) osoba.personAddr = address;
     if (phone) osoba.personPhone = phone;
-    if (Object.keys(osoba).length > 0) {
-      client = osoba;
-      // Only set clientType to osoba if we found some person data
-      if (!clientType) {
-        return {
-          clientType: "osoba",
-          client,
-          meta: { project: projectName },
-          items: items.length > 0 ? items : undefined,
-          notes,
-        };
-      }
-    }
+    if (Object.keys(osoba).length > 0) client = osoba;
   }
 
-  const result: PonudaFill = {};
-
-  if (clientType) result.clientType = clientType;
-  else if (client) result.clientType = "osoba";
+  const result: PonudaFill = {
+    clientType,
+    meta: { project },
+  };
 
   if (client) result.client = client;
-
-  const meta: PonudaMeta = {};
-  if (projectName && items.length > 0) meta.project = projectName;
-  if (Object.keys(meta).length > 0) result.meta = meta;
-
   if (items.length > 0) result.items = items;
+  if (service && SERVICE_DESCS[service.key]) result.serviceDesc = SERVICE_DESCS[service.key];
   if (notes) result.notes = notes;
 
   return result;
@@ -425,44 +444,29 @@ export function parsePonuda(text: string): PonudaFill {
 export function summarizeParsed(p: PonudaFill): string {
   const parts: string[] = [];
 
-  // Client type
-  if (p.clientType === "zgrada") {
-    parts.push("**Stambena zgrada**");
-  } else if (p.clientType === "firma") {
-    parts.push("**Firma**");
-  } else if (p.clientType === "osoba") {
-    parts.push("**Osoba**");
-  }
+  if (p.clientType === "zgrada") parts.push("**Stambena zgrada**");
+  else if (p.clientType === "firma") parts.push("**Firma**");
+  else if (p.clientType === "osoba") parts.push("**Osoba**");
 
-  // Address
-  const addr = (() => {
-    if (!p.client) return undefined;
-    const c = p.client as Record<string, string | undefined>;
-    return c["bldgAddr"] ?? c["addr"] ?? c["personAddr"];
-  })();
+  const c = (p.client ?? {}) as Record<string, string | undefined>;
+  const addr = c["bldgAddr"] ?? c["addr"] ?? c["personAddr"];
   if (addr) parts.push(`adresa: ${addr}`);
 
-  // Name / company
-  const name = (() => {
-    if (!p.client) return undefined;
-    const c = p.client as Record<string, string | undefined>;
-    return c["name"] ?? c["personName"];
-  })();
-  if (name) parts.push(`naziv: ${name}`);
+  const recipient = c["bldgRecipient"];
+  if (recipient && recipient !== "Predstavnik suvlasnika — ") parts.push(`kontakt: ${recipient}`);
 
-  // Items
+  if (p.meta?.project) parts.push(`projekt: ${p.meta.project}`);
+
   if (p.items && p.items.length > 0) {
-    const itemStrs = p.items.map((i) => {
-      const priceStr = i.price > 0 ? ` · ${i.price}€` : "";
-      return `${i.desc} ${i.qty}×${priceStr}`;
-    });
-    parts.push(`Usluga: ${itemStrs.join(", ")}`);
+    const s = p.items.map((i) => {
+      const pr = i.price > 0 ? ` · ${i.price}€` : "";
+      return `${i.desc} (${i.qty} ${i.unit})${pr}`;
+    }).join(", ");
+    parts.push(`usluga: ${s}`);
   }
 
-  // Notes
-  if (p.notes) parts.push(`Napomena: ${p.notes}`);
+  if (p.notes) parts.push(`napomena: ${p.notes}`);
 
   if (parts.length === 0) return "Nisam pronašao dovoljno podataka. Pokušaj opisati uslugu i adresu.";
-
   return `Pronašao sam: ${parts.join(" · ")}`;
 }
