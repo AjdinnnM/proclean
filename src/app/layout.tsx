@@ -19,6 +19,15 @@ const display = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: `${site.brand.name} — Premium čišćenje u Zagrebu`,
   description: site.hero.subheading,
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+    shortcut: "/favicon.ico",
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
     title: `${site.brand.name} — Premium čišćenje u Zagrebu`,
     description: site.hero.subheading,
