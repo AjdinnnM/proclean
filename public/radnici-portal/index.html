@@ -1387,25 +1387,11 @@
     function getToken() { return localStorage.getItem(LS_TOKEN) || ''; }
     function setToken(t) { localStorage.setItem(LS_TOKEN, t); }
 
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoiYWpkaW5uIiwiYSI6ImNtb2JvcTQ2ZTAyZXMycHNhM2phZHoxM2kifQ.V_7gxBDn5tQWr9kt5wXSfw';
+
     function initTokenFlow() {
-      const modal = $('#apiKeyModal');
-      const input = $('#apiKeyInput');
-      const save = $('#apiKeySave');
-      const existing = getToken();
-      if (existing && existing.startsWith('pk.')) {
-        bootMap(existing);
-        return;
-      }
-      modal.classList.remove('hidden');
-      input.focus();
-      save.addEventListener('click', () => {
-        const val = input.value.trim();
-        if (!val.startsWith('pk.')) { input.classList.add('ring-2','ring-red-400'); toast('Ključ mora počinjati sa "pk."'); return; }
-        setToken(val);
-        modal.classList.add('hidden');
-        bootMap(val);
-      });
-      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save.click(); });
+      setToken(MAPBOX_TOKEN);
+      bootMap(MAPBOX_TOKEN);
     }
 
     // ============== MAP ==============
