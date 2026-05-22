@@ -438,6 +438,85 @@ export function parsePonuda(text: string): PonudaFill {
 }
 
 // ---------------------------------------------------------------------------
+// Mapbox address enrichment (correct diacritics + proper street name from geocoder)
+// ---------------------------------------------------------------------------
+
+const MAPBOX_TOKEN = "pk.eyJ1IjoiYWpkaW5uIiwiYSI6ImNtb2JvcTQ2ZTAyZXMycHNhM2phZHoxM2kifQ.V_7gxBDn5tQWr9kt5wXSfw";
+
+interface MapboxContext {
+  id: string;
+  text: string;
+}
+
+interface MapboxFeature {
+  text: string;
+  address?: string;
+  context?: MapboxContext[];
+}
+
+interface MapboxResponse {
+  features?: MapboxFeature[];
+}
+
+function getClientAddr(fill: PonudaFill): string | undefined {
+  if (!fill.client) return undefined;
+  const c = fill.client as Record<string, string | undefined>;
+  return c["bldgAddr"] ?? c["addr"] ?? c["personAddr"];
+}
+
+function setClientAddr(fill: PonudaFill, addr: string): void {
+  if (!fill.client) return;
+  const c = fill.client as Record<string, string>;
+  if ("bldgAddr" in c) c["bldgAddr"] = addr;
+  else if ("addr" in c) c["addr"] = addr;
+  else if ("personAddr" in c) c["personAddr"] = addr;
+}
+
+export async function enrichWithMapbox(fill: PonudaFill): Promise<PonudaFill> {
+  const rawAddr = getClientAddr(fill);
+  if (!rawAddr) return fill;
+
+  try {
+    const query = encodeURIComponent(rawAddr + " Zagreb Croatia");
+    const url =
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json` +
+      `?country=HR&proximity=15.9819,45.8150&language=hr&types=address&limit=1` +
+      `&access_token=${MAPBOX_TOKEN}`;
+
+    const res = await fetch(url);
+    if (!res.ok) return fill;
+
+    const data: MapboxResponse = await res.json();
+    const feature = data.features?.[0];
+    if (!feature) return fill;
+
+    const streetName = feature.text ?? "";
+    const houseNum = feature.address ?? "";
+    const postcode =
+      feature.context?.find((c) => c.id.startsWith("postcode"))?.text ?? "10000";
+    const city =
+      feature.context?.find((c) => c.id.startsWith("place"))?.text ?? "Zagreb";
+
+    if (!streetName) return fill;
+
+    const properAddr = `${streetName}${houseNum ? " " + houseNum : ""}, ${postcode} ${city}`;
+    const enriched: PonudaFill = { ...fill, client: { ...fill.client } };
+    setClientAddr(enriched, properAddr);
+
+    // Also update project name with corrected street
+    if (enriched.meta?.project) {
+      const label = enriched.meta.project.split("·")[0].trim();
+      const shortStreet = addressShort(properAddr);
+      enriched.meta = { ...enriched.meta, project: `${label} · ${shortStreet}` };
+    }
+
+    return enriched;
+  } catch {
+    return fill;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Summary helper
 // ---------------------------------------------------------------------------
 

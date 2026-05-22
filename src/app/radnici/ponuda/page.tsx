@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { parsePonuda, summarizeParsed, type PonudaFill } from "@/lib/ponuda-parser";
+import { parsePonuda, enrichWithMapbox, summarizeParsed, type PonudaFill } from "@/lib/ponuda-parser";
 
 const EXAMPLE_CHIPS = [
   "Stubište, Maksimirska 10",
@@ -20,8 +20,9 @@ export default function PonudaPage() {
   const [inputText, setInputText] = useState("");
   const [summary, setSummary] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleFill = useCallback(() => {
+  const handleFill = useCallback(async () => {
     const text = inputText.trim();
     if (!text) {
       setError("Upiši opis posla da bi ispunio ponudu.");
@@ -30,14 +31,15 @@ export default function PonudaPage() {
 
     setError(null);
     setSummary(null);
+    setLoading(true);
 
-    const parsed: PonudaFill = parsePonuda(text);
-    const msg = { type: "FILL_PONUDA", ...parsed };
+    let parsed: PonudaFill = parsePonuda(text);
+    parsed = await enrichWithMapbox(parsed);
 
-    iframeRef.current?.contentWindow?.postMessage(msg, "*");
+    setLoading(false);
 
-    const sum = summarizeParsed(parsed);
-    setSummary(sum);
+    iframeRef.current?.contentWindow?.postMessage({ type: "FILL_PONUDA", ...parsed }, "*");
+    setSummary(summarizeParsed(parsed));
   }, [inputText]);
 
   const handleChip = useCallback((chip: string) => {
@@ -56,7 +58,7 @@ export default function PonudaPage() {
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
-        handleFill();
+        void handleFill();
       }
     },
     [handleFill]
@@ -218,10 +220,16 @@ export default function PonudaPage() {
               {/* Footer with submit button */}
               <div className="px-4 pb-4 pt-2 flex-shrink-0">
                 <button
-                  onClick={handleFill}
-                  className="w-full bg-[#3B82F6] hover:bg-[#2563EB] active:scale-[0.99] text-white font-semibold text-sm py-2.5 rounded-xl transition-all"
+                  onClick={() => void handleFill()}
+                  disabled={loading}
+                  className="w-full bg-[#3B82F6] hover:bg-[#2563EB] active:scale-[0.99] disabled:opacity-60 text-white font-semibold text-sm py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"
                 >
-                  Ispuni ponudu
+                  {loading ? (
+                    <>
+                      <span className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Tražim adresu…
+                    </>
+                  ) : "Ispuni ponudu"}
                 </button>
                 <p className="text-center text-white/30 text-[10px] mt-1.5">
                   Ctrl+Enter za brzo slanje
