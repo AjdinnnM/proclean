@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 const INCLUDES = [
-  "Strojno ribanje poda jednodisčnim strojem ili autostrojem",
+  "Strojno ribanje poda dvodiskim strojem ili autostrojem",
   "Uklanjanje masnih naslaga, ulja i goriva",
   "Čišćenje fugni i spojnica između pločica",
   "Ispiranje i ekstrakcija prljave vode",

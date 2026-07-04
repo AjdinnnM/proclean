@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
+import { PhotoGallery } from "@/components/Lightbox";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
 import { AnimatedChecklist } from "@/components/v3/AnimatedChecklist";
@@ -33,7 +34,7 @@ const jsonLd = {
     name: "Pro Clean",
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
-    address: { "@type": "PostalAddress", streetAddress: "Liganjska 4", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
+    address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
     url: "https://proclean.hr",
     openingHours: "Mo-Sa 08:00-20:00",
   },
@@ -313,6 +314,32 @@ export default function IzgradnjaPage() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── GALERIJA — NAŠ RAD ── */}
+      <section className="bg-white py-16 lg:py-20">
+        <div className="max-w-5xl mx-auto px-5">
+          <Reveal className="text-center mb-10 max-w-xl mx-auto">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-3">Galerija</p>
+            <h2 className="font-semibold text-[#0A0A0A] text-[28px] lg:text-[40px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
+              Naš rad nakon <span className="italic font-normal text-[#3B82F6]">izgradnje.</span>
+            </h2>
+          </Reveal>
+          <Reveal variant="up" delay={100}>
+            <PhotoGallery
+              images={[
+                { src: "/images/photos/izgradnja/IMG_2968.jpg", alt: "Čišćenje nakon izgradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_2973.jpg", alt: "Uklanjanje građevinske prašine — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_2983.jpg", alt: "Završno čišćenje novogradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_2990.jpg", alt: "Pranje podova nakon radova — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_2991.jpg", alt: "Detaljno čišćenje prostora nakon izgradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_3018.jpg", alt: "Čišćenje stakla i površina nakon gradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_3058.jpg", alt: "Priprema prostora za useljenje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/IMG_3060.jpg", alt: "Završno poliranje nakon izgradnje — Pro Clean Zagreb" },
+              ]}
+            />
+          </Reveal>
         </div>
       </section>
 

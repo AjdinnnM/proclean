@@ -12,7 +12,7 @@ const NAV = [
 
 const SERVICES = [
   { title: "Čišćenje stubišta", href: "/usluge/stubiste", image: "/images/services/staircase-real.jpg" },
-  { title: "Čišćenje garaža", href: "/usluge/garaza", image: "/images/photos/garaza/IMG_3342.jpg" },
+  { title: "Čišćenje garaža", href: "/usluge/garaza", image: "/images/services/garaza-karcher.jpg" },
   { title: "Pranje prozora", href: "/usluge/prozori", image: "/images/photos/prozori/IMG_3288.jpg" },
   { title: "Čišćenje nakon izgradnje", href: "/usluge/izgradnja", image: "/images/services/izgradnja-popup.jpg" },
   { title: "Generalno čišćenje", href: "/usluge/poslovni-prostori", image: "/images/photos/cvjecarnica-skrinjaric.jpg" },

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { GarazaShowcaseProvider, BeforeAfterGrid, WorkGallery } from "@/components/GarazaShowcase";
+import { InViewGroup } from "@/components/InViewGroup";
 import { Reveal } from "@/components/Reveal";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
@@ -33,7 +35,7 @@ const jsonLd = {
     name: "Pro Clean",
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
-    address: { "@type": "PostalAddress", streetAddress: "Liganjska 4", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
+    address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
     url: "https://proclean.hr",
     openingHours: "Mo-Sa 08:00-20:00",
   },
@@ -234,6 +236,18 @@ export default function GarazaPage() {
       <InvesticijaCallout />
 
 
+      <GarazaShowcaseProvider
+        images={[
+          "/images/photos/garaza/garaza-prije.jpg",
+          "/images/photos/garaza/garaza-poslije.jpg",
+          "/images/photos/garaza/garaza-prije-2.jpg",
+          "/images/photos/garaza/garaza-poslije-2.jpg",
+          "/images/photos/garaza/garaza-rad-1.jpg",
+          "/images/photos/garaza/garaza-rad-2.jpg",
+          "/images/photos/garaza/garaza-rad-3.jpg",
+          "/images/photos/garaza/garaza-rad-4.jpg",
+        ]}
+      >
       {/* ── PRIJE / POSLIJE ── */}
       <section className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-5">
@@ -245,32 +259,80 @@ export default function GarazaPage() {
             </h2>
           </Reveal>
           <Reveal variant="up" delay={100}>
-            <div className="relative rounded-[20px] overflow-hidden shadow-2xl shadow-black/10 border border-gray-100">
-              <Image src="/images/photos/garaza-prije-poslije.jpg" alt="Garaža prije i poslije čišćenja — Pro Clean Zagreb" width={900} height={1200} className="w-full h-auto" sizes="(min-width:1024px) 900px, 100vw" />
-            </div>
+            <BeforeAfterGrid
+              startIndex={0}
+              pairs={[
+                { before: "/images/photos/garaza/garaza-prije.jpg", after: "/images/photos/garaza/garaza-poslije.jpg" },
+                { before: "/images/photos/garaza/garaza-prije-2.jpg", after: "/images/photos/garaza/garaza-poslije-2.jpg" },
+              ]}
+            />
           </Reveal>
-
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { src: "/images/photos/garaza/IMG_3341.jpg", alt: "Čista garaža nakon strojnog ribanja — Pro Clean Zagreb" },
-              { src: "/images/photos/garaza/IMG_3342.jpg", alt: "Strojno pranje poda garaže — Pro Clean Zagreb" },
-              { src: "/images/photos/garaza/IMG_3469.jpg", alt: "Čišćenje paučine i prašine s cijevi u garaži — Pro Clean Zagreb" },
-            ].map((img, i) => (
-              <Reveal key={img.src} variant="up" delay={150 + i * 80}>
-                <div className="relative aspect-[4/3] rounded-[16px] overflow-hidden shadow-lg border border-gray-100 group">
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(min-width:640px) 33vw, 100vw"
-                  />
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
+
+      {/* ── VIDEO — STROJ U AKCIJI (autoplay) ── */}
+      <section className="relative overflow-hidden py-16 lg:py-20 bg-gradient-to-b from-white via-[#E6EEFF] to-[#FAFAF7]">
+        {/* soft blue glow accents */}
+        <div aria-hidden className="absolute -top-32 -left-24 h-[360px] w-[360px] rounded-full opacity-40 blur-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, #3B82F6 0%, transparent 65%)" }} />
+        <div aria-hidden className="absolute -bottom-32 -right-24 h-[360px] w-[360px] rounded-full opacity-30 blur-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, #60A5FA 0%, transparent 65%)" }} />
+
+        <div className="relative max-w-4xl mx-auto px-5">
+          <Reveal className="text-center mb-10 max-w-xl mx-auto">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-3">Uživo</p>
+            <h2 className="font-semibold text-[#0A0A0A] text-[28px] lg:text-[40px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
+              Stroj na <span className="italic font-normal text-[#3B82F6]">djelu.</span>
+            </h2>
+            <p className="text-[#3F3F3F] text-[15px] mt-3 leading-relaxed">
+              Profesionalno strojno ribanje poda — istovremeno pere, riba i usisava vodu. Bez prskanja, bez nereda.
+            </p>
+          </Reveal>
+          <Reveal variant="up" delay={100}>
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 max-w-2xl mx-auto">
+              {[
+                { src: "/videos/garaza-akcija-1.mp4", poster: "/videos/garaza-akcija-1-poster.jpg" },
+                { src: "/videos/garaza-akcija-2.mp4", poster: "/videos/garaza-akcija-2-poster.jpg" },
+              ].map((v) => (
+                <div key={v.src} className="relative aspect-[9/16] rounded-[14px] sm:rounded-[20px] overflow-hidden shadow-xl shadow-[#3B82F6]/15 ring-1 ring-white/60 bg-black">
+                  <video
+                    className="w-full h-full object-cover"
+                    src={v.src}
+                    poster={v.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  />
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── GALERIJA — NAŠ RAD ── */}
+      <section className="bg-[#FAFAF7] py-16 lg:py-20">
+        <div className="max-w-5xl mx-auto px-5">
+          <Reveal className="text-center mb-10 max-w-xl mx-auto">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-3">Galerija</p>
+            <h2 className="font-semibold text-[#0A0A0A] text-[28px] lg:text-[40px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
+              Naš rad u <span className="italic font-normal text-[#3B82F6]">garažama.</span>
+            </h2>
+          </Reveal>
+          <Reveal variant="up" delay={100}>
+            <WorkGallery
+              startIndex={4}
+              images={[
+                { src: "/images/photos/garaza/garaza-rad-1.jpg", alt: "Kärcher stroj za strojno ribanje poda garaže — Pro Clean Zagreb" },
+                { src: "/images/photos/garaza/garaza-rad-2.jpg", alt: "Strojno pranje poda garaže s pjenom — Pro Clean Zagreb" },
+                { src: "/images/photos/garaza/garaza-rad-3.jpg", alt: "Čišćenje garaže profesionalnim strojem — Pro Clean Zagreb" },
+                { src: "/images/photos/garaza/garaza-rad-4.jpg", alt: "Pod garaže prije i poslije ribanja — Pro Clean Zagreb" },
+              ]}
+            />
+          </Reveal>
+        </div>
+      </section>
+      </GarazaShowcaseProvider>
 
       {/* ── PITATE SE ZAŠTO — 3 razloga, custom SVG ── */}
       <section className="bg-white py-20 lg:py-24">
@@ -286,9 +348,9 @@ export default function GarazaPage() {
           <div className="grid md:grid-cols-3 gap-5">
             {REASONS.map((r, i) => (
               <Reveal key={r.title} delay={i * 100} variant="up">
-                <div className="group relative h-full bg-[#FAFAF7] rounded-[20px] p-7 border border-black/5 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.2)] hover:border-[#BFDBFE] cursor-default">
-                  <div className="relative h-12 w-12 rounded-[14px] bg-[#EFF6FF] flex items-center justify-center mb-5 transition-all duration-500 group-hover:bg-[#3B82F6] group-hover:scale-110 group-hover:rotate-[-6deg]">
-                    <span className="text-[#3B82F6] group-hover:text-white transition-colors duration-500">{r.icon}</span>
+                <InViewGroup className="group relative h-full bg-[#FAFAF7] rounded-[20px] p-7 border border-black/5 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.2)] hover:border-[#BFDBFE] data-[active=true]:-translate-y-1 data-[active=true]:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.2)] data-[active=true]:border-[#BFDBFE] cursor-default">
+                  <div className="relative h-12 w-12 rounded-[14px] bg-[#EFF6FF] flex items-center justify-center mb-5 transition-all duration-500 group-hover:bg-[#3B82F6] group-hover:scale-110 group-hover:rotate-[-6deg] group-data-[active=true]:bg-[#3B82F6] group-data-[active=true]:scale-110 group-data-[active=true]:rotate-[-6deg]">
+                    <span className="text-[#3B82F6] group-hover:text-white group-data-[active=true]:text-white transition-colors duration-500">{r.icon}</span>
                   </div>
                   <h3 className="font-semibold text-[#0A0A0A] text-[18px] mb-2 tracking-tight" style={{ fontFamily: "var(--font-v3-display)" }}>
                     {r.title}
@@ -296,8 +358,8 @@ export default function GarazaPage() {
                   <p className="text-[13px] text-[#6B7280] leading-[1.6]">
                     {r.desc}
                   </p>
-                  <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#3B82F6] group-hover:w-full transition-all duration-500" />
-                </div>
+                  <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#3B82F6] group-hover:w-full group-data-[active=true]:w-full transition-all duration-500" />
+                </InViewGroup>
               </Reveal>
             ))}
           </div>
@@ -331,19 +393,19 @@ export default function GarazaPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
             {RISKS.map((item, i) => (
               <Reveal key={item.title} delay={i * 120} variant="up">
-                <div className="group relative h-full bg-white rounded-[24px] p-7 lg:p-8 border border-black/5 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_24px_50px_-15px_rgba(249,115,22,0.28)] hover:border-[#FED7AA] cursor-default">
+                <InViewGroup className="group relative h-full bg-white rounded-[24px] p-7 lg:p-8 border border-black/5 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_24px_50px_-15px_rgba(249,115,22,0.28)] hover:border-[#FED7AA] data-[active=true]:-translate-y-1.5 data-[active=true]:shadow-[0_24px_50px_-15px_rgba(249,115,22,0.28)] data-[active=true]:border-[#FED7AA] cursor-default">
 
                   {/* Big number top-right */}
                   <span
-                    className="absolute top-6 right-7 text-[16px] tabular-nums text-[#9CA3AF] font-medium opacity-50 group-hover:opacity-100 group-hover:text-[#D97706] transition-all duration-500"
+                    className="absolute top-6 right-7 text-[16px] tabular-nums text-[#9CA3AF] font-medium opacity-50 group-hover:opacity-100 group-hover:text-[#D97706] group-data-[active=true]:opacity-100 group-data-[active=true]:text-[#D97706] transition-all duration-500"
                     style={{ fontFamily: "var(--font-v3-display)" }}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
                   {/* Warning icon container — bigger */}
-                  <div className="relative h-14 w-14 rounded-[16px] bg-[#FEF3C7] flex items-center justify-center mb-5 transition-all duration-500 group-hover:bg-[#D97706] group-hover:scale-110 group-hover:rotate-[-6deg]">
-                    <span className="text-[#D97706] group-hover:text-white transition-colors duration-500">{item.icon}</span>
+                  <div className="relative h-14 w-14 rounded-[16px] bg-[#FEF3C7] flex items-center justify-center mb-5 transition-all duration-500 group-hover:bg-[#D97706] group-hover:scale-110 group-hover:rotate-[-6deg] group-data-[active=true]:bg-[#D97706] group-data-[active=true]:scale-110 group-data-[active=true]:rotate-[-6deg]">
+                    <span className="text-[#D97706] group-hover:text-white group-data-[active=true]:text-white transition-colors duration-500">{item.icon}</span>
                     <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-[#F97316] ring-2 ring-white animate-pulse" />
                   </div>
 
@@ -355,14 +417,14 @@ export default function GarazaPage() {
                   </p>
 
                   {/* Bottom accent — orange */}
-                  <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#D97706] group-hover:w-full transition-all duration-500" />
+                  <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#D97706] group-hover:w-full group-data-[active=true]:w-full transition-all duration-500" />
 
                   {/* Glow on hover */}
                   <span
-                    className="absolute -bottom-14 -right-14 h-36 w-36 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                    className="absolute -bottom-14 -right-14 h-36 w-36 rounded-full opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-700 pointer-events-none"
                     style={{ background: "radial-gradient(circle, rgba(249,115,22,0.16), transparent 70%)" }}
                   />
-                </div>
+                </InViewGroup>
               </Reveal>
             ))}
           </div>

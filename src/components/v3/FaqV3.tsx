@@ -1,5 +1,5 @@
 const FAQ = [
-  { q: "Koliko košta čišćenje?", a: "Cijena ovisi o površini, učestalosti i specifičnim zahtjevima. Za stambene zajednice nudimo besplatno probno čišćenje prije ugovora. Pošalji upit i odgovaramo s konkretnom ponudom unutar 2 sata." },
+  { q: "Koliko košta čišćenje?", a: "Cijena ovisi o površini, učestalosti i specifičnim zahtjevima. Pošalji upit i odgovaramo s konkretnom ponudom unutar 2 sata." },
   { q: "Tko sve može biti klijent?", a: "Stambene zajednice, upravitelji zgrada, tvrtke, hoteli, butici, kao i privatni korisnici. Radimo i jednokratne i kontinuirane angažmane." },
   { q: "Izdajete li R1 račun?", a: "Da, R1 račun za pravna lica izdajemo bez dodatnih troškova. Tako pravne osobe i stambene zajednice imaju potpuno transparentan račun za knjigovodstvo." },
   { q: "Koja sredstva koristite?", a: "100% biorazgradiva, ekološka sredstva — sigurna za stanare, kućne ljubimce i okoliš. Posebne tretmane provodimo profesionalnim koncentratima." },

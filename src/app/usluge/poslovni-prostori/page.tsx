@@ -48,7 +48,7 @@ const jsonLd = {
     name: "Pro Clean",
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
-    address: { "@type": "PostalAddress", streetAddress: "Liganjska 4", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
+    address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
     url: "https://proclean.hr",
     openingHours: "Mo-Sa 08:00-20:00",
   },

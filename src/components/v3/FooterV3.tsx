@@ -55,7 +55,6 @@ export function FooterV3() {
             <ul className="space-y-3 text-[14px]">
               <li><a href="tel:+385994840416" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">099 484 0416</a></li>
               <li><a href="mailto:proclean.hr@outlook.com" className="text-[#0A0A0A] hover:text-[#3B82F6] transition-colors">proclean.hr@outlook.com</a></li>
-              <li className="text-[#3F3F3F]">Liganjska 4, 10000 Zagreb</li>
               <li className="text-[#3F3F3F]">Pon–Sub · 08:00–20:00</li>
             </ul>
           </div>

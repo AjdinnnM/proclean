@@ -99,30 +99,27 @@ export function ImageLightbox({ pairs, extras }: { pairs: Pair[]; extras: Extra[
           even when ancestors have CSS transforms (like Reveal) */}
       {mounted && active && createPortal(
         <div
-          className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center animate-[fadeIn_180ms_ease-out]"
-          style={{ touchAction: "none" }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-5 sm:p-12 backdrop-blur-2xl animate-[laFade_180ms_ease-out]"
+          style={{
+            touchAction: "none",
+            background:
+              "linear-gradient(135deg, rgba(59,130,246,0.32) 0%, rgba(241,245,249,0.58) 50%, rgba(96,165,250,0.30) 100%)",
+          }}
           onClick={close}
         >
-          {/* Image */}
-          <div
-            className="relative w-screen h-screen flex items-center justify-center"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            key={active}
+            src={active}
+            alt="Povećana slika"
             onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              key={active}
-              src={active}
-              alt="Povećana slika"
-              fill
-              className="object-contain animate-[zoomIn_220ms_ease-out]"
-              sizes="100vw"
-              priority
-            />
-          </div>
+            className="relative max-w-full max-h-full w-auto h-auto object-contain rounded-2xl sm:rounded-[28px] ring-1 ring-white/60 shadow-[0_24px_80px_rgba(37,99,235,0.45)] animate-[laZoom_220ms_ease-out]"
+          />
 
           {/* Close */}
           <button
             onClick={close}
-            className="fixed top-4 right-4 h-11 w-11 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center text-xl transition-colors backdrop-blur-sm"
+            className="fixed top-4 right-4 h-11 w-11 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center text-xl transition-colors backdrop-blur-sm"
             aria-label="Zatvori"
           >
             ✕
@@ -131,7 +128,7 @@ export function ImageLightbox({ pairs, extras }: { pairs: Pair[]; extras: Extra[
           {/* Prev */}
           <button
             onClick={(e) => { e.stopPropagation(); prev(); }}
-            className="fixed left-3 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center text-2xl transition-colors backdrop-blur-sm"
+            className="fixed left-3 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center text-2xl transition-colors backdrop-blur-sm"
             aria-label="Prethodna"
           >
             ‹
@@ -140,26 +137,20 @@ export function ImageLightbox({ pairs, extras }: { pairs: Pair[]; extras: Extra[
           {/* Next */}
           <button
             onClick={(e) => { e.stopPropagation(); next(); }}
-            className="fixed right-3 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/15 hover:bg-white/30 text-white flex items-center justify-center text-2xl transition-colors backdrop-blur-sm"
+            className="fixed right-3 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center text-2xl transition-colors backdrop-blur-sm"
             aria-label="Sljedeća"
           >
             ›
           </button>
 
           {/* Counter */}
-          <div className="fixed bottom-5 left-1/2 -translate-x-1/2 text-white/70 text-xs font-medium bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm">
+          <div className="fixed bottom-5 left-1/2 -translate-x-1/2 text-white text-xs font-medium bg-black/45 px-3 py-1.5 rounded-full backdrop-blur-sm">
             {allImages.indexOf(active) + 1} / {allImages.length}
           </div>
 
           <style>{`
-            @keyframes fadeIn {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-            @keyframes zoomIn {
-              from { opacity: 0; transform: scale(0.92); }
-              to { opacity: 1; transform: scale(1); }
-            }
+            @keyframes laFade { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes laZoom { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
           `}</style>
         </div>,
         document.body,

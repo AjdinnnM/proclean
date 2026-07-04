@@ -17,7 +17,7 @@ export const site: SiteContent = {
     phone: "099 484 0416",
     phoneLink: "+385994840416",
     email: "proclean.hr@outlook.com",
-    address: "Liganjska 4, 10000 Zagreb",
+    address: "",
     city: "Zagreb",
     serviceArea: "Zagreb i okolica",
     hours: "Pon – Sub: 08:00 – 20:00",
@@ -63,15 +63,14 @@ export const site: SiteContent = {
         shortDescription:
           "Redovito ili jednokratno čišćenje stubišta — pod, rukohvati, ulazni prostor.",
         longDescription:
-          "Redovito i jednokratno čišćenje stubišta u stambenim zgradama. Prvo čišćenje je uvijek generalno — metemo, skidamo paučinu, peremo pod, stepenice i rukohvate, brišemo vrata, ulazni prostor i poštanske sandučiće. Nudimo i besplatno probno čišćenje za stambene zajednice. Cijena se dogovara prema veličini i učestalosti.",
+          "Redovito i jednokratno čišćenje stubišta u stambenim zgradama. Prvo čišćenje je uvijek generalno — metemo, skidamo paučinu, peremo pod, stepenice i rukohvate, brišemo vrata, ulazni prostor i poštanske sandučiće. Cijena se dogovara prema veličini i učestalosti.",
         priceLabel: "Cijena po dogovoru",
-        badge: "Besplatno probno čišćenje",
+        badge: "Za stambene zajednice",
         image: "/images/services/staircase-real.jpg",
         imagePosition: "center",
         pageUrl: "/usluge/stubiste",
         highlights: [
           "Prvo čišćenje je generalno",
-          "Besplatno probno čišćenje",
           "Pranje podova, stepenica i rukohvata",
           "Tjedni, mjesečni ili jednokratni plan",
         ],
@@ -194,7 +193,7 @@ export const site: SiteContent = {
         number: "02",
         title: "Dogovori termin",
         description:
-          "Kad potvrdiš ponudu, dogovaramo vrijeme izlaska — u pravilu unutar 7 dana. Po potrebi izlazimo na besplatan pregled ili probno čišćenje.",
+          "Kad potvrdiš ponudu, dogovaramo vrijeme izlaska — u pravilu unutar 7 dana. Po potrebi izlazimo na besplatan pregled.",
       },
       {
         number: "03",
@@ -344,7 +343,7 @@ export const site: SiteContent = {
       {
         question: "Koliko košta čišćenje stubišta?",
         answer:
-          "Cijena čišćenja stubišta je po dogovoru — ovisi o broju katova, površini i učestalosti. Prvo čišćenje je uvijek generalno, a za stambene zajednice nudimo besplatno probno čišćenje kako bi se stanari mogli uvjeriti u kvalitetu prije nego što potpišu ugovor.",
+          "Cijena čišćenja stubišta je po dogovoru — ovisi o broju katova, površini i učestalosti. Prvo čišćenje je uvijek generalno kako bi se stanari mogli uvjeriti u kvalitetu.",
       },
       {
         question: "Koliko košta čišćenje garaže?",
@@ -429,7 +428,6 @@ export const site: SiteContent = {
         links: [
           { label: "099 484 0416", href: "tel:+385994840416" },
           { label: "proclean.hr@outlook.com", href: "mailto:proclean.hr@outlook.com" },
-          { label: "Liganjska 4, 10000 Zagreb", href: "#" },
         ],
       },
     ],

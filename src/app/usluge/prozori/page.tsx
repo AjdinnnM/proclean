@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { LightboxProvider, ZoomImage } from "@/components/Lightbox";
 import { Reveal } from "@/components/Reveal";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
@@ -34,7 +35,7 @@ const jsonLd = {
     name: "Pro Clean",
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
-    address: { "@type": "PostalAddress", streetAddress: "Liganjska 4", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
+    address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
     url: "https://proclean.hr",
     openingHours: "Mo-Sa 08:00-20:00",
   },
@@ -264,23 +265,23 @@ export default function ProzoriPage() {
 
                 {/* Right — feature image + small collage */}
                 <div className="relative order-1 lg:order-2 p-5 lg:p-8 bg-[#FAFAF7] flex items-stretch">
-                  <div className="grid grid-cols-3 grid-rows-3 gap-2.5 w-full min-h-[420px] lg:min-h-[560px]">
-                    <div className="relative col-span-2 row-span-2 rounded-[16px] overflow-hidden shadow-md">
-                      <Image src="/images/photos/prozori/IMG_3455.jpg" alt="Pranje prozora na visini — stambena zgrada Zagreb" fill className="object-cover" sizes="(min-width:1024px) 33vw, 60vw" />
+                  <LightboxProvider
+                    images={[
+                      "/images/photos/prozori/IMG_3455.jpg",
+                      "/images/photos/prozori/IMG_3451.jpg",
+                      "/images/photos/prozori/IMG_3452.jpg",
+                      "/images/photos/prozori/IMG_3453.jpg",
+                      "/images/photos/prozori/IMG_3454.jpg",
+                    ]}
+                  >
+                    <div className="grid grid-cols-3 grid-rows-3 gap-2.5 w-full min-h-[420px] lg:min-h-[560px]">
+                      <ZoomImage src="/images/photos/prozori/IMG_3455.jpg" alt="Pranje prozora na visini — stambena zgrada Zagreb" sizes="(min-width:1024px) 33vw, 60vw" className="col-span-2 row-span-2 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/IMG_3451.jpg" alt="Dizalica za pranje prozora" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/IMG_3452.jpg" alt="Radnik na platformi pere prozore" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/IMG_3453.jpg" alt="Pranje fasadnog stakla s dizalicom" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/IMG_3454.jpg" alt="Pranje prozora na visokoj zgradi" sizes="(min-width:1024px) 33vw, 60vw" className="col-span-2 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
                     </div>
-                    <div className="relative col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md">
-                      <Image src="/images/photos/prozori/IMG_3451.jpg" alt="Dizalica za pranje prozora" fill className="object-cover" sizes="(min-width:1024px) 16vw, 30vw" />
-                    </div>
-                    <div className="relative col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md">
-                      <Image src="/images/photos/prozori/IMG_3452.jpg" alt="Radnik na platformi pere prozore" fill className="object-cover" sizes="(min-width:1024px) 16vw, 30vw" />
-                    </div>
-                    <div className="relative col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md">
-                      <Image src="/images/photos/prozori/IMG_3453.jpg" alt="Pranje fasadnog stakla s dizalicom" fill className="object-cover" sizes="(min-width:1024px) 16vw, 30vw" />
-                    </div>
-                    <div className="relative col-span-2 row-span-1 rounded-[16px] overflow-hidden shadow-md">
-                      <Image src="/images/photos/prozori/IMG_3454.jpg" alt="Pranje prozora na visokoj zgradi" fill className="object-cover" sizes="(min-width:1024px) 33vw, 60vw" />
-                    </div>
-                  </div>
+                  </LightboxProvider>
                 </div>
               </div>
             </div>

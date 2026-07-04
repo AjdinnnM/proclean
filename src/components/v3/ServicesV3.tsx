@@ -14,7 +14,7 @@ const SERVICES: { slug: string; title: string; desc: string; image: string; href
     slug: "garaza",
     title: "Čišćenje garaža",
     desc: "Strojno ribanje, metenje, paučina i završno usisavanje.",
-    image: "/images/photos/garaza/IMG_3342.jpg",
+    image: "/images/services/garaza-karcher.jpg",
     href: "/usluge/garaza",
     tags: ["Podzemne i nadzemne", "Vlastita oprema"],
   },

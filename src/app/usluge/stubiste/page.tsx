@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
+import { LightboxProvider, ZoomImage } from "@/components/Lightbox";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
 
 export const metadata: Metadata = {
   title: "Čišćenje stubišta Zagreb — Pro Clean | Redovito i jednokratno",
   description:
-    "Profesionalno čišćenje stubišta u stambenim zgradama Zagreba. Besplatno probno čišćenje za stambene zajednice. Pozovite 099 484 0416.",
+    "Profesionalno čišćenje stubišta u stambenim zgradama Zagreba — redovito ili jednokratno. Pozovite 099 484 0416.",
   keywords: ["čišćenje stubišta Zagreb","čišćenje stepeništa Zagreb","stambena zajednica čišćenje Zagreb","Pro Clean Zagreb"],
   alternates: { canonical: "https://proclean.hr/usluge/stubiste" },
   openGraph: {
     title: "Čišćenje stubišta Zagreb — Pro Clean",
-    description: "Redovito i jednokratno čišćenje stubišta. Besplatno probno čišćenje za stambene zajednice.",
+    description: "Redovito i jednokratno čišćenje stubišta u stambenim zgradama Zagreba.",
     url: "https://proclean.hr/usluge/stubiste",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
@@ -32,7 +33,7 @@ const jsonLd = {
     name: "Pro Clean",
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
-    address: { "@type": "PostalAddress", streetAddress: "Liganjska 4", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
+    address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
     url: "https://proclean.hr",
     openingHours: "Mo-Sa 08:00-20:00",
   },
@@ -47,80 +48,10 @@ const STEPS = [
   { n: "04", title: "Pranje poda i stepenica", desc: "Peremo pod i stepenice profesionalnim sredstvima — bez tragova, bez kemijskog mirisa." },
 ];
 
-const WHY = [
-  { title: "Besplatno probno čišćenje", desc: "Za stambene zajednice — bez obaveza. Stanari vide razliku prije nego potpišu ugovor." },
-  { title: "Ritam po vašoj mjeri", desc: "Tjedni, dvotjedni ili mjesečni plan — prilagođavamo prema vašim potrebama." },
-  { title: "Ekološka sredstva", desc: "Biorazgradiva i atestirana sredstva — sigurna za djecu, ljubimce i biljke." },
-  { title: "Točnost i pouzdanost", desc: "Dolazimo na dogovoreni termin. Nikad nismo propustili dogovoreni dolazak." },
-  { title: "Stanari imaju popust", desc: "Stanari stambenih zajednica s ugovorom ostvaruju popust na sve naše usluge čišćenja." },
-  { title: "Jasna cijena", desc: "Cijena koja je dogovorena je cijena koja se plaća — bez iznenađenja na kraju." },
-];
-
-const SERVICES_GRID = [
-  {
-    title: "Pod i stepenice",
-    desc: "Metenje, pranje i poliranje. Profesionalna sredstva, bez tragova.",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 21h4v-4h4v-4h4v-4h4v-4h4" />
-      </svg>
-    ),
-  },
-  {
-    title: "Paučina & zidovi",
-    desc: "Skidamo paučinu sa zidova, stropova, kutova i okvira.",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19" />
-      </svg>
-    ),
-  },
-  {
-    title: "Rukohvati & ograde",
-    desc: "Brisanje i dezinfekcija na svakom katu zgrade.",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 17l18-10M3 7l18 10" />
-        <circle cx="6" cy="15" r="1.5" /><circle cx="18" cy="9" r="1.5" />
-      </svg>
-    ),
-  },
-  {
-    title: "Vrata i okviri",
-    desc: "Vrata katova, ulazna vrata, šarke i okviri.",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 3h14v18H5z" />
-        <circle cx="15" cy="12" r="0.6" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    title: "Poštanski sandučići",
-    desc: "Brisanje vanjske strane — uvijek čisti i pregledni.",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9h18v10H3z" />
-        <path d="M3 9V6h18v3M8 9V6M16 9V6M7 14h2" />
-      </svg>
-    ),
-  },
-  {
-    title: "Prozorske klupčice",
-    desc: "Klupčice prozora u stubištu — bez prašine i mrlja.",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 5h16v12H4z" />
-        <path d="M12 5v12M4 11h16M2 17h20" />
-      </svg>
-    ),
-  },
-];
 
 const FAQ = [
   { q: "Koliko košta redovito čišćenje stubišta?", a: "Cijena se dogovara prema broju katova, površini i učestalosti. Kontaktirajte nas za besplatnu procjenu — bez obaveza." },
   { q: "Što uključuje generalno prvo čišćenje?", a: "Metemo i peremo pod i stepenice, skidamo paučinu sa zidova i stropova, brišemo rukohvate, vrata, ulazna vrata, poštanske sandučiće i prozorske klupčice." },
-  { q: "Možemo li imati probno čišćenje?", a: "Da — za stambene zajednice nudimo besplatno jednokratno probno čišćenje. Bez ugovora i bez obaveza." },
   { q: "Trebamo li biti prisutni kad dolazite?", a: "Ne. Dovoljan je pristup stubištu. Ekipa dolazi, radi i odlazi bez ometanja stanara." },
   { q: "Imaju li stanari popust?", a: "Da. Stanari stambenih zajednica koje imaju ugovor s Pro Clean ostvaruju popust na sve naše usluge čišćenja." },
   { q: "Radite li subotom?", a: "Da. Radimo ponedjeljak–subota od 08:00 do 20:00. Za hitne termine javite se telefonom." },
@@ -132,12 +63,12 @@ export default function StubistePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* ── HERO ── */}
-      <section className="bg-white pt-14 pb-0 overflow-hidden">
+      <section className="bg-white pt-4 lg:pt-14 pb-16 lg:pb-24 overflow-hidden">
         <div className="max-w-6xl mx-auto px-5">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
             {/* Left — text */}
-            <div className="pb-14 lg:pb-20">
+            <div>
               <div className="flex items-center gap-2 mb-5">
                 <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Pro Clean</Link>
                 <span className="text-gray-300">›</span>
@@ -155,13 +86,13 @@ export default function StubistePage() {
 
               <p className="text-gray-500 text-lg leading-relaxed max-w-lg mb-8">
                 Redovito i jednokratno profesionalno čišćenje stubišta u stambenim
-                zgradama Zagreba. Besplatno probno čišćenje za stambene zajednice.
+                zgradama Zagreba.
               </p>
 
               <ul className="space-y-3 mb-9">
                 {[
-                  "Besplatno probno čišćenje — bez ugovora",
-                  "Generalno prvo čišćenje uključeno",
+                  "Temeljito generalno prvo čišćenje",
+                  "Redovito ili jednokratno — po dogovoru",
                   "Stanari imaju popust na usluge čišćenja",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-gray-700 text-sm font-semibold">
@@ -179,58 +110,53 @@ export default function StubistePage() {
                   📞 Nazovi nas
                 </a>
               </div>
-            </div>
 
-            {/* Right — lobby photo */}
-            <div className="relative lg:self-stretch flex items-end justify-center lg:justify-end">
-              <div className="relative w-full max-w-lg lg:max-w-none h-[380px] lg:h-full lg:min-h-[540px] rounded-[20px] overflow-hidden shadow-2xl shadow-black/10">
-                <Image
-                  src="/images/photos/stubiste-lobby.jpg"
-                  alt="Čist luksuzni ulaz — Pro Clean Zagreb"
-                  fill priority
-                  className="object-cover"
-                  style={{ objectPosition: "center 30%" }}
-                  sizes="(min-width:1024px) 50vw, 100vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 via-transparent to-transparent" />
-                {/* Floating badges */}
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-3 w-[calc(100%-40px)]">
-                  <div className="bg-white rounded-[16px] px-4 py-3 shadow-xl flex items-center gap-3 flex-1">
-                    <div className="text-xl font-extrabold text-[#3B82F6] leading-none">100+</div>
-                    <div className="text-[11px] text-gray-500 font-medium leading-tight">stambenih<br /><span className="text-gray-400">zgrada</span></div>
-                  </div>
-                  <div className="bg-white rounded-[16px] px-4 py-3 shadow-xl flex items-center gap-3 flex-1">
-                    <div className="text-xl font-extrabold text-[#3B82F6] leading-none">5000+</div>
-                    <div className="text-[11px] text-gray-500 font-medium leading-tight">stanara u<br /><span className="text-gray-400">skrbi</span></div>
-                  </div>
+              {/* Inline stats */}
+              <div className="flex gap-10 mt-10 pt-8 border-t border-gray-100">
+                <div>
+                  <div className="text-[30px] font-semibold text-[#0A0A0A] leading-none" style={{ fontFamily: "var(--font-v3-display)" }}>100+</div>
+                  <div className="text-xs text-gray-500 mt-2">stambenih zgrada</div>
+                </div>
+                <div className="border-l border-gray-100 pl-10">
+                  <div className="text-[30px] font-semibold text-[#0A0A0A] leading-none" style={{ fontFamily: "var(--font-v3-display)" }}>5000+</div>
+                  <div className="text-xs text-gray-500 mt-2">stanara u skrbi</div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── PHOTO STRIP ── */}
-      <section className="bg-[#FAFAF7] py-10">
-        <div className="max-w-5xl mx-auto px-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { src: "/images/photos/stubiste/IMG_3457.jpg", alt: "Čist moderni ulaz stambene zgrade — Pro Clean Zagreb" },
-              { src: "/images/photos/stubiste-ulaz-1.jpg", alt: "Stubište nakon čišćenja — Pro Clean Zagreb" },
-              { src: "/images/services/staircase-real.jpg", alt: "Stubište stambene zgrade — Pro Clean Zagreb" },
-            ].map((img, i) => (
-              <Reveal key={img.src} variant="up" delay={i * 80}>
-                <div className="relative aspect-[4/3] rounded-[16px] overflow-hidden shadow-lg border border-gray-100 group">
+            {/* Right — image collage */}
+            <Reveal variant="up" className="relative lg:self-stretch">
+              <div className="grid gap-3 lg:gap-4 h-full">
+                <div className="relative aspect-[16/10] lg:aspect-auto lg:flex-1 lg:min-h-[360px] rounded-[20px] overflow-hidden shadow-2xl shadow-black/10">
                   <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(min-width:640px) 33vw, 100vw"
+                    src="/images/photos/stubiste-lobby.jpg"
+                    alt="Čist luksuzni ulaz — Pro Clean Zagreb"
+                    fill priority
+                    className="object-cover"
+                    style={{ objectPosition: "center 30%" }}
+                    sizes="(min-width:1024px) 50vw, 100vw"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/25 via-transparent to-transparent" />
                 </div>
-              </Reveal>
-            ))}
+                <div className="grid grid-cols-3 gap-3 lg:gap-4">
+                  {[
+                    { src: "/images/photos/stubiste/IMG_3457.jpg", alt: "Čist moderni ulaz stambene zgrade — Pro Clean Zagreb" },
+                    { src: "/images/photos/stubiste-ulaz-1.jpg", alt: "Stubište nakon čišćenja — Pro Clean Zagreb" },
+                    { src: "/images/services/staircase-real.jpg", alt: "Stubište stambene zgrade — Pro Clean Zagreb" },
+                  ].map((img) => (
+                    <div key={img.src} className="relative aspect-[4/3] rounded-[14px] overflow-hidden shadow-lg border border-gray-100 group">
+                      <Image
+                        src={img.src}
+                        alt={img.alt}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(min-width:1024px) 16vw, 30vw"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -304,16 +230,17 @@ export default function StubistePage() {
 
             {/* Right — strojevi u akciji */}
             <Reveal variant="up" delay={200} className="relative">
+              <LightboxProvider
+                images={[
+                  "/images/photos/stubiste/IMG_3459.jpg",
+                  "/images/photos/stubiste/IMG_3458.jpg",
+                  "/images/photos/stubiste/IMG_3470.jpg",
+                ]}
+              >
               <div className="relative w-full h-[360px] lg:h-[480px] rounded-[24px] overflow-hidden shadow-2xl shadow-black/10 group grid grid-cols-2 grid-rows-2 gap-2 bg-white p-2">
-                <div className="relative col-span-1 row-span-2 rounded-[18px] overflow-hidden">
-                  <Image src="/images/photos/stubiste/IMG_3459.jpg" alt="Strojno čišćenje ulaza stambene zgrade — Pro Clean Zagreb" fill className="object-cover" sizes="(min-width:1024px) 25vw, 50vw" />
-                </div>
-                <div className="relative col-span-1 row-span-1 rounded-[18px] overflow-hidden">
-                  <Image src="/images/photos/stubiste/IMG_3458.jpg" alt="Strojno pranje pločica u stubištu — Pro Clean" fill className="object-cover" sizes="(min-width:1024px) 25vw, 50vw" />
-                </div>
-                <div className="relative col-span-1 row-span-1 rounded-[18px] overflow-hidden">
-                  <Image src="/images/photos/stubiste/IMG_3470.jpg" alt="Stroj za ribanje poda u lobby-u stambene zgrade — Pro Clean" fill className="object-cover" sizes="(min-width:1024px) 25vw, 50vw" />
-                </div>
+                <ZoomImage src="/images/photos/stubiste/IMG_3459.jpg" alt="Strojno čišćenje ulaza stambene zgrade — Pro Clean Zagreb" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-2 rounded-[18px] overflow-hidden" />
+                <ZoomImage src="/images/photos/stubiste/IMG_3458.jpg" alt="Strojno pranje pločica u stubištu — Pro Clean" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-1 rounded-[18px] overflow-hidden" />
+                <ZoomImage src="/images/photos/stubiste/IMG_3470.jpg" alt="Stroj za ribanje poda u lobby-u stambene zgrade — Pro Clean" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-1 rounded-[18px] overflow-hidden" />
 
                 {/* Periodic shine */}
                 <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -328,8 +255,58 @@ export default function StubistePage() {
                 </div>
                 <style>{`@keyframes stub-machine-shine { 0%, 70% { transform: skewX(-12deg) translateX(-200%); opacity: 0 } 78% { opacity: 1 } 92% { opacity: 1 } 100% { transform: skewX(-12deg) translateX(700%); opacity: 0 } }`}</style>
               </div>
+              </LightboxProvider>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ── STROJNA GENERALKA — prije/poslije + video ── */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FAFAF7] via-[#EAF1FF] to-[#FAFAF7] py-16 lg:py-20">
+        <div aria-hidden className="absolute -top-28 -left-24 h-[340px] w-[340px] rounded-full opacity-30 blur-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, #3B82F6 0%, transparent 65%)" }} />
+        <div className="relative max-w-5xl mx-auto px-5">
+          <Reveal className="text-center mb-10 max-w-2xl mx-auto">
+            <p className="text-xs font-bold text-[#3B82F6] uppercase tracking-widest mb-3">Strojna generalka</p>
+            <h2 className="font-extrabold text-[#0A0A0A] text-3xl md:text-4xl tracking-tight mb-4" style={{ fontFamily: "var(--font-v3-display)" }}>
+              Zašto prvo čišćenje radimo strojem
+            </h2>
+            <p className="text-gray-500 text-base leading-relaxed">
+              Većina firmi godinama pere istom, prljavom vodom — a ta se prljavština uvlači u pločice i fuge, tamni ih i s vremenom kvari izgled poda. Naš dvodiskni stroj izvlači nakupljene naslage iz pora i vraća pod u prvobitno stanje. Zato za prvo čišćenje uvijek preporučujemo{" "}
+              <strong className="text-[#0A0A0A]">strojnu generalku</strong>.
+            </p>
+          </Reveal>
+
+          {/* Before / after — clickable */}
+          <Reveal variant="up" delay={100}>
+            <LightboxProvider
+              images={[
+                "/images/photos/stubiste/strojno-stubiste-prije.jpg",
+                "/images/photos/stubiste/strojno-stubiste-poslije.jpg",
+              ]}
+            >
+              <div className="relative flex aspect-[3/2] rounded-[20px] sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-white/60 max-w-3xl mx-auto">
+                <ZoomImage src="/images/photos/stubiste/strojno-stubiste-prije.jpg" alt="Stubište prije strojne generalke — Pro Clean Zagreb" sizes="(min-width:768px) 384px, 50vw" className="flex-1" />
+                <ZoomImage src="/images/photos/stubiste/strojno-stubiste-poslije.jpg" alt="Stubište poslije strojne generalke — Pro Clean Zagreb" sizes="(min-width:768px) 384px, 50vw" className="flex-1" />
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 text-white text-[10px] sm:text-xs font-semibold uppercase tracking-wider backdrop-blur-sm pointer-events-none z-20">Prije</span>
+                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#3B82F6] text-white text-[10px] sm:text-xs font-semibold uppercase tracking-wider backdrop-blur-sm pointer-events-none z-20">Poslije</span>
+                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-white shadow-[0_0_8px_rgba(0,0,0,0.25)] z-10 pointer-events-none" />
+              </div>
+            </LightboxProvider>
+          </Reveal>
+
+          {/* Videos — autoplay (stroj na djelu) */}
+          <Reveal variant="up" delay={150}>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto mt-4">
+              {[
+                { src: "/videos/strojno-akcija-1.mp4", poster: "/videos/strojno-akcija-1-poster.jpg" },
+                { src: "/videos/strojno-akcija-2.mp4", poster: "/videos/strojno-akcija-2-poster.jpg" },
+              ].map((v) => (
+                <div key={v.src} className="relative aspect-[9/16] rounded-[16px] sm:rounded-2xl overflow-hidden shadow-xl shadow-[#3B82F6]/15 ring-1 ring-white/60 bg-black">
+                  <video className="w-full h-full object-cover" src={v.src} poster={v.poster} autoPlay muted loop playsInline preload="metadata" />
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -363,121 +340,81 @@ export default function StubistePage() {
         </div>
       </section>
 
-      {/* ── ŠTO RADIMO ── */}
+      {/* ── PROBLEM vs PRO CLEAN — usporedba ── */}
       <section className="bg-[#FAFAF7] py-20 lg:py-28 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-5">
-
-          {/* Header — centered, smaller, like home page */}
-          <Reveal className="text-center max-w-2xl mx-auto mb-14 lg:mb-16">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-4">Što radimo</p>
+        <div className="max-w-5xl mx-auto px-5">
+          <Reveal className="text-center max-w-2xl mx-auto mb-12 lg:mb-14">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-4">Razlika koja se vidi</p>
             <h2 className="font-semibold text-[#0A0A0A] text-[32px] lg:text-[44px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
-              Svaki kutak —<br />
-              <span className="italic font-normal text-[#3B82F6]">bez iznimke.</span>
+              Jeftino čišćenje<br />
+              <span className="italic font-normal text-[#3B82F6]">skupo košta.</span>
             </h2>
             <p className="mt-5 text-[15px] text-[#3F3F3F] leading-[1.6]">
-              Generalno prvo čišćenje za svakog novog klijenta. Bez preskakanja detalja.
+              Čistoća zajedničkih prostora prvi je dojam koji stanari i posjetitelji imaju o vašoj zgradi. Mi nismo samo još jedna ekipa s kantom — partner smo kojem je stalo do izgleda i vrijednosti vašeg objekta.
             </p>
           </Reveal>
 
-          {/* Bento grid: featured image card + 6 service tiles */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-            {/* Featured image card — spans 2 cols on lg, full row on sm */}
-            <Reveal variant="up" className="sm:col-span-2 lg:row-span-2 relative rounded-[20px] overflow-hidden min-h-[280px] sm:min-h-[340px] lg:min-h-0 group cursor-default">
-              <Image
-                src="/images/photos/stubiste-lobby.jpg"
-                alt="Čist elegantni ulaz stambene zgrade"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                style={{ objectPosition: "center 25%" }}
-                sizes="(min-width:1024px) 33vw, 100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/85 via-[#0A0A0A]/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-7">
-                <div className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur text-[#3B82F6] text-[10px] font-bold uppercase tracking-[0.14em] px-2.5 py-1 rounded-full mb-3">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#3B82F6] animate-pulse" />
-                  Generalno čišćenje
+          <div className="grid md:grid-cols-2 gap-4 lg:gap-5 items-stretch">
+            {/* Obična usluga */}
+            <Reveal variant="up">
+              <div className="group h-full rounded-[24px] bg-white border border-black/5 p-7 lg:p-8 transition-all duration-500 hover:border-[#FECACA] hover:shadow-[0_18px_40px_-18px_rgba(239,68,68,0.18)]">
+                <div className="inline-flex items-center gap-2 text-[#9CA3AF] text-[11px] font-bold uppercase tracking-[0.16em] mb-6">
+                  <span className="h-2 w-2 rounded-full bg-[#D1D5DB] group-hover:bg-[#EF4444] transition-colors duration-500" /> Obična usluga
                 </div>
-                <h3 className="font-semibold text-white text-[22px] lg:text-[26px] leading-tight" style={{ fontFamily: "var(--font-v3-display)" }}>
-                  Od zadnjeg kata do<br /><span className="italic font-normal">prizemlja.</span>
-                </h3>
-                <p className="mt-2 text-white/75 text-[13px] leading-relaxed max-w-[280px]">
-                  Svako stubište počinjemo temeljitim generalnim — onda održavamo.
-                </p>
+                <ul className="space-y-4">
+                  {[
+                    "Pere istom, prljavom vodom — prljavština se uvlači u pločice i pod s godinama tamni.",
+                    "Preskače detalje — rukohvati, sandučići, kutovi i uglovi ostaju zaboravljeni.",
+                    "Nepouzdani dolasci i otkazivanja — stanari zovu, žale se, a vama troše vrijeme.",
+                    "Radi površno, samo da prođe — zgrada nikad ne ostavlja dobar prvi dojam.",
+                  ].map((t) => (
+                    <li key={t} className="flex items-start gap-3 text-[14px] text-[#6B7280] leading-[1.5] transition-all duration-300 hover:translate-x-1 hover:text-[#9CA3AF] hover:line-through decoration-[#EF4444]/50 decoration-2">
+                      <span className="mt-0.5 h-5 w-5 rounded-full bg-[#F3F4F6] text-[#9CA3AF] flex items-center justify-center text-xs font-bold shrink-0 transition-colors duration-300 group-hover:bg-[#FEE2E2] group-hover:text-[#EF4444] no-underline">✕</span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </Reveal>
 
-            {/* Service tiles */}
-            {SERVICES_GRID.map((item, i) => (
-              <Reveal key={item.title} delay={120 + i * 70} variant="up">
-                <div className="group relative h-full bg-white rounded-[20px] p-5 lg:p-6 border border-black/5 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.22)] hover:border-[#BFDBFE] cursor-default">
-
-                  {/* Number top-right */}
-                  <span className="absolute top-5 right-5 text-[11px] tabular-nums text-[#9CA3AF] font-medium opacity-60 group-hover:opacity-100 transition-opacity duration-500" style={{ fontFamily: "var(--font-v3-display)" }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-
-                  {/* Icon */}
-                  <div className="relative h-11 w-11 rounded-[14px] bg-[#EFF6FF] flex items-center justify-center mb-4 transition-all duration-500 group-hover:bg-[#3B82F6] group-hover:scale-110 group-hover:rotate-[-6deg]">
-                    <span className="text-[#3B82F6] group-hover:text-white transition-colors duration-500">
-                      {item.icon}
-                    </span>
-                  </div>
-
-                  <h3 className="font-semibold text-[#0A0A0A] text-[16px] lg:text-[17px] mb-1.5 tracking-tight" style={{ fontFamily: "var(--font-v3-display)" }}>
-                    {item.title}
-                  </h3>
-                  <p className="text-[13px] text-[#6B7280] leading-[1.55]">
-                    {item.desc}
-                  </p>
-
-                  {/* Bottom accent line — slides in on hover */}
-                  <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#3B82F6] group-hover:w-full transition-all duration-500" />
-
-                  {/* Glow background on hover */}
-                  <span
-                    className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-                    style={{ background: "radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%)" }}
-                  />
+            {/* Pro Clean */}
+            <Reveal variant="up" delay={120}>
+              <div className="group h-full rounded-[24px] bg-[#0A0A0A] text-white p-7 lg:p-8 shadow-2xl shadow-[#3B82F6]/20 ring-1 ring-[#3B82F6]/30 relative overflow-hidden transition-transform duration-500 hover:-translate-y-1">
+                {/* pulsing glow */}
+                <div aria-hidden className="absolute -top-16 -right-16 h-44 w-44 rounded-full blur-[80px] pointer-events-none" style={{ background: "radial-gradient(circle,#3B82F6,transparent 70%)", animation: "pc-glow 4s ease-in-out infinite" }} />
+                {/* shine sweep */}
+                <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden rounded-[24px]">
+                  <div className="absolute -inset-y-8 w-1/3" style={{ background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%)", transform: "skewX(-12deg)", animation: "pc-shine 5.5s ease-in-out 1s infinite" }} />
                 </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── WHY PRO CLEAN ── */}
-      <section className="border-y border-black/5 bg-white py-16 lg:py-24">
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-          <Reveal className="mb-12 lg:mb-16 max-w-2xl">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-4">Zašto Pro Clean</p>
-            <h2 className="font-semibold text-[#0A0A0A] text-[32px] lg:text-[44px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
-              Razlog zašto nam<br />
-              <span className="italic font-normal text-[#3B82F6]">stanari vjeruju.</span>
-            </h2>
-          </Reveal>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
-            {WHY.map((w, i) => (
-              <div key={w.title} className="relative">
-                <p
-                  className="text-[12px] text-[#3B82F6] tabular-nums mb-3 font-medium"
-                  style={{ fontFamily: "var(--font-v3-display)" }}
-                >
-                  0{i + 1}
-                </p>
-                <h3
-                  className="text-[18px] lg:text-[20px] text-[#0A0A0A] font-semibold mb-2 tracking-tight"
-                  style={{ fontFamily: "var(--font-v3-display)" }}
-                >
-                  {w.title}
-                </h3>
-                <p className="text-[13px] lg:text-[14px] text-[#3F3F3F] leading-[1.55]">
-                  {w.desc}
-                </p>
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 text-[#93C5FD] text-[11px] font-bold uppercase tracking-[0.16em] mb-6">
+                    <span className="h-2 w-2 rounded-full bg-[#3B82F6] animate-pulse" /> Pro Clean
+                  </div>
+                  <ul className="space-y-4">
+                    {[
+                      "Strojna generalka — izvlačimo nakupljenu prljavštinu iz pora i vraćamo pod u prvobitno stanje.",
+                      "Svaki detalj — pod, stepenice, rukohvati, vrata, sandučići i kutovi. Bez preskakanja.",
+                      "Točnost i pouzdanost — dolazimo na vrijeme i sve rješavamo sami, bez poziva stanara.",
+                      "Dugoročno održavanje — zgrada koja uvijek ostavlja dojam i čuva svoju vrijednost.",
+                    ].map((t) => (
+                      <li key={t} className="flex items-start gap-3 text-[14px] text-white/85 leading-[1.5] transition-transform duration-300 hover:translate-x-1">
+                        <span className="mt-0.5 h-5 w-5 rounded-full bg-[#3B82F6] text-white flex items-center justify-center text-xs font-bold shrink-0 transition-transform duration-300 group-hover:scale-110">✓</span>
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <style>{`@keyframes pc-glow{0%,100%{opacity:.28}50%{opacity:.55}}@keyframes pc-shine{0%,72%{transform:skewX(-12deg) translateX(-260%);opacity:0}80%{opacity:1}94%{opacity:1}100%{transform:skewX(-12deg) translateX(720%);opacity:0}}`}</style>
               </div>
-            ))}
+            </Reveal>
           </div>
+
+          <Reveal variant="up" delay={150}>
+            <p className="mt-10 text-center text-[15px] text-[#3F3F3F] leading-[1.6] max-w-xl mx-auto">
+              Naš cilj nije samo očistiti prostor, nego ga{" "}
+              <strong className="text-[#0A0A0A]">dugoročno održavati urednim, sigurnim i ugodnim za život.</strong>
+            </p>
+          </Reveal>
         </div>
       </section>
 
