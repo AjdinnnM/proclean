@@ -120,7 +120,7 @@ export const site: SiteContent = {
           "Profesionalno pranje prozora, izloga i staklenih fasada. Cijena uključuje obje strane (iznutra i izvana). Radimo i pranje na visini te na teško dostupnim mjestima uz profesionalnu opremu i dizalice.",
         priceLabel: "Cijena po dogovoru",
         badge: "Iznutra i izvana",
-        image: "/images/photos/prozori/IMG_3288.jpg",
+        image: "/images/photos/prozori/pranje-prozora-stambena-zgrada.jpg",
         pageUrl: "/usluge/prozori",
         highlights: [
           "Obje strane stakla — iznutra i izvana",
@@ -329,7 +329,7 @@ export const site: SiteContent = {
         name: "Stambena zgrada — pranje prozora",
         service: "Pranje prozora",
         location: "Maksimir, Zagreb",
-        image: "/images/photos/prozori/IMG_3153.jpg",
+        image: "/images/photos/prozori/pranje-prozora-profesionalno-zagreb.jpg",
         description: "Pranje prozora na svim katovima — iznutra i izvana, uključujući okvire i klupčice.",
       },
     ],

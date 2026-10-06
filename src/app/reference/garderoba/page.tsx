@@ -7,15 +7,15 @@ export const metadata: Metadata = {
   title: "Garderoba Store — Čišćenje nakon renovacije coffee shopa | Pro Clean",
   description:
     "Pro Clean angažiran za grubo čišćenje i završnu pripremu prostora coffee shopa Garderoba Store u Zagrebu nakon renovacije. Izvođač adaptacije: Creato adaptacije i dizajn.",
-  alternates: { canonical: "https://proclean.hr/reference/garderoba" },
+  alternates: { canonical: "https://www.procleanzg.com/reference/garderoba" },
   openGraph: {
     title: "Garderoba Store — Čišćenje nakon renovacije | Pro Clean Zagreb",
     description: "Završno čišćenje coffee shopa Garderoba Store nakon adaptacije — stolarija, stakla, sanitarni čvorovi. Izvođač: Creato.",
-    url: "https://proclean.hr/reference/garderoba",
+    url: "https://www.procleanzg.com/reference/garderoba",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/photos/izgradnja/IMG_2991.jpg", width: 1200, height: 630, alt: "Garderoba Store coffee shop — Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/photos/izgradnja/ciscenje-nakon-izgradnje-poslije.jpg", width: 1200, height: 630, alt: "Garderoba Store coffee shop — Pro Clean Zagreb" }],
   },
 };
 
@@ -24,15 +24,15 @@ const jsonLd = {
   "@type": "Article",
   headline: "Garderoba Store — Čišćenje nakon renovacije coffee shopa",
   description: "Pro Clean angažiran za grubo čišćenje i završnu pripremu prostora coffee shopa Garderoba Store u Zagrebu nakon adaptacije.",
-  author: { "@type": "Organization", name: "Pro Clean", url: "https://proclean.hr" },
-  image: "https://proclean.hr/images/photos/izgradnja/IMG_2991.jpg",
+  author: { "@type": "Organization", name: "Pro Clean", url: "https://www.procleanzg.com" },
+  image: "https://www.procleanzg.com/images/photos/izgradnja/ciscenje-nakon-izgradnje-poslije.jpg",
 };
 
 const PAIRS = [
-  { before: "/images/photos/izgradnja/IMG_2990.jpg", after: "/images/photos/izgradnja/IMG_2991.jpg", label: "Glavni prostor" },
-  { before: "/images/photos/izgradnja/IMG_3018.jpg", after: "/images/photos/izgradnja/IMG_3044.jpg", label: "Detalj interijera" },
-  { before: "/images/photos/izgradnja/IMG_2968.jpg", after: "/images/photos/izgradnja/IMG_3040.jpg", label: "WC školjka" },
-  { before: "/images/photos/izgradnja/IMG_2973.jpg", after: "/images/photos/izgradnja/IMG_3058.jpg", label: "Kupaonica" },
+  { before: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-prije.jpg", after: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-poslije.jpg", label: "Glavni prostor" },
+  { before: "/images/photos/izgradnja/ciscenje-novogradnje-prije.jpg", after: "/images/photos/izgradnja/ciscenje-novogradnje-poslije.jpg", label: "Detalj interijera" },
+  { before: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-zagreb-1.jpg", after: "/images/photos/izgradnja/ciscenje-sanitarija-nakon-radova.jpg", label: "WC školjka" },
+  { before: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-zagreb-2.jpg", after: "/images/photos/izgradnja/ciscenje-gradjevinske-prasine-zagreb.jpg", label: "Kupaonica" },
 ];
 
 export default function GarzedobaReferencePage() {
@@ -56,7 +56,7 @@ export default function GarzedobaReferencePage() {
       {/* ── HERO ── */}
       <section className="relative w-full overflow-hidden" style={{ aspectRatio: "21/8", minHeight: "220px" }}>
         <Image
-          src="/images/photos/izgradnja/IMG_2991.jpg"
+          src="/images/photos/izgradnja/ciscenje-nakon-izgradnje-poslije.jpg"
           alt="Garderoba Store coffee shop — Pro Clean Zagreb"
           fill priority
           className="object-cover"
@@ -145,9 +145,9 @@ export default function GarzedobaReferencePage() {
           <ImageLightbox
             pairs={PAIRS}
             extras={[
-              "/images/photos/izgradnja/IMG_2983.jpg",
-              "/images/photos/izgradnja/IMG_3036.jpg",
-              "/images/photos/izgradnja/IMG_3060.jpg",
+              "/images/photos/izgradnja/ciscenje-nakon-renovacije-zagreb.jpg",
+              "/images/photos/izgradnja/ciscenje-nakon-adaptacije-sank.jpg",
+              "/images/photos/izgradnja/ciscenje-stana-nakon-izgradnje.jpg",
             ]}
           />
         </div>

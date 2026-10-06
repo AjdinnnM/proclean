@@ -4,6 +4,7 @@ import { TrustV3 } from "@/components/v3/TrustV3";
 import { ServicesV3 } from "@/components/v3/ServicesV3";
 import { StoryV3 } from "@/components/v3/StoryV3";
 import { PartnersV3 } from "@/components/v3/PartnersV3";
+import { FeaturedProjects } from "@/components/v3/FeaturedProjects";
 import { TestimonialsV3 } from "@/components/v3/TestimonialsV3";
 import { FaqV3 } from "@/components/v3/FaqV3";
 import { ContactV3 } from "@/components/v3/ContactV3";
@@ -20,6 +21,7 @@ export default function Home() {
         <ServicesV3 />
         <StoryV3 />
         <PartnersV3 />
+        <FeaturedProjects />
         <TestimonialsV3 />
         <FaqV3 />
         <ContactV3 />

@@ -7,21 +7,22 @@ import { Reveal } from "@/components/Reveal";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
 import { InvesticijaCallout } from "@/components/v3/InvesticijaCallout";
+import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const metadata: Metadata = {
   title: "Čišćenje garaža Zagreb — Pro Clean | Strojno ribanje i metenje",
   description:
     "Profesionalno čišćenje garaža u Zagrebu — metenje, uklanjanje paučine, strojno ribanje i završno usisavanje. Popust za veće površine. Pozovite 099 484 0416.",
   keywords: ["čišćenje garaža Zagreb","pranje garaže Zagreb","čišćenje podzemne garaže","strojno ribanje garaže","Pro Clean garaža Zagreb"],
-  alternates: { canonical: "https://proclean.hr/usluge/garaza" },
+  alternates: { canonical: "https://www.procleanzg.com/usluge/garaza" },
   openGraph: {
     title: "Čišćenje garaža Zagreb — Pro Clean",
     description: "Strojno ribanje i temeljito čišćenje garaža u Zagrebu. Cijena po dogovoru.",
-    url: "https://proclean.hr/usluge/garaza",
+    url: "https://www.procleanzg.com/usluge/garaza",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/photos/img-2381.jpg", width: 1200, height: 630, alt: "Čišćenje garaže Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/photos/img-2381.jpg", width: 1200, height: 630, alt: "Čišćenje garaže Pro Clean Zagreb" }],
   },
 };
 
@@ -36,7 +37,7 @@ const jsonLd = {
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
     address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
-    url: "https://proclean.hr",
+    url: "https://www.procleanzg.com",
     openingHours: "Mo-Sa 08:00-20:00",
   },
   areaServed: { "@type": "City", name: "Zagreb" },
@@ -124,15 +125,15 @@ const FAQ = [
 const RELATED = [
   {
     href: "/usluge/stubiste", title: "Čišćenje stubišta", sub: "Redovito i jednokratno",
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h4v-4h4v-4h4v-4h4v-4h4" /></svg>,
+    icon: <ServiceIcon slug="stubiste" />,
   },
   {
     href: "/usluge/izgradnja", title: "Čišćenje nakon izgradnje", sub: "Spremno za useljenje",
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18" /><path d="M5 21V7l8-4 8 4v14" /><path d="M9 9h1M9 13h1M14 9h1M14 13h1" /></svg>,
+    icon: <ServiceIcon slug="izgradnja" />,
   },
   {
     href: "/usluge/prozori", title: "Pranje prozora", sub: "Obje strane · na visini",
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="1" /><path d="M3 12h18M12 3v18" /></svg>,
+    icon: <ServiceIcon slug="prozori" />,
   },
 ];
 
@@ -242,6 +243,10 @@ export default function GarazaPage() {
           "/images/photos/garaza/garaza-poslije.jpg",
           "/images/photos/garaza/garaza-prije-2.jpg",
           "/images/photos/garaza/garaza-poslije-2.jpg",
+          "/images/photos/garaza/garaza-prije-3.jpg",
+          "/images/photos/garaza/garaza-poslije-3.jpg",
+          "/images/photos/garaza/garaza-prije-4.jpg",
+          "/images/photos/garaza/garaza-poslije-4.jpg",
           "/images/photos/garaza/garaza-rad-1.jpg",
           "/images/photos/garaza/garaza-rad-2.jpg",
           "/images/photos/garaza/garaza-rad-3.jpg",
@@ -264,6 +269,8 @@ export default function GarazaPage() {
               pairs={[
                 { before: "/images/photos/garaza/garaza-prije.jpg", after: "/images/photos/garaza/garaza-poslije.jpg" },
                 { before: "/images/photos/garaza/garaza-prije-2.jpg", after: "/images/photos/garaza/garaza-poslije-2.jpg" },
+                { before: "/images/photos/garaza/garaza-prije-3.jpg", after: "/images/photos/garaza/garaza-poslije-3.jpg" },
+                { before: "/images/photos/garaza/garaza-prije-4.jpg", after: "/images/photos/garaza/garaza-poslije-4.jpg" },
               ]}
             />
           </Reveal>
@@ -287,10 +294,11 @@ export default function GarazaPage() {
             </p>
           </Reveal>
           <Reveal variant="up" delay={100}>
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4 max-w-3xl mx-auto">
               {[
                 { src: "/videos/garaza-akcija-1.mp4", poster: "/videos/garaza-akcija-1-poster.jpg" },
                 { src: "/videos/garaza-akcija-2.mp4", poster: "/videos/garaza-akcija-2-poster.jpg" },
+                { src: "/videos/garaza-akcija-3.mp4", poster: "/videos/garaza-akcija-3-poster.jpg" },
               ].map((v) => (
                 <div key={v.src} className="relative aspect-[9/16] rounded-[14px] sm:rounded-[20px] overflow-hidden shadow-xl shadow-[#3B82F6]/15 ring-1 ring-white/60 bg-black">
                   <video
@@ -321,7 +329,7 @@ export default function GarazaPage() {
           </Reveal>
           <Reveal variant="up" delay={100}>
             <WorkGallery
-              startIndex={4}
+              startIndex={8}
               images={[
                 { src: "/images/photos/garaza/garaza-rad-1.jpg", alt: "Kärcher stroj za strojno ribanje poda garaže — Pro Clean Zagreb" },
                 { src: "/images/photos/garaza/garaza-rad-2.jpg", alt: "Strojno pranje poda garaže s pjenom — Pro Clean Zagreb" },

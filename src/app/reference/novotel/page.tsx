@@ -7,15 +7,15 @@ export const metadata: Metadata = {
   title: "Novotel Zagreb — Pranje prozora nakon izgradnje | Pro Clean",
   description:
     "Pro Clean djelatnici sudjelovali su kao vanjski suradnici na čišćenju svih prozora i staklenih površina nakon završetka izgradnje hotela Novotel u Zagrebu. Izvođač radova: Kamgrad.",
-  alternates: { canonical: "https://proclean.hr/reference/novotel" },
+  alternates: { canonical: "https://www.procleanzg.com/reference/novotel" },
   openGraph: {
     title: "Novotel Zagreb — Pranje prozora nakon izgradnje | Pro Clean",
     description: "Pro Clean kao vanjski suradnik na završnom čišćenju prozora Novotel Zagreb. Izvođač: Kamgrad.",
-    url: "https://proclean.hr/reference/novotel",
+    url: "https://www.procleanzg.com/reference/novotel",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/photos/prozori/IMG_7358.jpg", width: 1200, height: 630, alt: "Novotel Zagreb — Pro Clean pranje prozora" }],
+    images: [{ url: "https://www.procleanzg.com/images/photos/prozori/pranje-prozora-novotel-zagreb.jpg", width: 1200, height: 630, alt: "Novotel Zagreb — Pro Clean pranje prozora" }],
   },
 };
 
@@ -24,15 +24,15 @@ const jsonLd = {
   "@type": "Article",
   headline: "Novotel Zagreb — Pranje prozora nakon izgradnje",
   description: "Pro Clean djelatnici sudjelovali su kao vanjski suradnici na završnom čišćenju prozora i staklenih fasada hotela Novotel Zagreb.",
-  author: { "@type": "Organization", name: "Pro Clean", url: "https://proclean.hr" },
-  publisher: { "@type": "Organization", name: "Pro Clean", url: "https://proclean.hr" },
-  image: "https://proclean.hr/images/photos/prozori/IMG_7358.jpg",
+  author: { "@type": "Organization", name: "Pro Clean", url: "https://www.procleanzg.com" },
+  publisher: { "@type": "Organization", name: "Pro Clean", url: "https://www.procleanzg.com" },
+  image: "https://www.procleanzg.com/images/photos/prozori/pranje-prozora-novotel-zagreb.jpg",
 };
 
 const PHOTOS = [
-  "/images/photos/prozori/IMG_7358.jpg",
-  "/images/photos/prozori/IMG_2956.jpg",
-  "/images/photos/prozori/IMG_2958.jpg",
+  "/images/photos/prozori/pranje-prozora-novotel-zagreb.jpg",
+  "/images/photos/prozori/pranje-prozora-zagreb-1.jpg",
+  "/images/photos/prozori/pranje-prozora-zagreb-3.jpg",
 ];
 
 export default function NovotelPage() {
@@ -56,7 +56,7 @@ export default function NovotelPage() {
       {/* ── HERO ── */}
       <section className="relative w-full overflow-hidden" style={{ aspectRatio: "21/8", minHeight: "220px" }}>
         <Image
-          src="/images/photos/prozori/IMG_7358.jpg"
+          src="/images/photos/prozori/pranje-prozora-novotel-zagreb.jpg"
           alt="Novotel Zagreb — staklena fasada"
           fill priority
           className="object-cover"

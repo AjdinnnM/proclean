@@ -22,7 +22,7 @@ const SERVICES: { slug: string; title: string; desc: string; image: string; href
     slug: "prozori",
     title: "Pranje prozora",
     desc: "Iznutra i izvana, na visini, za hotele, urede i privatne klijente.",
-    image: "/images/photos/prozori/IMG_3288.jpg",
+    image: "/images/photos/prozori/pranje-prozora-stambena-zgrada.jpg",
     href: "/usluge/prozori",
     tags: ["Visine · Fasade", "Hoteli · Trgovine"],
   },

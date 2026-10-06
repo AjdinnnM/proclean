@@ -6,70 +6,91 @@ import { PhotoGallery } from "@/components/Lightbox";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
 import { AnimatedChecklist } from "@/components/v3/AnimatedChecklist";
+import { FeaturedProjects } from "@/components/v3/FeaturedProjects";
+import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const metadata: Metadata = {
-  title: "Čišćenje nakon izgradnje Zagreb — Pro Clean | Novogradnja i adaptacija",
+  title: "Čišćenje nakon građevinskih radova Zagreb — novogradnja, renovacija, poslovni objekti | Pro Clean",
   description:
-    "Generalno čišćenje nakon gradnje, renovacije ili adaptacije u Zagrebu. Uklanjamo građevinsku prašinu, ostatke boje i silikona. Prostor spreman za useljenje. Pozovite 099 484 0416.",
-  keywords: ["čišćenje nakon izgradnje Zagreb", "generalno čišćenje Zagreb", "čišćenje nakon renovacije", "čišćenje novogradnje Zagreb", "Pro Clean Zagreb"],
-  alternates: { canonical: "https://proclean.hr/usluge/izgradnja" },
+    "Završno čišćenje nakon gradnje i renovacije u Zagrebu — stanovi, kuće, zgrade i poslovni objekti. Uklanjamo građevinsku prašinu, ostatke boje, silikona i ljepila. Prostor spreman za useljenje i primopredaju. 099 484 0416.",
+  keywords: [
+    "čišćenje nakon građevinskih radova Zagreb",
+    "čišćenje nakon izgradnje Zagreb",
+    "čišćenje nakon gradnje",
+    "čišćenje nakon renovacije Zagreb",
+    "čišćenje nakon adaptacije",
+    "čišćenje novogradnje Zagreb",
+    "čišćenje stana nakon radova",
+    "čišćenje kuće nakon gradnje",
+    "čišćenje poslovnih objekata nakon izgradnje",
+    "završno čišćenje zgrade",
+    "uklanjanje građevinske prašine",
+    "Pro Clean Zagreb",
+  ],
+  alternates: { canonical: "https://www.procleanzg.com/usluge/izgradnja" },
   openGraph: {
-    title: "Čišćenje nakon izgradnje Zagreb — Pro Clean",
-    description: "Generalno čišćenje novogradnje i adaptacija u Zagrebu. Cijena po dogovoru.",
-    url: "https://proclean.hr/usluge/izgradnja",
+    title: "Čišćenje nakon građevinskih radova Zagreb — Pro Clean",
+    description:
+      "Završno čišćenje novogradnje, renovacija i poslovnih objekata u Zagrebu. Od 10.000 m² zgrada do stanova.",
+    url: "https://www.procleanzg.com/usluge/izgradnja",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/photos/img-2752.jpg", width: 1200, height: 630, alt: "Čišćenje nakon izgradnje Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/photos/vukovarska/vukovarska-zgrada.jpg", width: 1200, height: 630, alt: "Čišćenje nakon građevinskih radova — Pro Clean Zagreb" }],
   },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Service",
-  name: "Čišćenje nakon izgradnje Zagreb",
-  description: "Profesionalno generalno čišćenje nakon gradnje, renovacije i adaptacije u Zagrebu.",
+  name: "Čišćenje nakon građevinskih radova Zagreb",
+  serviceType: "Čišćenje nakon izgradnje, renovacije i adaptacije",
+  description:
+    "Završno čišćenje nakon gradnje i renovacije u Zagrebu — stanovi, kuće, stambene zgrade i poslovni objekti. Uklanjanje građevinske prašine, ostataka boje, silikona i ljepila.",
   provider: {
     "@type": "LocalBusiness",
     name: "Pro Clean",
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
     address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
-    url: "https://proclean.hr",
+    url: "https://www.procleanzg.com",
     openingHours: "Mo-Sa 08:00-20:00",
   },
   areaServed: { "@type": "City", name: "Zagreb" },
-  offers: { "@type": "Offer", description: "Čišćenje nakon izgradnje — cijena po dogovoru", availability: "https://schema.org/InStock" },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Čišćenje nakon građevinskih radova",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Čišćenje nakon izgradnje novogradnje" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Čišćenje nakon renovacije i adaptacije stana" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Čišćenje kuće nakon gradnje" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Završno čišćenje poslovnih objekata i zgrada" } },
+    ],
+  },
+  offers: { "@type": "Offer", description: "Čišćenje nakon građevinskih radova — cijena po dogovoru", availability: "https://schema.org/InStock" },
+};
+
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Pro Clean", item: "https://www.procleanzg.com" },
+    { "@type": "ListItem", position: 2, name: "Čišćenje nakon izgradnje", item: "https://www.procleanzg.com/usluge/izgradnja" },
+  ],
 };
 
 const STEPS = [
-  {
-    n: "01",
-    title: "Grubo čišćenje",
-    desc: "Uklanjamo krupni otpad, ostatke materijala i građevinski šut. Metemo i usisavamo sve površine kako bismo pripremili prostor za temeljito čišćenje.",
-  },
-  {
-    n: "02",
-    title: "Uklanjanje naslaga",
-    desc: "Skidamo ostatke boje, ljepila, silikona, estriha i kitova s podova, pločica, stolarije i stakla — bez oštećivanja novih površina.",
-  },
-  {
-    n: "03",
-    title: "Dubinsko čišćenje",
-    desc: "Peremo prozore, stolariju, radijatore, pločice, sanitarije i podove. Brišemo zidove, skidamo prašinu s instalacija i čistimo sve do detalja.",
-  },
-  {
-    n: "04",
-    title: "Završna kontrola",
-    desc: "Prolazimo svaki prostor, provjeravamo kutove, prozore i podove. Predajemo vam ključeve prostora koji je spreman za useljenje ili otvaranje.",
-  },
+  { n: "01", title: "Grubo čišćenje", desc: "Uklanjamo šut, krupni otpad i ostatke materijala." },
+  { n: "02", title: "Skidanje naslaga", desc: "Boja, silikon, ljepilo i estrih — bez oštećenja novih površina." },
+  { n: "03", title: "Dubinsko pranje", desc: "Prozori, stolarija, pločice, sanitarije i podovi." },
+  { n: "04", title: "Primopredaja", desc: "Završna kontrola i prostor spreman za useljenje." },
 ];
 
 const WHY = [
-  { title: "Stambeni i poslovni", desc: "Stanovi, kuće, uredi, hoteli, butici i trgovački prostori — prilagođavamo se svakom prostoru." },
-  { title: "Brz termin", desc: "Svaki dan kašnjenja znači trošak. Odgovor unutar 24h i prilagođavanje vašem roku." },
-  { title: "Pravo sredstvo", desc: "Profesionalna sredstva za boju, silikon i estrih — bez oštećenja novih površina." },
-  { title: "R1 račun", desc: "Izdajemo R1 za investitore, tvrtke i obrtnike. Bez dodatnih troškova." },
+  { title: "Svaki objekt", desc: "Stanovi, kuće, zgrade, uredi i poslovni prostori." },
+  { title: "Rok je rok", desc: "Prilagođavamo se vašem terminu primopredaje." },
+  { title: "Prava sredstva", desc: "Bez oštećenja novih podova, stolarije i stakla." },
+  { title: "R1 račun", desc: "Za investitore, izvođače i tvrtke." },
 ];
 
 const CHECKLIST = [
@@ -94,10 +115,22 @@ const FAQ = [
   { q: "Izdajete li račun?", a: "Da, izdajemo R1 račun za investitore, tvrtke i fizičke osobe." },
 ];
 
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 export default function IzgradnjaPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
 
       {/* ── HERO ── */}
       <section className="relative bg-white pt-8 lg:pt-14 pb-0 overflow-hidden">
@@ -199,15 +232,13 @@ export default function IzgradnjaPage() {
                 </div>
                 <style>{`@keyframes iz-shine { 0%, 70% { transform: skewX(-12deg) translateX(-200%); opacity: 0 } 78% { opacity: 1 } 92% { opacity: 1 } 100% { transform: skewX(-12deg) translateX(700%); opacity: 0 } }`}</style>
 
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-5 py-4 shadow-xl flex items-center gap-4 whitespace-nowrap">
-                  <div className="text-xl font-extrabold text-[#3B82F6] leading-none">Brz odgovor</div>
-                  <div className="text-xs text-gray-500 font-medium leading-tight">unutar 24h</div>
-                </div>
               </div>
             </Reveal>
           </div>
         </div>
       </section>
+
+      <FeaturedProjects />
 
       {/* ── REFERENCA — GARDEROBA ── */}
       <section className="bg-[#F5F5F0] py-12">
@@ -217,7 +248,7 @@ export default function IzgradnjaPage() {
           <a href="/reference/garderoba" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative">
             <div className="relative w-full h-[220px] sm:h-[280px] md:h-[340px]">
               <Image
-                src="/images/photos/izgradnja/IMG_3035.jpg"
+                src="/images/photos/izgradnja/ciscenje-nakon-adaptacije-kafic.jpg"
                 alt="Garderoba Store coffee shop — Pro Clean Zagreb"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -241,6 +272,7 @@ export default function IzgradnjaPage() {
         </div>
       </section>
 
+
       {/* ── PRIJE / POSLIJE ── */}
       <section className="bg-white py-16">
         <div className="max-w-5xl mx-auto px-5">
@@ -253,8 +285,8 @@ export default function IzgradnjaPage() {
 
           <div className="grid md:grid-cols-2 gap-5">
             {[
-              { before: "/images/photos/izgradnja/IMG_2990.jpg", after: "/images/photos/izgradnja/IMG_2991.jpg" },
-              { before: "/images/photos/izgradnja/IMG_3018.jpg", after: "/images/photos/izgradnja/IMG_3044.jpg" },
+              { before: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-prije.jpg", after: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-poslije.jpg" },
+              { before: "/images/photos/izgradnja/ciscenje-novogradnje-prije.jpg", after: "/images/photos/izgradnja/ciscenje-novogradnje-poslije.jpg" },
             ].map((pair, i) => (
               <Reveal key={i} delay={i * 100} variant={i % 2 === 0 ? "left" : "right"}>
               <div className="rounded-[20px] overflow-hidden shadow-lg border border-gray-100">
@@ -286,34 +318,47 @@ export default function IzgradnjaPage() {
         </div>
       </section>
 
-      {/* ── PROCESS ── */}
+      {/* ── PROCES + ŠTO JE UKLJUČENO (spojeno) ── */}
       <section className="bg-white py-20 lg:py-24">
         <div className="max-w-6xl mx-auto px-5">
-          <Reveal className="text-center mb-12 max-w-xl mx-auto">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-3">Naš proces</p>
+          <Reveal className="text-center mb-12 max-w-2xl mx-auto">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-3">Kako radimo</p>
             <h2 className="font-semibold text-[#0A0A0A] text-[28px] lg:text-[40px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
-              4 koraka do<br />
-              <span className="italic font-normal text-[#3B82F6]">čistog prostora.</span>
+              Od građevinske prašine do<br />
+              <span className="italic font-normal text-[#3B82F6]">spremnog prostora.</span>
             </h2>
           </Reveal>
 
-          {/* Mobile — animated timeline */}
+          {/* 4 koraka */}
           <div className="md:hidden max-w-sm mx-auto">
             <ProcessStepsAnimated steps={STEPS} />
           </div>
-
-          {/* Desktop — 4-column grid */}
-          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="hidden md:grid md:grid-cols-4 gap-4">
             {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={i * 100} variant={i % 2 === 0 ? "left" : "right"}>
-                <div className="group bg-[#FAFAF7] rounded-[20px] p-7 border border-gray-100 hover:-translate-y-1.5 hover:shadow-xl hover:border-[#BFDBFE]/60 hover:bg-white transition-all duration-300 h-full cursor-default">
-                  <div className="font-extrabold text-6xl text-[#DBEAFE] group-hover:text-[#93C5FD] leading-none mb-4 select-none transition-colors duration-300">{s.n}</div>
-                  <h3 className="font-extrabold text-[#0A0A0A] text-base leading-snug mb-3">{s.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+              <Reveal key={s.n} delay={i * 90} variant="up">
+                <div className="group bg-[#FAFAF7] rounded-[20px] p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg hover:bg-white transition-all duration-300 h-full">
+                  <div className="font-extrabold text-4xl text-[#DBEAFE] group-hover:text-[#93C5FD] leading-none mb-3 transition-colors">{s.n}</div>
+                  <h3 className="font-semibold text-[#0A0A0A] text-[15px] mb-1.5">{s.title}</h3>
+                  <p className="text-[13px] text-gray-500 leading-relaxed">{s.desc}</p>
                 </div>
               </Reveal>
             ))}
           </div>
+
+          {/* Što ulazi u uslugu */}
+          <Reveal variant="up" delay={120} className="mt-10 rounded-[22px] bg-[#FAFAF7] border border-black/5 p-7 lg:p-9">
+            <h3 className="font-semibold text-[#0A0A0A] text-[18px] lg:text-[20px] tracking-tight mb-5" style={{ fontFamily: "var(--font-v3-display)" }}>
+              Što ulazi u čišćenje nakon građevinskih radova
+            </h3>
+            <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-7 gap-y-2.5">
+              {CHECKLIST.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-[13.5px] text-[#3F3F3F] leading-[1.5]">
+                  <span className="mt-0.5 h-4 w-4 rounded-full bg-[#DBEAFE] text-[#3B82F6] flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </section>
 
@@ -329,51 +374,22 @@ export default function IzgradnjaPage() {
           <Reveal variant="up" delay={100}>
             <PhotoGallery
               images={[
-                { src: "/images/photos/izgradnja/IMG_2968.jpg", alt: "Čišćenje nakon izgradnje — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_2973.jpg", alt: "Uklanjanje građevinske prašine — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_2983.jpg", alt: "Završno čišćenje novogradnje — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_2990.jpg", alt: "Pranje podova nakon radova — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_2991.jpg", alt: "Detaljno čišćenje prostora nakon izgradnje — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_3018.jpg", alt: "Čišćenje stakla i površina nakon gradnje — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_3058.jpg", alt: "Priprema prostora za useljenje — Pro Clean Zagreb" },
-                { src: "/images/photos/izgradnja/IMG_3060.jpg", alt: "Završno poliranje nakon izgradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-zagreb-1.jpg", alt: "Čišćenje nakon izgradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-zagreb-2.jpg", alt: "Uklanjanje građevinske prašine — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-nakon-renovacije-zagreb.jpg", alt: "Završno čišćenje novogradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-prije.jpg", alt: "Pranje podova nakon radova — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-nakon-izgradnje-poslije.jpg", alt: "Detaljno čišćenje prostora nakon izgradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-novogradnje-prije.jpg", alt: "Čišćenje stakla i površina nakon gradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-gradjevinske-prasine-zagreb.jpg", alt: "Priprema prostora za useljenje — Pro Clean Zagreb" },
+                { src: "/images/photos/izgradnja/ciscenje-stana-nakon-izgradnje.jpg", alt: "Završno poliranje nakon izgradnje — Pro Clean Zagreb" },
+                { src: "/images/photos/vukovarska/vukovarska-strojno-pranje.jpg", alt: "Strojno pranje podova nakon građevinskih radova — poslovni objekt Zagreb" },
+                { src: "/images/photos/vukovarska/vukovarska-pranje-stakla.jpg", alt: "Uklanjanje zaštitne folije i naslaga sa staklenih stijena nakon gradnje" },
+                { src: "/images/photos/vukovarska/vukovarska-fasada-ljestve.jpg", alt: "Pranje prozora na fasadi poslovne zgrade nakon izgradnje" },
+                { src: "/images/photos/vukovarska/vukovarska-usisavanje.jpg", alt: "Uklanjanje građevinske prašine iz ureda nakon radova" },
+                { src: "/images/photos/vukovarska/vukovarska-ured.jpg", alt: "Uredski prostor spreman za primopredaju nakon završnog čišćenja" },
+                { src: "/images/photos/vukovarska/vukovarska-stubiste.jpg", alt: "Očišćeno stubište poslovnog objekta nakon građevinskih radova" },
               ]}
             />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ── ŠTO JE UKLJUČENO — Apple-style minimalist checklist ── */}
-      <section className="bg-[#FAFAF7] py-20 lg:py-28 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-5">
-
-          {/* Centered header */}
-          <Reveal className="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B82F6] font-medium mb-4">Što je uključeno</p>
-            <h2 className="font-semibold text-[#0A0A0A] text-[32px] lg:text-[44px] leading-[1.05] tracking-[-0.02em]" style={{ fontFamily: "var(--font-v3-display)" }}>
-              Svaki detalj —<br />
-              <span className="italic font-normal text-[#3B82F6]">bez iznimke.</span>
-            </h2>
-            <p className="mt-5 text-[15px] text-[#3F3F3F] leading-[1.6]">
-              Radimo po checklistama. Ne predajemo prostor dok svaki kvadrat ne zadovolji naš standard.
-            </p>
-          </Reveal>
-
-          {/* Animated checklist — full width, no cards */}
-          <div className="max-w-3xl mx-auto">
-            <AnimatedChecklist items={CHECKLIST} />
-          </div>
-
-          {/* Image strip below */}
-          <Reveal variant="up" delay={200} className="mt-12 lg:mt-16 relative h-[280px] lg:h-[380px] rounded-[20px] overflow-hidden shadow-xl shadow-black/8 max-w-4xl mx-auto group">
-            <Image
-              src="/images/photos/izgradnja/IMG_3044.jpg"
-              alt="Generalno čišćenje novogradnje — Pro Clean Zagreb"
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-              sizes="(min-width:1024px) 900px, 100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 to-transparent" />
           </Reveal>
         </div>
       </section>
@@ -487,15 +503,15 @@ export default function IzgradnjaPage() {
             {[
               {
                 href: "/usluge/stubiste", title: "Čišćenje stubišta", sub: "Redovito i jednokratno",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h4v-4h4v-4h4v-4h4v-4h4" /></svg>,
+                icon: <ServiceIcon slug="stubiste" />,
               },
               {
                 href: "/usluge/garaza", title: "Čišćenje garaža", sub: "Strojno ribanje poda",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /><path d="M3 17h2M9 17h6M19 17h2" /><path d="M3 17l2-7h11l3 4v3" /></svg>,
+                icon: <ServiceIcon slug="garaza" />,
               },
               {
                 href: "/usluge/prozori", title: "Pranje prozora", sub: "Iznutra i izvana · na visini",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="1" /><path d="M3 12h18M12 3v18" /></svg>,
+                icon: <ServiceIcon slug="prozori" />,
               },
             ].map((s, i) => (
               <Reveal key={s.title} delay={i * 70} variant={i % 2 === 0 ? "left" : "right"}>

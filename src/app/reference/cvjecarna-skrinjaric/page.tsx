@@ -7,15 +7,15 @@ export const metadata: Metadata = {
   title: "Cvjećarna Skrinjarić — Generalno čišćenje nakon evenata | Pro Clean Zagreb",
   description:
     "Pro Clean obavlja generalno čišćenje prostora Cvjećarne Skrinjarić u Zagrebu nakon velikih evenata, vjenčanja i sezonskih akcija. Pouzdana suradnja.",
-  alternates: { canonical: "https://proclean.hr/reference/cvjecarna-skrinjaric" },
+  alternates: { canonical: "https://www.procleanzg.com/reference/cvjecarna-skrinjaric" },
   openGraph: {
     title: "Cvjećarna Skrinjarić — Referenca | Pro Clean Zagreb",
     description: "Generalno čišćenje Cvjećarne Skrinjarić nakon velikih evenata i sezonskih akcija.",
-    url: "https://proclean.hr/reference/cvjecarna-skrinjaric",
+    url: "https://www.procleanzg.com/reference/cvjecarna-skrinjaric",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/reference/cvjecarna-skrinjaric.jpg", width: 1200, height: 630, alt: "Cvjećarna Skrinjarić — Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/reference/cvjecarna-skrinjaric.jpg", width: 1200, height: 630, alt: "Cvjećarna Skrinjarić — Pro Clean Zagreb" }],
   },
 };
 
@@ -24,8 +24,8 @@ const jsonLd = {
   "@type": "Article",
   headline: "Cvjećarna Skrinjarić — referenca Pro Clean Zagreb",
   description: "Pro Clean čisti prostor Cvjećarne Skrinjarić u Zagrebu nakon velikih evenata, vjenčanja i sezonskih akcija.",
-  author: { "@type": "Organization", name: "Pro Clean", url: "https://proclean.hr" },
-  image: "https://proclean.hr/images/reference/cvjecarna-skrinjaric.jpg",
+  author: { "@type": "Organization", name: "Pro Clean", url: "https://www.procleanzg.com" },
+  image: "https://www.procleanzg.com/images/reference/cvjecarna-skrinjaric.jpg",
 };
 
 const HIGHLIGHTS = [

@@ -5,21 +5,22 @@ import { Reveal } from "@/components/Reveal";
 import { LightboxProvider, ZoomImage } from "@/components/Lightbox";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
+import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const metadata: Metadata = {
   title: "Čišćenje stubišta Zagreb — Pro Clean | Redovito i jednokratno",
   description:
     "Profesionalno čišćenje stubišta u stambenim zgradama Zagreba — redovito ili jednokratno. Pozovite 099 484 0416.",
   keywords: ["čišćenje stubišta Zagreb","čišćenje stepeništa Zagreb","stambena zajednica čišćenje Zagreb","Pro Clean Zagreb"],
-  alternates: { canonical: "https://proclean.hr/usluge/stubiste" },
+  alternates: { canonical: "https://www.procleanzg.com/usluge/stubiste" },
   openGraph: {
     title: "Čišćenje stubišta Zagreb — Pro Clean",
     description: "Redovito i jednokratno čišćenje stubišta u stambenim zgradama Zagreba.",
-    url: "https://proclean.hr/usluge/stubiste",
+    url: "https://www.procleanzg.com/usluge/stubiste",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/photos/stubiste-lobby.jpg", width: 1200, height: 630, alt: "Čišćenje stubišta Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/photos/stubiste-lobby.jpg", width: 1200, height: 630, alt: "Čišćenje stubišta Pro Clean Zagreb" }],
   },
 };
 
@@ -34,7 +35,7 @@ const jsonLd = {
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
     address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
-    url: "https://proclean.hr",
+    url: "https://www.procleanzg.com",
     openingHours: "Mo-Sa 08:00-20:00",
   },
   areaServed: { "@type": "City", name: "Zagreb" },
@@ -140,7 +141,7 @@ export default function StubistePage() {
                 </div>
                 <div className="grid grid-cols-3 gap-3 lg:gap-4">
                   {[
-                    { src: "/images/photos/stubiste/IMG_3457.jpg", alt: "Čist moderni ulaz stambene zgrade — Pro Clean Zagreb" },
+                    { src: "/images/photos/stubiste/ciscenje-stubista-zagreb-ulaz.jpg", alt: "Čist moderni ulaz stambene zgrade — Pro Clean Zagreb" },
                     { src: "/images/photos/stubiste-ulaz-1.jpg", alt: "Stubište nakon čišćenja — Pro Clean Zagreb" },
                     { src: "/images/services/staircase-real.jpg", alt: "Stubište stambene zgrade — Pro Clean Zagreb" },
                   ].map((img) => (
@@ -232,15 +233,15 @@ export default function StubistePage() {
             <Reveal variant="up" delay={200} className="relative">
               <LightboxProvider
                 images={[
-                  "/images/photos/stubiste/IMG_3459.jpg",
-                  "/images/photos/stubiste/IMG_3458.jpg",
-                  "/images/photos/stubiste/IMG_3470.jpg",
+                  "/images/photos/stubiste/strojno-ciscenje-ulaza-zgrade.jpg",
+                  "/images/photos/stubiste/strojno-pranje-plocica-stubiste.jpg",
+                  "/images/photos/stubiste/stroj-za-ribanje-poda-stubiste.jpg",
                 ]}
               >
               <div className="relative w-full h-[360px] lg:h-[480px] rounded-[24px] overflow-hidden shadow-2xl shadow-black/10 group grid grid-cols-2 grid-rows-2 gap-2 bg-white p-2">
-                <ZoomImage src="/images/photos/stubiste/IMG_3459.jpg" alt="Strojno čišćenje ulaza stambene zgrade — Pro Clean Zagreb" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-2 rounded-[18px] overflow-hidden" />
-                <ZoomImage src="/images/photos/stubiste/IMG_3458.jpg" alt="Strojno pranje pločica u stubištu — Pro Clean" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-1 rounded-[18px] overflow-hidden" />
-                <ZoomImage src="/images/photos/stubiste/IMG_3470.jpg" alt="Stroj za ribanje poda u lobby-u stambene zgrade — Pro Clean" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-1 rounded-[18px] overflow-hidden" />
+                <ZoomImage src="/images/photos/stubiste/strojno-ciscenje-ulaza-zgrade.jpg" alt="Strojno čišćenje ulaza stambene zgrade — Pro Clean Zagreb" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-2 rounded-[18px] overflow-hidden" />
+                <ZoomImage src="/images/photos/stubiste/strojno-pranje-plocica-stubiste.jpg" alt="Strojno pranje pločica u stubištu — Pro Clean" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-1 rounded-[18px] overflow-hidden" />
+                <ZoomImage src="/images/photos/stubiste/stroj-za-ribanje-poda-stubiste.jpg" alt="Stroj za ribanje poda u lobby-u stambene zgrade — Pro Clean" sizes="(min-width:1024px) 25vw, 50vw" className="col-span-1 row-span-1 rounded-[18px] overflow-hidden" />
 
                 {/* Periodic shine */}
                 <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -490,15 +491,15 @@ export default function StubistePage() {
             {[
               {
                 href: "/usluge/garaza", title: "Čišćenje garaža", sub: "Strojno ribanje poda",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /><path d="M3 17h2M9 17h6M19 17h2" /><path d="M3 17l2-7h11l3 4v3" /></svg>,
+                icon: <ServiceIcon slug="garaza" />,
               },
               {
                 href: "/usluge/izgradnja", title: "Čišćenje nakon izgradnje", sub: "Spremno za useljenje",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18" /><path d="M5 21V7l8-4 8 4v14" /><path d="M9 9h1M9 13h1M14 9h1M14 13h1" /></svg>,
+                icon: <ServiceIcon slug="izgradnja" />,
               },
               {
                 href: "/usluge/prozori", title: "Pranje prozora", sub: "Obje strane · na visini",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="1" /><path d="M3 12h18M12 3v18" /></svg>,
+                icon: <ServiceIcon slug="prozori" />,
               },
             ].map((s, i) => (
               <Reveal key={s.title} delay={i * 70} variant={i % 2 === 0 ? "left" : "right"}>

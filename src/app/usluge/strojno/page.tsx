@@ -3,13 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Footer } from "@/components/Footer";
+import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const metadata: Metadata = {
   title: "Strojno pranje podova Zagreb — Pro Clean | Garaže i poslovni prostori",
   description:
     "Profesionalno strojno pranje i ribanje tvrdih podova u Zagrebu. Garaže, parkirališta, skladišta, poslovni prostori. Industrijska oprema. Pozovite 099 484 0416.",
   keywords: ["strojno pranje podova Zagreb", "ribanje podova Zagreb", "čišćenje garaže Zagreb", "profesionalno čišćenje podova", "Pro Clean Zagreb"],
-  alternates: { canonical: "https://proclean.hr/usluge/strojno" },
+  alternates: { canonical: "https://www.procleanzg.com/usluge/strojno" },
 };
 
 const INCLUDES = [
@@ -230,13 +231,13 @@ export default function StrojnoPage() {
             <h2 className="font-extrabold text-[#0d1f3c] text-xl mb-6">Ostale usluge</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { href: "/usluge/stubiste",  emoji: "🏢", title: "Čišćenje stubišta",    sub: "Redovito i jednokratno" },
-                { href: "/usluge/garaza",    emoji: "🚗", title: "Čišćenje garaža",      sub: "Strojno ribanje poda" },
-                { href: "/usluge/prozori",   emoji: "🪟", title: "Pranje prozora",        sub: "Iznutra i izvana" },
-                { href: "/usluge/generalke", emoji: "🧹", title: "Generalno čišćenje",   sub: "Poslovni prostori i stanovi" },
+                { href: "/usluge/stubiste",  slug: "stubiste" as const, title: "Čišćenje stubišta",    sub: "Redovito i jednokratno" },
+                { href: "/usluge/garaza",    slug: "garaza" as const, title: "Čišćenje garaža",      sub: "Strojno ribanje poda" },
+                { href: "/usluge/prozori",   slug: "prozori" as const, title: "Pranje prozora",        sub: "Iznutra i izvana" },
+                { href: "/usluge/generalke", slug: "generalke" as const, title: "Generalno čišćenje",   sub: "Poslovni prostori i stanovi" },
               ].map((s) => (
                 <Link key={s.title} href={s.href} className="group flex items-start gap-4 bg-white border border-gray-100 rounded-2xl p-5 hover:border-blue-300 hover:bg-blue-50/40 transition-all">
-                  <span className="text-2xl shrink-0">{s.emoji}</span>
+                  <span className="h-10 w-10 rounded-[12px] bg-[#EFF6FF] text-[#0266f0] flex items-center justify-center shrink-0 group-hover:bg-[#0266f0] group-hover:text-white transition-colors duration-300"><ServiceIcon slug={s.slug} /></span>
                   <div>
                     <h3 className="font-bold text-[#0d1f3c] text-sm group-hover:text-[#0266f0] transition-colors">{s.title}</h3>
                     <p className="text-xs text-gray-400 mt-0.5">{s.sub}</p>

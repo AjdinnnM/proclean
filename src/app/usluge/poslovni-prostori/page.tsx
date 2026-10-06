@@ -5,6 +5,7 @@ import { Reveal } from "@/components/Reveal";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
 import { AnimatedChecklist } from "@/components/v3/AnimatedChecklist";
+import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const metadata: Metadata = {
   title: "Generalno čišćenje poslovnih prostora i stanova Zagreb — Pro Clean",
@@ -26,15 +27,15 @@ export const metadata: Metadata = {
     "spremačica Zagreb",
     "Pro Clean Zagreb",
   ],
-  alternates: { canonical: "https://proclean.hr/usluge/poslovni-prostori" },
+  alternates: { canonical: "https://www.procleanzg.com/usluge/poslovni-prostori" },
   openGraph: {
     title: "Čišćenje poslovnih prostora Zagreb — Pro Clean",
     description: "Generalno čišćenje kafića, restorana, ureda, cvjećarni i butika u Zagrebu. Cijena po dogovoru.",
-    url: "https://proclean.hr/usluge/poslovni-prostori",
+    url: "https://www.procleanzg.com/usluge/poslovni-prostori",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/services/office.jpg", width: 1200, height: 630, alt: "Čišćenje poslovnih prostora Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/services/office.jpg", width: 1200, height: 630, alt: "Čišćenje poslovnih prostora Pro Clean Zagreb" }],
   },
 };
 
@@ -49,7 +50,7 @@ const jsonLd = {
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
     address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
-    url: "https://proclean.hr",
+    url: "https://www.procleanzg.com",
     openingHours: "Mo-Sa 08:00-20:00",
   },
   areaServed: { "@type": "City", name: "Zagreb" },
@@ -272,7 +273,7 @@ export default function PoslovniProstoriPage() {
         <div className="max-w-6xl mx-auto px-5">
           <Reveal className="text-xs font-bold text-[#3B82F6] uppercase tracking-widest mb-5 text-center">Naše reference</Reveal>
 
-          <div className="grid md:grid-cols-2 gap-5 lg:gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             <Reveal variant="left">
               <a href="/reference/cvjecarna-skrinjaric" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
                 <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
@@ -304,7 +305,7 @@ export default function PoslovniProstoriPage() {
               <a href="/reference/garderoba" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
                 <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
                   <Image
-                    src="/images/photos/izgradnja/IMG_3035.jpg"
+                    src="/images/photos/izgradnja/ciscenje-nakon-adaptacije-kafic.jpg"
                     alt="Garderoba Store coffee shop — Pro Clean Zagreb"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -323,6 +324,33 @@ export default function PoslovniProstoriPage() {
                     </span>
                   </div>
                   <span className="absolute top-4 left-5 bg-[#3B82F6] text-white text-xs font-bold px-3 py-1.5 rounded-full">Coffee shop</span>
+                </div>
+              </a>
+            </Reveal>
+
+            <Reveal variant="up" delay={250}>
+              <a href="/reference/kalea-family-mall" className="group block rounded-[20px] overflow-hidden shadow-lg border border-gray-100 relative h-full">
+                <div className="relative w-full h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px]">
+                  <Image
+                    src="/images/photos/kalea/kalea-salon-gotovo.jpg"
+                    alt="Kalea salon namještaja, Family Mall Zagreb — Pro Clean"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
+                    style={{ transform: "translateZ(0)" }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-white/70 uppercase tracking-widest block mb-1">Referenca</span>
+                      <span className="text-white font-extrabold text-lg md:text-xl leading-snug block">Kalea<br /> — Family Mall</span>
+                      <span className="text-white/60 text-xs block mt-1">Priprema salona za otvaranje</span>
+                    </div>
+                    <span className="flex items-center gap-1.5 bg-white text-[#3B82F6] text-xs font-bold px-4 py-2 rounded-full group-hover:bg-[#3B82F6] group-hover:text-white transition-colors shrink-0">
+                      Pogledaj →
+                    </span>
+                  </div>
+                  <span className="absolute top-4 left-5 bg-[#3B82F6] text-white text-xs font-bold px-3 py-1.5 rounded-full">Salon namještaja</span>
                 </div>
               </a>
             </Reveal>
@@ -528,15 +556,15 @@ export default function PoslovniProstoriPage() {
             {[
               {
                 href: "/usluge/stubiste", title: "Čišćenje stubišta", sub: "Stambene zgrade · tjedno",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h4v-4h4v-4h4v-4h4v-4h4"/></svg>,
+                icon: <ServiceIcon slug="stubiste" />,
               },
               {
                 href: "/usluge/izgradnja", title: "Čišćenje nakon izgradnje", sub: "Novogradnja i renovacije",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 22h20"/><path d="M5 22V8l7-5 7 5v14"/><path d="M10 14h4"/></svg>,
+                icon: <ServiceIcon slug="izgradnja" />,
               },
               {
                 href: "/usluge/prozori", title: "Pranje prozora", sub: "Iznutra i izvana · na visini",
-                icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="1" /><path d="M3 12h18M12 3v18" /></svg>,
+                icon: <ServiceIcon slug="prozori" />,
               },
             ].map((s, i) => (
               <Reveal key={s.title} delay={i * 70} variant={i % 2 === 0 ? "left" : "right"}>

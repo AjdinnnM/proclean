@@ -7,12 +7,12 @@ const SHOTS = [
     sub: "Strojno ribanje · 1 dolazak",
   },
   {
-    src: "/images/photos/prozori/IMG_3151.jpg",
+    src: "/images/photos/prozori/pranje-prozora-detalj-8.jpg",
     label: "Pranje prozora · Novotel",
     sub: "Staklena fasada · ekipa od 3",
   },
   {
-    src: "/images/photos/izgradnja/IMG_3035.jpg",
+    src: "/images/photos/izgradnja/ciscenje-nakon-adaptacije-kafic.jpg",
     label: "Nakon izgradnje · Trešnjevka",
     sub: "Stan 88 m² · spremno za useljenje",
   },

@@ -6,7 +6,7 @@ import { GalleryV3 } from "@/components/v3/GalleryV3";
 export const metadata: Metadata = {
   title: "Galerija radova — Pro Clean Zagreb",
   description: "Pogledajte naše radove — čišćenje stubišta, garaža, pranje prozora i čišćenje nakon izgradnje. Zagreb i okolica.",
-  alternates: { canonical: "https://proclean.hr/galerija" },
+  alternates: { canonical: "https://www.procleanzg.com/galerija" },
 };
 
 export default function GalerijaPage() {

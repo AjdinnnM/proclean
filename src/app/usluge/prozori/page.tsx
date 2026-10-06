@@ -7,21 +7,22 @@ import { Reveal } from "@/components/Reveal";
 import { ProcessStepsAnimated } from "@/components/v3/ProcessStepsAnimated";
 import { TypewriterText } from "@/components/v3/TypewriterText";
 import { RotatingTypes } from "@/components/v3/RotatingTypes";
+import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const metadata: Metadata = {
   title: "Pranje prozora Zagreb — Pro Clean | Iznutra i izvana, pranje na visini",
   description:
     "Profesionalno pranje prozora, izloga i staklenih fasada u Zagrebu. Pranje na visini uz dizalice. Bez tragova, obje strane. Pozovite 099 484 0416.",
   keywords: ["pranje prozora Zagreb", "čišćenje prozora Zagreb", "pranje fasadnog stakla", "pranje izloga Zagreb", "pranje prozora na visini", "Pro Clean Zagreb"],
-  alternates: { canonical: "https://proclean.hr/usluge/prozori" },
+  alternates: { canonical: "https://www.procleanzg.com/usluge/prozori" },
   openGraph: {
     title: "Pranje prozora Zagreb — Pro Clean | Na visini i iznutra",
     description: "Profesionalno pranje prozora i fasadnog stakla u Zagrebu. Radimo i na visini uz dizalice.",
-    url: "https://proclean.hr/usluge/prozori",
+    url: "https://www.procleanzg.com/usluge/prozori",
     siteName: "Pro Clean Zagreb",
     locale: "hr_HR",
     type: "website",
-    images: [{ url: "https://proclean.hr/images/photos/img-2810.jpg", width: 1200, height: 630, alt: "Pranje prozora Pro Clean Zagreb" }],
+    images: [{ url: "https://www.procleanzg.com/images/photos/img-2810.jpg", width: 1200, height: 630, alt: "Pranje prozora Pro Clean Zagreb" }],
   },
 };
 
@@ -36,7 +37,7 @@ const jsonLd = {
     telephone: "+385994840416",
     email: "proclean.hr@outlook.com",
     address: { "@type": "PostalAddress", addressLocality: "Zagreb", postalCode: "10000", addressCountry: "HR" },
-    url: "https://proclean.hr",
+    url: "https://www.procleanzg.com",
     openingHours: "Mo-Sa 08:00-20:00",
   },
   areaServed: { "@type": "City", name: "Zagreb" },
@@ -79,15 +80,15 @@ const FAQ = [
 const RELATED = [
   {
     href: "/usluge/stubiste", title: "Čišćenje stubišta", sub: "Redovito i jednokratno",
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h4v-4h4v-4h4v-4h4v-4h4" /></svg>,
+    icon: <ServiceIcon slug="stubiste" />,
   },
   {
     href: "/usluge/garaza", title: "Čišćenje garaža", sub: "Strojno ribanje poda",
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /><path d="M3 17h2M9 17h6M19 17h2" /><path d="M3 17l2-7h11l3 4v3" /></svg>,
+    icon: <ServiceIcon slug="garaza" />,
   },
   {
     href: "/usluge/izgradnja", title: "Čišćenje nakon izgradnje", sub: "Spremno za useljenje",
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18" /><path d="M5 21V7l8-4 8 4v14" /><path d="M9 9h1M9 13h1M14 9h1M14 13h1" /></svg>,
+    icon: <ServiceIcon slug="izgradnja" />,
   },
 ];
 
@@ -173,7 +174,7 @@ export default function ProzoriPage() {
             {/* Right — image with squeegee shimmer */}
             <Reveal variant="up" delay={200} className="relative lg:self-stretch flex items-end justify-center lg:justify-end">
               <div className="relative w-full max-w-lg lg:max-w-none h-[360px] lg:h-full lg:min-h-[520px] rounded-[20px] overflow-hidden shadow-2xl shadow-black/10 group">
-                <Image src="/images/photos/prozori/IMG_3153.jpg" alt="Profesionalno pranje prozora — Pro Clean Zagreb" fill priority className="object-cover" sizes="(min-width:1024px) 50vw, 100vw" />
+                <Image src="/images/photos/prozori/pranje-prozora-profesionalno-zagreb.jpg" alt="Profesionalno pranje prozora — Pro Clean Zagreb" fill priority className="object-cover" sizes="(min-width:1024px) 50vw, 100vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/30 via-transparent to-transparent" />
 
                 {/* Squeegee shimmer — light bar moves diagonally across glass */}
@@ -267,19 +268,19 @@ export default function ProzoriPage() {
                 <div className="relative order-1 lg:order-2 p-5 lg:p-8 bg-[#FAFAF7] flex items-stretch">
                   <LightboxProvider
                     images={[
-                      "/images/photos/prozori/IMG_3455.jpg",
-                      "/images/photos/prozori/IMG_3451.jpg",
-                      "/images/photos/prozori/IMG_3452.jpg",
-                      "/images/photos/prozori/IMG_3453.jpg",
-                      "/images/photos/prozori/IMG_3454.jpg",
+                      "/images/photos/prozori/pranje-prozora-na-visini-zagreb.jpg",
+                      "/images/photos/prozori/dizalica-za-pranje-prozora-zagreb.jpg",
+                      "/images/photos/prozori/pranje-prozora-na-visini-platforma.jpg",
+                      "/images/photos/prozori/pranje-fasadnog-stakla-dizalica.jpg",
+                      "/images/photos/prozori/pranje-prozora-visoka-zgrada.jpg",
                     ]}
                   >
                     <div className="grid grid-cols-3 grid-rows-3 gap-2.5 w-full min-h-[420px] lg:min-h-[560px]">
-                      <ZoomImage src="/images/photos/prozori/IMG_3455.jpg" alt="Pranje prozora na visini — stambena zgrada Zagreb" sizes="(min-width:1024px) 33vw, 60vw" className="col-span-2 row-span-2 rounded-[16px] overflow-hidden shadow-md" />
-                      <ZoomImage src="/images/photos/prozori/IMG_3451.jpg" alt="Dizalica za pranje prozora" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
-                      <ZoomImage src="/images/photos/prozori/IMG_3452.jpg" alt="Radnik na platformi pere prozore" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
-                      <ZoomImage src="/images/photos/prozori/IMG_3453.jpg" alt="Pranje fasadnog stakla s dizalicom" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
-                      <ZoomImage src="/images/photos/prozori/IMG_3454.jpg" alt="Pranje prozora na visokoj zgradi" sizes="(min-width:1024px) 33vw, 60vw" className="col-span-2 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/pranje-prozora-na-visini-zagreb.jpg" alt="Pranje prozora na visini — stambena zgrada Zagreb" sizes="(min-width:1024px) 33vw, 60vw" className="col-span-2 row-span-2 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/dizalica-za-pranje-prozora-zagreb.jpg" alt="Dizalica za pranje prozora" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/pranje-prozora-na-visini-platforma.jpg" alt="Radnik na platformi pere prozore" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/pranje-fasadnog-stakla-dizalica.jpg" alt="Pranje fasadnog stakla s dizalicom" sizes="(min-width:1024px) 16vw, 30vw" className="col-span-1 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
+                      <ZoomImage src="/images/photos/prozori/pranje-prozora-visoka-zgrada.jpg" alt="Pranje prozora na visokoj zgradi" sizes="(min-width:1024px) 33vw, 60vw" className="col-span-2 row-span-1 rounded-[16px] overflow-hidden shadow-md" />
                     </div>
                   </LightboxProvider>
                 </div>
@@ -323,16 +324,16 @@ export default function ProzoriPage() {
           <Reveal variant="up" delay={100}>
             <ImageLightbox
               pairs={[
-                { before: "/images/photos/prozori/IMG_3151.jpg", after: "/images/photos/prozori/IMG_3152.jpg", label: "" },
-                { before: "/images/photos/prozori/IMG_3144.jpg", after: "/images/photos/prozori/IMG_3145.jpg", label: "" },
+                { before: "/images/photos/prozori/pranje-prozora-detalj-8.jpg", after: "/images/photos/prozori/pranje-prozora-detalj-9.jpg", label: "" },
+                { before: "/images/photos/prozori/pranje-prozora-detalj-1.jpg", after: "/images/photos/prozori/pranje-prozora-detalj-2.jpg", label: "" },
               ]}
               extras={[
-                "/images/photos/prozori/IMG_3301.jpg",
-                "/images/photos/prozori/IMG_3305.jpg",
-                "/images/photos/prozori/IMG_3288.jpg",
-                "/images/photos/prozori/IMG_7358.jpg",
-                "/images/photos/prozori/IMG_2956.jpg",
-                "/images/photos/prozori/IMG_2958.jpg",
+                "/images/photos/prozori/ciscenje-staklenih-povrsina-zagreb.jpg",
+                "/images/photos/prozori/pranje-izloga-zagreb.jpg",
+                "/images/photos/prozori/pranje-prozora-stambena-zgrada.jpg",
+                "/images/photos/prozori/pranje-prozora-novotel-zagreb.jpg",
+                "/images/photos/prozori/pranje-prozora-zagreb-1.jpg",
+                "/images/photos/prozori/pranje-prozora-zagreb-3.jpg",
               ]}
             />
           </Reveal>

@@ -9,7 +9,7 @@ const REFERENCES = [
     title: "Garderoba Store",
     sub: "Coffee shop · čišćenje nakon renovacije",
     tag: "Renovacija",
-    image: "/images/photos/izgradnja/IMG_3035.jpg",
+    image: "/images/photos/izgradnja/ciscenje-nakon-adaptacije-kafic.jpg",
     href: "/reference/garderoba",
   },
   {

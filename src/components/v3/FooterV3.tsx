@@ -64,6 +64,13 @@ export function FooterV3() {
           <p className="text-[12px] text-[#6B7280]">© 2026 Pro Clean. Sva prava pridržana.</p>
           <div className="flex items-center gap-5">
             <Link
+              href="/politika-privatnosti"
+              className="text-[12px] text-[#6B7280] hover:text-[#3B82F6] transition-colors"
+            >
+              Politika privatnosti
+            </Link>
+            <span className="hidden md:inline text-[#E5E7EB]">·</span>
+            <Link
               href="/radnici"
               className="group inline-flex items-center gap-2 text-[12px] text-[#6B7280] hover:text-[#3B82F6] transition-colors"
             >
